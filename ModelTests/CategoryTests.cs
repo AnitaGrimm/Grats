@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Grats.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Xunit;
 
 namespace ModelTests
 {
-    [TestClass]
     public class CategoryTests
     {
         
-        [TestMethod]
+        [Fact]
         public void CanCreateGeneralСategory()
         {
             var db = new GratsDBContext();
@@ -35,8 +34,8 @@ namespace ModelTests
             db.SaveChanges();
 
             var contact = db.Contacts.ToList().First();
-            Assert.IsTrue(contact.Category is GeneralCategory);
-            Assert.IsFalse(contact.Category is BirthdayCategory);
+            Assert.True(contact.Category is GeneralCategory);
+            Assert.False(contact.Category is BirthdayCategory);
         }
     }
 }
