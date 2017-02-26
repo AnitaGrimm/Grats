@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.EntityFrameworkCore;
+using Grats.Model;
 
 namespace Grats
 {
@@ -22,6 +24,7 @@ namespace Grats
     /// </summary>
     sealed partial class App : Application
     {
+        public GratsDBContext dbContext;
         /// <summary>
         /// Инициализирует одноэлементный объект приложения.  Это первая выполняемая строка разрабатываемого
         /// кода; поэтому она является логическим эквивалентом main() или WinMain().
@@ -30,6 +33,8 @@ namespace Grats
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            dbContext = new GratsDBContext();
+            dbContext.Database.Migrate();
         }
 
         /// <summary>
