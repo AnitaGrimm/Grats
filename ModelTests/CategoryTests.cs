@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using Grats.Model;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace ModelTests
 {
@@ -11,7 +12,7 @@ namespace ModelTests
     {
         
         [TestMethod]
-        public void CanCreateGeneralTategory()
+        public void CanCreateGeneralСategory()
         {
             var db = new GratsDBContext();
             db.Database.Migrate();
@@ -22,11 +23,15 @@ namespace ModelTests
                 Date = new DateTime(2016, 05, 14)
             };
 
-            category.Contacts.Add(new Contact()
+            category.Contacts = new List<Contact>
             {
-                ScreenName = "FooBar"
-            });
+                new Contact()
+                {
+                    ScreenName = "Foobaar"
+                }
+            };
 
+            db.Categories.Add(category);
             db.SaveChanges();
 
             var contact = db.Contacts.ToList().First();
