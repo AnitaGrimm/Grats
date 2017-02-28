@@ -16,6 +16,15 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.EntityFrameworkCore;
 using Grats.Model;
+using Windows.ApplicationModel.Resources;
+using VkNet;
+using VkNet.Enums.Filters;
+using Windows.Storage;
+using System.Threading.Tasks;
+using VkNet.Exception;
+using System.Diagnostics;
+using VkNet.Utils.AntiCaptcha;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Grats
 {
@@ -24,7 +33,13 @@ namespace Grats
     /// </summary>
     sealed partial class App : Application
     {
+        static string VK_API_LOGIN_KEY = "vk_api_login";
+        static string VK_API_PASSWORD_KEY = "vk_api_password";
+        static string VK_API_APP_ID_KEY = "vk_api_app_id";
+
         public GratsDBContext dbContext;
+        public VkApi VKAPI;
+        public ulong VKAPIApplicationID;
         /// <summary>
         /// Инициализирует одноэлементный объект приложения.  Это первая выполняемая строка разрабатываемого
         /// кода; поэтому она является логическим эквивалентом main() или WinMain().
@@ -33,8 +48,25 @@ namespace Grats
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+        }
+
+        public void InitializeDB()
+        {
             dbContext = new GratsDBContext();
             dbContext.Database.Migrate();
+        }
+
+        public void InitializeVKAPI()
+        {
+            VKAPIApplicationID = ulong.Parse(Resources[VK_API_APP_ID_KEY] as String);
+            VKAPI = new VkApi();
+            VKAPI.OnTokenExpires += VKAPI_OnTokenExpires;
+        }
+
+        private void VKAPI_OnTokenExpires(VkApi api)
+        {
+            // TODO: Реализовать
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -50,6 +82,9 @@ namespace Grats
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+            InitializeDB();
+            InitializeVKAPI();
+
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
@@ -74,10 +109,10 @@ namespace Grats
             {
                 if (rootFrame.Content == null)
                 {
-                    // Если стек навигации не восстанавливается для перехода к первой странице,
-                    // настройка новой страницы путем передачи необходимой информации в качестве параметра
-                    // параметр
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    if (TrySignIn())
+                        rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    else
+                        rootFrame.Navigate(typeof(LoginPage), e.Arguments);
                 }
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();
@@ -107,5 +142,96 @@ namespace Grats
             //TODO: Сохранить состояние приложения и остановить все фоновые операции
             deferral.Complete();
         }
+
+        #region Авторизация
+
+        // TODO: Добавить двухфакторную аутентификацию
+
+        public bool TrySignIn()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            var login = localSettings.Values[VK_API_LOGIN_KEY] as String;
+            var password = localSettings.Values[VK_API_PASSWORD_KEY] as String;
+            if (String.IsNullOrEmpty(login) || String.IsNullOrEmpty(password))
+                return false;
+            else
+            {
+                try
+                {
+                    SignIn(login, password);
+                }
+                catch (VkApiAuthorizationException e)
+                {
+                    Debug.Fail(e.Message);
+                    return false;
+                }
+                catch (VkApiException e)
+                {
+                    Debug.Fail(e.Message);
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        public void SignIn(String login, String password, long? captchaSid = null, string captchaValue = null)
+        {
+            VKAPI.Authorize(new ApiAuthParams()
+            {
+                ApplicationId = VKAPIApplicationID,
+                Login = login,
+                Password = password,
+                Settings = Settings.All,
+                CaptchaSid = captchaSid,
+                CaptchaKey = captchaValue
+            });
+            SaveCredentials(login, password);
+        }
+
+        public async Task SignInAsync(String login, String password, long? captchaSid = null, string captchaValue = null)
+        {
+            await VKAPI.AuthorizeAsync(new ApiAuthParams()
+            {
+                ApplicationId = VKAPIApplicationID,
+                Login = login,
+                Password = password,
+                Settings = Settings.All,
+                CaptchaSid = captchaSid,
+                CaptchaKey = captchaValue
+            });
+            SaveCredentials(login, password);
+        }
+        
+        public void SignOut()
+        {
+            ClearCredentials();
+            ShowLoginPage();
+        }
+
+        public void SaveCredentials(String login, String password)
+        {
+            // TODO: Сохранять пароль в секретных настройках
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values[VK_API_LOGIN_KEY] = login;
+            localSettings.Values[VK_API_PASSWORD_KEY] = password;
+        }
+
+        public void ClearCredentials()
+        {
+            var localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values.Remove(VK_API_LOGIN_KEY);
+            localSettings.Values.Remove(VK_API_PASSWORD_KEY);
+        }
+
+        #endregion
+
+        #region Общая навигация
+
+        public void ShowLoginPage()
+        {
+            (Window.Current.Content as Frame).Navigate(typeof(LoginPage));
+        }
+
+        #endregion
     }
 }
