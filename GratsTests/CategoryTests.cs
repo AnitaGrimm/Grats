@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Xunit;
 
-namespace ModelTests
+namespace GratsTests
 {
     public class CategoryTests
     {
-        
+
         [Fact]
         public void CanCreateGeneralСategory()
         {
