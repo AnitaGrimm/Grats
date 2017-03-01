@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using VkNet.Enums;
+using VkNet.Enums.Filters;
 using VkNet.Model;
 using Xunit;
 
@@ -86,7 +87,7 @@ namespace GratsTests
         {
             var templateText = "^имя, ^имя! ^имя";
             var mt = new MessageTemplate(templateText);
-            Assert.Equal(new[] { "FirstName" }, mt.Fields);
+            Assert.Equal(ProfileFields.FirstName, mt.Fields);
         }
 
         [Fact]
@@ -95,8 +96,8 @@ namespace GratsTests
             var templateText = "Здравствуй, ^имя ^фамилия!";
             var mt = new MessageTemplate(templateText);
             Assert.Equal(
-                new[] { "FirstName", "LastName" }.OrderBy(s => s),
-                mt.Fields.OrderBy(s => s));
+                ProfileFields.FirstName | ProfileFields.LastName,
+                mt.Fields);
             var user = new User
             {
                 FirstName = "Иван",
@@ -109,10 +110,14 @@ namespace GratsTests
         [Fact]
         public void InvalidCaseUseShouldThrow()
         {
-            var templateText1 = "^имя{текст}";
-            Assert.Throws<MessageTemplateSyntaxException>(() => new MessageTemplate(templateText1));
-            var templateText2 = "^пол";
-            Assert.Throws<MessageTemplateSyntaxException>(() => new MessageTemplate(templateText2));
+            var templateTexts = new[] {
+                "^имя{текст}",
+                "^пол",
+            };
+            Assert.All(templateTexts, text =>
+            {
+                Assert.Throws<MessageTemplateSyntaxException>(() => new MessageTemplate(text));
+            });
         }
 
         [Fact]
@@ -138,7 +143,7 @@ namespace GratsTests
         {
             var templateText = "^пол{м: мужской, ж: женский, не указан}";
             var mt = new MessageTemplate(templateText);
-            Assert.Equal(new[] { "Sex" }, mt.Fields);
+            Assert.Equal(ProfileFields.Sex, mt.Fields);
             var male = new User { Sex = Sex.Male };
             var female = new User { Sex = Sex.Female };
             var unknown = new User();

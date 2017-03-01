@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VkNet.Enums.Filters;
 using VkNet.Model;
 
 namespace Grats.Interfaces
@@ -15,7 +16,7 @@ namespace Grats.Interfaces
         /// <summary>
         /// Поля, используемые в шаблоне
         /// </summary>
-        List<String> Fields { get; }
+        ProfileFields Fields { get; }
         /// <summary>
         /// Метод, возвращающий вычисленный текст на основе пользователя
         /// </summary>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using VkNet.Enums.Filters;
 using VkNet.Model;
 
 namespace Grats.MessageTemplates
@@ -45,8 +46,6 @@ namespace Grats.MessageTemplates
                 var text = templateText.Substring(position);
                 AddLiteralText(text);
             }
-
-            Fields = RequiredFields.ToList();
         }
 
         /// <summary>
@@ -67,7 +66,7 @@ namespace Grats.MessageTemplates
                 ["пол"] = new List<string>{ "м", "ж", "н" },
             };
 
-        public List<string> Fields { get; }
+        public ProfileFields Fields { get; private set; } = new ProfileFields();
 
         public string Substitute(User user)
         {
@@ -90,7 +89,6 @@ namespace Grats.MessageTemplates
 
         private delegate string TemplateItem(User user);
 
-        private HashSet<string> RequiredFields = new HashSet<string>();
         private List<TemplateItem> TemplateItems = new List<TemplateItem>();
 
 
@@ -135,7 +133,7 @@ namespace Grats.MessageTemplates
                     switch (fieldName)
                     {
                         case "пол":
-                            RequiredFields.Add("Sex");
+                            Fields |= ProfileFields.Sex;
                             templateItem = user =>
                             {
                                 string value = null;
@@ -172,11 +170,11 @@ namespace Grats.MessageTemplates
                     switch (fieldName)
                     {
                         case "имя":
-                            RequiredFields.Add("FirstName");
+                            Fields |= ProfileFields.FirstName;
                             templateItem = user => user.FirstName;
                             break;
                         case "фамилия":
-                            RequiredFields.Add("LastName");
+                            Fields |= ProfileFields.LastName;
                             templateItem = user => user.LastName;
                             break;
                         default:
