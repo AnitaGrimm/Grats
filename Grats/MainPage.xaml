@@ -97,17 +97,10 @@
             <PivotItem Header="Поздравления"/>
         </Pivot>
         <!-- /Списки друзей и поздравлений -->
-        <!-- Сводка -->
-        <Hub Grid.Column="1"
-             Grid.Row="1"
-             Header="Сводка">
-            <HubSection Header="Календарь" DataContext="{Binding}">
-                <!-- TODO: Добавить страницу с календарем -->
-            </HubSection>
-            <HubSection Header="История">
-                <!-- TODO: Добавить страницу с историей -->
-            </HubSection>
-        </Hub>
-        <!-- /Сводка -->
+        <!-- MainFrame -->
+        <Frame Name="MainFrame"
+               Grid.Column="1"
+               Grid.Row="1"/>
+        <!-- /MainFrame -->
     </Grid>
 </Page>

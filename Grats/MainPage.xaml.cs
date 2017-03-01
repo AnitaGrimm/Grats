@@ -80,10 +80,13 @@ namespace Grats
         {
             var app = App.Current as App;
             // Тянем друзей с VK
-            var friends = from friend in await FetchFriends()
-                          select new VKUserViewModel(friend);
-            //Группируем по первой букве фамилии
-            var groups = from item in friends
+            var friends = await FetchFriends();
+            // Показываем сводную страницу
+            UpdateSummaryPage(friends);
+            var friendsVM = from friend in friends
+                            select new VKUserViewModel(friend);
+            // Группируем по первой букве фамилии
+            var groups = from item in friendsVM
                          group item by item.ScreenName[0] into g
                          orderby g.Key
                          select new { Key = g.Key, Friends = g };
@@ -101,6 +104,12 @@ namespace Grats
         }
 
         #endregion
+
+        private void UpdateSummaryPage(List<User> friends)
+        {
+            MainFrame.Navigate(typeof(SummaryPage), friends);
+        }
+
 
         private void LogoutMenuItem_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
