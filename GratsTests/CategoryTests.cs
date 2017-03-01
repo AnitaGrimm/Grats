@@ -7,22 +7,22 @@ using Xunit;
 
 namespace GratsTests
 {
-    public class CategoryTests
+    [Collection("Model tests")]
+    public class CategoryTest
     {
-
         [Fact]
         public void CanCreateGeneralСategory()
         {
-            var db = new GratsDBContext();
-            db.Database.Migrate();
-
-            var category = new GeneralCategory()
+            var db = (App.Current as App).dbContext;
+            try
             {
-                Name = "Simple",
-                Date = new DateTime(2016, 05, 14)
-            };
+                var category = new GeneralCategory()
+                {
+                    Name = "Simple",
+                    Date = new DateTime(2016, 05, 14)
+                };
 
-            category.Contacts = new List<Contact>
+                category.Contacts = new List<Contact>
             {
                 new Contact()
                 {
@@ -30,12 +30,18 @@ namespace GratsTests
                 }
             };
 
-            db.Categories.Add(category);
-            db.SaveChanges();
+                db.Categories.Add(category);
+                db.SaveChanges();
 
-            var contact = db.Contacts.ToList().First();
-            Assert.True(contact.Category is GeneralCategory);
-            Assert.False(contact.Category is BirthdayCategory);
+                var contact = db.Contacts.ToList().First();
+                Assert.True(contact.Category is GeneralCategory);
+                Assert.False(contact.Category is BirthdayCategory);
+            }
+            finally
+            {
+                db.Database.ExecuteSqlCommand("delete from [categories]");
+                db.Database.ExecuteSqlCommand("delete from [contacts]");
+            }
         }
     }
 }

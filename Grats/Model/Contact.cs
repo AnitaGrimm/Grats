@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Globalization;
 using VkNet.Model;
+using VkNet.Enums;
 
 namespace Grats.Model
 {
@@ -15,7 +17,8 @@ namespace Grats.Model
         public long ID { get; set; }
         public long VKID { get; set; }
         public String ScreenName { get; set; }
-        public DateTime Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
+        public string PhotoUri { get; set; }
 
         public Category Category { get; set; }
         public long CategoryID { get; set; }
@@ -23,7 +26,24 @@ namespace Grats.Model
         public Contact() { }
         public Contact(User user)
         {
-            throw new NotImplementedException();
+            this.VKID = user.Id;
+            this.ScreenName = user.LastName + " " + user.FirstName;
+            if (user.BirthdayVisibility.HasValue)
+            {
+                switch (user.BirthdayVisibility.Value)
+                {
+                    case BirthdayVisibility.Full:
+                        this.Birthday = DateTime.ParseExact(user.BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                        break;
+                    case BirthdayVisibility.OnlyDayAndMonth:
+                        this.Birthday = DateTime.ParseExact(user.BirthDate, "dd.MM", CultureInfo.InvariantCulture);
+                        break;
+                    default:
+                        this.Birthday = null;
+                        break;
+                } 
+            }
+            this.PhotoUri = user.Photo100.AbsoluteUri;
         }
     }
 }

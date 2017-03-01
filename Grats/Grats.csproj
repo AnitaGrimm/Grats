@@ -103,9 +103,9 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20170226194833_InitialMigration.cs" />
-    <Compile Include="Migrations\20170226194833_InitialMigration.designer.cs">
-      <DependentUpon>20170226194833_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\20170301185339_InitialMigration.cs" />
+    <Compile Include="Migrations\20170301185339_InitialMigration.designer.cs">
+      <DependentUpon>20170301185339_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />
