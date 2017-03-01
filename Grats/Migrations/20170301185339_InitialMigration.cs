@@ -47,8 +47,9 @@ namespace Grats.Migrations
                 {
                     ID = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Birthday = table.Column<DateTime>(nullable: false),
+                    Birthday = table.Column<DateTime>(nullable: true),
                     CategoryID = table.Column<long>(nullable: false),
+                    PhotoUri = table.Column<string>(nullable: true),
                     ScreenName = table.Column<string>(nullable: true),
                     VKID = table.Column<long>(nullable: false)
                 },

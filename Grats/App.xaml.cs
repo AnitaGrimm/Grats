@@ -37,7 +37,6 @@ namespace Grats
         static string VK_API_PASSWORD_KEY = "vk_api_password";
         static string VK_API_APP_ID_KEY = "vk_api_app_id";
 
-        public GratsDBContext dbContext;
         public VkApi VKAPI;
         public ulong VKAPIApplicationID;
         /// <summary>
@@ -50,13 +49,23 @@ namespace Grats
             this.Suspending += OnSuspending;
         }
 
-        public void InitializeDB()
+        /// <summary>
+        /// Как оказалось, EF DBContext не тред-сейфти
+        /// </summary>
+        public GratsDBContext dbContext
         {
-            dbContext = new GratsDBContext();
+            get
+            {
+                return new GratsDBContext();
+            }
+        }
+
+        private void InitializeDB()
+        {
             dbContext.Database.Migrate();
         }
 
-        public void InitializeVKAPI()
+        private void InitializeVKAPI()
         {
             VKAPIApplicationID = ulong.Parse(Resources[VK_API_APP_ID_KEY] as String);
             VKAPI = new VkApi();
