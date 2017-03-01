@@ -116,5 +116,33 @@ namespace Grats
             var app = App.Current as App;
             app.SignOut();
         }
+
+        private void CreateCategoryButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            var selectedFriends = from viewModel in FriendsListView.SelectedItems
+                                  select (viewModel as VKUserViewModel).User;
+            if (selectedFriends.Count() != 0)
+                CreateCategory(selectedFriends);
+            FriendsListView.SelectedItems.Clear();
+        }
+
+        private void CreateCategory(IEnumerable<User> friends)
+        {
+            var contacts = from friend in friends
+                           select new Model.Contact(friend);
+            var app = App.Current as App;
+            var category = new Model.Category()
+            {
+                OwnersVKID = app.VKAPI.UserId.Value,
+                // TODO: Выбрать дефолтный цвет
+                Contacts = contacts.ToList(),
+            };
+        }
+
+        private void ShowCategoryEditorPage(Model.Category category)
+        {
+            // TODO: Реализовать
+            throw new NotImplementedException();
+        }
     }
 }

@@ -80,19 +80,37 @@
         <!-- Списки друзей и поздравлений -->
         <Pivot Grid.Row="1">
             <PivotItem Header="Друзья">
-                <ListView ItemTemplate="{StaticResource FriendsItempTemplate}" 
-                         ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}">
-                    <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate x:DataType="viewmodels:FriendsGroupByKey">
-                                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListView Name="FriendsListView" 
+                              ItemTemplate="{StaticResource FriendsItempTemplate}" 
+                              ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
+                              SelectionMode="Multiple"
+                              SelectedValuePath="User">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate x:DataType="viewmodels:FriendsGroupByKey">
+                                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
                                            Text="{x:Bind Key}"/>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ListView.GroupStyle>
-                </ListView>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                    </ListView>
+                    <CommandBar Grid.Row="1" 
+                                Background="{x:Null}">
+                        <!-- TODO: Реализовать через команды -->
+                        <!-- TODO: Подобрать иконку -->
+                        <AppBarButton Name="CreateCategoryButton" 
+                                          Label="Поздравить" 
+                                          Icon="Message"
+                                      Click="CreateCategoryButton_Click"/>
+                    </CommandBar>
+                </Grid>
             </PivotItem>
             <PivotItem Header="Поздравления"/>
         </Pivot>
