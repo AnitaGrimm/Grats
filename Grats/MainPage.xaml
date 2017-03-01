@@ -1,13 +1,67 @@
 ﻿<Page
-    x:Class="Grats.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Grats"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-
+    xmlns:viewmodels="using:Grats.ViewModels"
+    x:Class="Grats.MainPage"
+    mc:Ignorable="d"
+    >
+    <Page.Resources>
+        <DataTemplate x:Key="FriendsItempTemplate"
+                      x:DataType="viewmodels:VKUserViewModel">
+            <Grid Height="48">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Ellipse Margin="4">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{x:Bind Photo}"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <TextBlock Text="{x:Bind ScreenName}"
+                           Margin="4,0"
+                           Grid.Column="1"/>
+            </Grid>
+        </DataTemplate>
+        <CollectionViewSource x:Key="FriendsGroupedByKey"
+                              x:Name="FriendsGroupedByKey"
+                              IsSourceGrouped="True"/>
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Pivot Grid.Row="1">
+            <PivotItem Header="Друзья">
+                <ListView ItemTemplate="{StaticResource FriendsItempTemplate}" 
+                         ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="viewmodels:FriendsGroupByKey">
+                                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                                           Text="{x:Bind Key}"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+                </ListView>
+            </PivotItem>
+            <PivotItem Header="Поздравления"/>
+        </Pivot>
+        <Hub Grid.Column="1"
+             Grid.RowSpan="2"
+             Header="Сводка">
+            <HubSection Header="Календарь" DataContext="{Binding}"/>
+            <HubSection Header="История"/>
+        </Hub>
     </Grid>
 </Page>

@@ -77,6 +77,7 @@ namespace Grats
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
+            ClearCredentials();
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 this.DebugSettings.EnableFrameRateCounter = true;
