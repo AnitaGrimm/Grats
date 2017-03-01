@@ -11,9 +11,9 @@
     <Page.Resources>
         <DataTemplate x:Key="FriendsItempTemplate"
                       x:DataType="viewmodels:VKUserViewModel">
-            <Grid Height="48">
+            <Grid Height="40">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition Width="40"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Ellipse Margin="4">
@@ -23,7 +23,8 @@
                 </Ellipse>
                 <TextBlock Text="{x:Bind ScreenName}"
                            Margin="4,0"
-                           Grid.Column="1"/>
+                           Grid.Column="1"
+                           VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
         <CollectionViewSource x:Key="FriendsGroupedByKey"
@@ -36,9 +37,47 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="72"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Grid Grid.ColumnSpan="2"
+                       Margin="4">
+            <!-- Секция текщего пользователя -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Ellipse Margin="4"
+                     Width="56">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{x:Bind Current.Photo}"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <TextBlock Text="{x:Bind Current.ScreenName}"
+                       Style="{ThemeResource TitleTextBlockStyle}"
+                       Margin="4"
+                       TextWrapping="WrapWholeWords" VerticalAlignment="Center"/>
+            </StackPanel>
+            <CommandBar Margin="4"
+                        Grid.Column="1" Background="{x:Null}"
+                        VerticalAlignment="Center">
+                <AppBarButton Icon="Setting">
+                    <AppBarButton.Flyout>
+                        <MenuFlyout>
+                            <!-- TODO: Здесь стоит использовать комманду -->
+                            <!-- TODO: Добавить диалог подтверждения -->
+                            <MenuFlyoutItem Name="LogoutMenuItem" 
+                                            Text="Выйти"
+                                            Click="LogoutMenuItem_Click"/>
+                        </MenuFlyout>
+                    </AppBarButton.Flyout>
+                    Настройки
+                </AppBarButton>
+            </CommandBar>
+            <!-- /Секция текщего пользователя -->
+        </Grid>
+        <!-- Списки друзей и поздравлений -->
         <Pivot Grid.Row="1">
             <PivotItem Header="Друзья">
                 <ListView ItemTemplate="{StaticResource FriendsItempTemplate}" 
@@ -57,11 +96,18 @@
             </PivotItem>
             <PivotItem Header="Поздравления"/>
         </Pivot>
+        <!-- /Списки друзей и поздравлений -->
+        <!-- Сводка -->
         <Hub Grid.Column="1"
-             Grid.RowSpan="2"
+             Grid.Row="1"
              Header="Сводка">
-            <HubSection Header="Календарь" DataContext="{Binding}"/>
-            <HubSection Header="История"/>
+            <HubSection Header="Календарь" DataContext="{Binding}">
+                <!-- TODO: Добавить страницу с календарем -->
+            </HubSection>
+            <HubSection Header="История">
+                <!-- TODO: Добавить страницу с историей -->
+            </HubSection>
         </Hub>
+        <!-- /Сводка -->
     </Grid>
 </Page>
