@@ -104,7 +104,8 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-	<Compile Include="MessageTemplates\MessageTemplate.cs" />
+    <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
+    <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
     <Compile Include="Migrations\20170301185339_InitialMigration.cs" />
     <Compile Include="Migrations\20170301185339_InitialMigration.designer.cs">

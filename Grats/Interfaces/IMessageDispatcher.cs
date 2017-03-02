@@ -10,7 +10,7 @@ namespace Grats.Interfaces
     /// <summary>
     /// Аргументы события, генерируемого IMessageDispatcher
     /// </summary>
-    class MessageDispatcherEventArgs: EventArgs
+    public class MessageDispatcherEventArgs: EventArgs
     {
         public MessageTask Task { get; set; }
   
@@ -23,13 +23,13 @@ namespace Grats.Interfaces
     /// Класс, совершающий отправку сообщений пользователям.
     /// Вызывается в бэкграунде
     /// </summary>
-    interface IMessageDispatcher
+    public interface IMessageDispatcher
     {
         /// <summary>
         /// Метод, запускающий отправку
         /// Здесь происходит выборка из бд текущих заданий и их обработка
         /// </summary>
-        void dispatch();
+        void Dispatch();
         /// <summary>
         /// Событие, вызываемое после попытки обработать задачу
         /// </summary>
