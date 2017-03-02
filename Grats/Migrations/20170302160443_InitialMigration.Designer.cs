@@ -8,7 +8,7 @@ using Grats.Model;
 namespace Grats.Migrations
 {
     [DbContext(typeof(GratsDBContext))]
-    [Migration("20170301185339_InitialMigration")]
+    [Migration("20170302160443_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,6 +68,8 @@ namespace Grats.Migrations
 
                     b.Property<long>("CategoryID");
 
+                    b.Property<long?>("ContactID");
+
                     b.Property<DateTime>("DispatchDate");
 
                     b.Property<DateTime>("LastTryDate");
@@ -79,6 +81,8 @@ namespace Grats.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("CategoryID");
+
+                    b.HasIndex("ContactID");
 
                     b.ToTable("MessageTasks");
                 });
@@ -134,6 +138,10 @@ namespace Grats.Migrations
                         .WithMany("Tasks")
                         .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Grats.Model.Contact", "Contact")
+                        .WithMany("Tasks")
+                        .HasForeignKey("ContactID");
                 });
         }
     }

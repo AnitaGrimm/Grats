@@ -30,5 +30,8 @@ namespace Grats.Model
 
         public Category Category { get; set; }
         public long CategoryID { get; set; }
+
+        public Contact Contact { get; set; }
+        public long? ContactID { get; set; }
     }
 }
