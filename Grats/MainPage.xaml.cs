@@ -157,8 +157,7 @@ namespace Grats
 
         private void ShowCategoryEditorPage(Model.Category category)
         {
-            // TODO: Реализовать
-            throw new NotImplementedException();
+            MainFrame.Navigate(typeof(EditorPage), category);
         }
     }
 }
