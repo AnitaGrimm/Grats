@@ -107,9 +107,9 @@
     <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
-    <Compile Include="Migrations\20170301185339_InitialMigration.cs" />
-    <Compile Include="Migrations\20170301185339_InitialMigration.designer.cs">
-      <DependentUpon>20170301185339_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\20170302160443_InitialMigration.cs" />
+    <Compile Include="Migrations\20170302160443_InitialMigration.designer.cs">
+      <DependentUpon>20170302160443_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />

@@ -71,6 +71,7 @@ namespace Grats.Migrations
                     ID = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     CategoryID = table.Column<long>(nullable: false),
+                    ContactID = table.Column<long>(nullable: true),
                     DispatchDate = table.Column<DateTime>(nullable: false),
                     LastTryDate = table.Column<DateTime>(nullable: false),
                     Status = table.Column<int>(nullable: false),
@@ -85,6 +86,12 @@ namespace Grats.Migrations
                         principalTable: "Categories",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MessageTasks_Contacts_ContactID",
+                        column: x => x.ContactID,
+                        principalTable: "Contacts",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -96,18 +103,23 @@ namespace Grats.Migrations
                 name: "IX_MessageTasks_CategoryID",
                 table: "MessageTasks",
                 column: "CategoryID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MessageTasks_ContactID",
+                table: "MessageTasks",
+                column: "ContactID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Contacts");
-
-            migrationBuilder.DropTable(
                 name: "MessageTasks");
 
             migrationBuilder.DropTable(
                 name: "Templates");
+
+            migrationBuilder.DropTable(
+                name: "Contacts");
 
             migrationBuilder.DropTable(
                 name: "Categories");

@@ -23,6 +23,8 @@ namespace Grats.Model
         public Category Category { get; set; }
         public long CategoryID { get; set; }
 
+        public List<MessageTask> Tasks { get; set; }
+
         public Contact() { }
         public Contact(User user)
         {
