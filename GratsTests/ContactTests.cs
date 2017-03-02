@@ -20,7 +20,7 @@ namespace GratsTests
             {
                 FirstName = "Foo",
                 LastName = "Bar",
-                BirthDate = "25.08.1990",
+                BirthDate = "25.8.1990",
                 BirthdayVisibility = VkNet.Enums.BirthdayVisibility.Full,
                 Photo100 = new Uri("https://pp.userapi.com/c837429/v837429341/13f59/WXwQuiIamSw.jpg")
             };
@@ -30,9 +30,15 @@ namespace GratsTests
             Assert.Equal(contact.Birthday.Value.Month, 8);
 
             vkuser.BirthdayVisibility = VkNet.Enums.BirthdayVisibility.OnlyDayAndMonth;
-            vkuser.BirthDate = "25.08";
+            vkuser.BirthDate = "25.8";
             contact = new Grats.Model.Contact(vkuser);
             Assert.Equal(contact.Birthday.Value.Day, 25);
+            Assert.Equal(contact.Birthday.Value.Month, 8);
+
+            vkuser.BirthdayVisibility = VkNet.Enums.BirthdayVisibility.OnlyDayAndMonth;
+            vkuser.BirthDate = "5.8";
+            contact = new Grats.Model.Contact(vkuser);
+            Assert.Equal(contact.Birthday.Value.Day, 5);
             Assert.Equal(contact.Birthday.Value.Month, 8);
 
             vkuser.BirthdayVisibility = VkNet.Enums.BirthdayVisibility.Invisible;

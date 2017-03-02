@@ -2,6 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Grats"
+    xmlns:model="using:Grats.Model"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:Grats.ViewModels"
@@ -30,6 +31,22 @@
         <CollectionViewSource x:Key="FriendsGroupedByKey"
                               x:Name="FriendsGroupedByKey"
                               IsSourceGrouped="True"/>
+        <DataTemplate x:Key="CategoriesItemTemplate"
+                      x:DataType="viewmodels:CategoryViewModel">
+            <Grid Height="64">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle Fill="{x:Bind Fill}"
+                           Width="4"
+                           VerticalAlignment="Stretch"/>
+                <TextBlock Text="{x:Bind Name}"
+                           TextWrapping="WrapWholeWords"
+                           Margin="8"
+                           Grid.Column="1"/>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
@@ -42,6 +59,7 @@
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2"
                        Margin="4">
+            <!-- /Секция текщего пользователя -->
             <!-- Секция текщего пользователя -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -62,21 +80,21 @@
             <CommandBar Margin="4"
                         Grid.Column="1" Background="{x:Null}"
                         VerticalAlignment="Center">
-                <AppBarButton Icon="Setting">
+                <AppBarButton Icon="Setting" Content="Настройки">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
                             <!-- TODO: Здесь стоит использовать комманду -->
                             <!-- TODO: Добавить диалог подтверждения -->
-                            <MenuFlyoutItem Name="LogoutMenuItem" 
+                            <MenuFlyoutItem x:Name="LogoutMenuItem" 
                                             Text="Выйти"
                                             Click="LogoutMenuItem_Click"/>
                         </MenuFlyout>
                     </AppBarButton.Flyout>
-                    Настройки
                 </AppBarButton>
             </CommandBar>
-            <!-- /Секция текщего пользователя -->
         </Grid>
+        <!-- /Списки друзей и поздравлений -->
+        <!-- /MainFrame -->
         <!-- Списки друзей и поздравлений -->
         <Pivot Grid.Row="1">
             <PivotItem Header="Друзья">
@@ -85,7 +103,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <ListView Name="FriendsListView" 
+                    <ListView x:Name="FriendsListView" 
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
                               SelectionMode="Multiple"
@@ -105,20 +123,21 @@
                                 Background="{x:Null}">
                         <!-- TODO: Реализовать через команды -->
                         <!-- TODO: Подобрать иконку -->
-                        <AppBarButton Name="CreateCategoryButton" 
+                        <AppBarButton x:Name="CreateCategoryButton" 
                                           Label="Поздравить" 
-                                          Icon="Message"
+                                          Icon="Mail"
                                       Click="CreateCategoryButton_Click"/>
                     </CommandBar>
                 </Grid>
             </PivotItem>
-            <PivotItem Header="Поздравления"/>
+            <PivotItem Header="Поздравления">
+                <ListView ItemTemplate="{StaticResource CategoriesItemTemplate}" 
+                          ItemsSource="{x:Bind Categories}" />
+            </PivotItem>
         </Pivot>
-        <!-- /Списки друзей и поздравлений -->
         <!-- MainFrame -->
-        <Frame Name="MainFrame"
+        <Frame x:Name="MainFrame"
                Grid.Column="1"
                Grid.Row="1"/>
-        <!-- /MainFrame -->
     </Grid>
 </Page>

@@ -33,10 +33,10 @@ namespace Grats.Model
                 switch (user.BirthdayVisibility.Value)
                 {
                     case BirthdayVisibility.Full:
-                        this.Birthday = DateTime.ParseExact(user.BirthDate, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                        this.Birthday = DateTime.ParseExact(user.BirthDate, "d.M.yyyy", CultureInfo.InvariantCulture);
                         break;
                     case BirthdayVisibility.OnlyDayAndMonth:
-                        this.Birthday = DateTime.ParseExact(user.BirthDate, "dd.MM", CultureInfo.InvariantCulture);
+                        this.Birthday = DateTime.ParseExact(user.BirthDate, "d.M", CultureInfo.InvariantCulture);
                         break;
                     default:
                         this.Birthday = null;
