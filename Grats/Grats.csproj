@@ -126,6 +126,7 @@
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\FriendsGroupByKey.cs" />
     <Compile Include="ViewModels\VKCurrentUserViewModel.cs" />
     <Compile Include="ViewModels\VKUserViewModel.cs" />

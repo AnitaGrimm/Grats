@@ -3,25 +3,117 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Grats"
+    xmlns:viewmodels="using:Grats.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+    <Page.Resources>
+        <Style x:Key="NameTextBoxStyle" TargetType="TextBox">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="24"/>
+            </Style.Setters>
+        </Style>
+        <DataTemplate x:Key="ContactsItemTemplate"
+                      x:DataType="viewmodels:ContactViewModel">
+            <Ellipse Margin="4"
+                     Width="48"
+                     Height="48"
+                     ToolTipService.ToolTip="{x:Bind ScreenName}">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{x:Bind Photo}"/>
+                </Ellipse.Fill>
+            </Ellipse>
+        </DataTemplate>
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <StackPanel>
-            <Grid Padding="4">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <AppBarButton Name="BackButton"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <AppBarButton Name="BackButton"
                               Icon="Back"
-                              Margin="4"
-                              Click="BackButton_Click"/>
-                <TextBox PlaceholderText="Введите название"
-                         Margin="4"
-                         Grid.Column="1"/>
-            </Grid>
-        </StackPanel>
+                              Click="BackButton_Click" VerticalAlignment="Center" Height="48"/>
+            <TextBlock Text="Поздравление"
+                           Grid.Column="1"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           VerticalAlignment="Center"/>
+        </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                      Grid.Row="1"
+                      Margin="56,0">
+            <StackPanel>
+                <StackPanel Margin="0,16">
+                    <TextBox Name="NameTextBox"
+                             Margin="8,0"
+                         PlaceholderText="Введите название"
+                         VerticalAlignment="Center"
+                     Text="{x:Bind CategoryName}"/>
+                </StackPanel>
+                <StackPanel Margin="0,16">
+                    <TextBlock Text="Участники"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                               Margin="8,0"/>
+                    <GridView Name="ContactsListView"
+                          ItemsSource="{x:Bind Contacts}"
+                          ItemTemplate="{StaticResource ContactsItemTemplate}">
+                    </GridView>
+                </StackPanel>
+                <Grid Margin="0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <CalendarDatePicker HorizontalAlignment="Stretch"
+                                        IsEnabled="{x:Bind IsGeneral}" Header="Дата"
+                                            Margin="8"/>
+                        <CheckBox Name="IsBithdayCheckBox"
+                                  Margin="8">
+                            День рождения
+                        </CheckBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Цвет"
+                                   Margin="8"/>
+                        <!-- TODO: Привязать текст -->
+                        <ComboBox Name="ColorComboBox"
+                              HorizontalAlignment="Stretch" 
+                                  SelectionChanged="ColorComboBox_SelectionChanged"
+                                  Margin="8,0"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Margin="0,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Текст поздравления"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                                   Margin="8,0"/>
+                        <CommandBar
+                                Grid.Column="1"
+                                Background="{x:Null}"
+                                IsOpen="True">
+                            <AppBarButton Icon="Preview"
+                                      Label="Предпросмотр"/>
+                            <AppBarButton Icon="Save"
+                                      Label="Сохранить"/>
+                            <AppBarButton Icon="Folder"
+                                      Label="Открыть"/>
+                        </CommandBar>
+                    </Grid>
+                    <TextBox Height="300"
+                             Margin="8,0"
+                         Text="{x:Bind MessageText}"
+                         PlaceholderText="Введите тект поздравления"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>

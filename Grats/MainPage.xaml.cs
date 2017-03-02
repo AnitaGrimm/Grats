@@ -149,14 +149,14 @@ namespace Grats
             var category = new Model.Category()
             {
                 OwnersVKID = app.VKAPI.UserId.Value,
-                // TODO: Выбрать дефолтный цвет
+                Color = Category.DefaultColor,
                 Contacts = contacts.ToList(),
             };
             ShowCategoryEditorPage(category);
         }
 
         private void ShowCategoryEditorPage(Model.Category category)
-        {
+        { 
             MainFrame.Navigate(typeof(EditorPage), category);
         }
     }
