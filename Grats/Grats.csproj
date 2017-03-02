@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\HexToColor.cs" />
     <Compile Include="Interfaces\IMessageDispatcher.cs" />
     <Compile Include="Interfaces\IMessageTemplate.cs" />
     <Compile Include="LoginPage.xaml.cs">
@@ -119,6 +120,7 @@
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\FriendsGroupByKey.cs" />
     <Compile Include="ViewModels\VKCurrentUserViewModel.cs" />
     <Compile Include="ViewModels\VKUserViewModel.cs" />

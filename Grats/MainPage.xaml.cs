@@ -9,6 +9,7 @@ using VkNet.Model.RequestParams;
 using VkNet.Utils;
 using Windows.UI.Xaml.Controls;
 using System;
+using Grats.Model;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -20,6 +21,7 @@ namespace Grats
     public sealed partial class MainPage : Page
     {
         public VKCurrentUserViewModel Current { get; set; }
+        public ObservableCollection<CategoryViewModel> Categories = new ObservableCollection<CategoryViewModel>();
 
         public MainPage()
         {
@@ -36,6 +38,19 @@ namespace Grats
             UpdateCurrentUser();
             // TODO: Добавить перехват исключений
             UpdateFriends();
+            UpdateCategories();
+        }
+
+        private void UpdateCategories()
+        {
+            var db = (App.Current as App).dbContext;
+            var categories = Enumerable.Union<Category>(
+                db.BirthdayCategories,
+                db.GeneralCategories);
+            var categoriesViewModels = from category in categories
+                                      select new CategoryViewModel(category);
+            foreach (var viewModel in categoriesViewModels)
+                Categories.Add(viewModel);
         }
 
         private void UpdateCurrentUser()
@@ -137,6 +152,7 @@ namespace Grats
                 // TODO: Выбрать дефолтный цвет
                 Contacts = contacts.ToList(),
             };
+            ShowCategoryEditorPage(category);
         }
 
         private void ShowCategoryEditorPage(Model.Category category)
