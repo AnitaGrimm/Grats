@@ -43,9 +43,11 @@ namespace Grats.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Birthday");
+                    b.Property<DateTime?>("Birthday");
 
                     b.Property<long>("CategoryID");
+
+                    b.Property<string>("PhotoUri");
 
                     b.Property<string>("ScreenName");
 

@@ -8,7 +8,7 @@ using Grats.Model;
 namespace Grats.Migrations
 {
     [DbContext(typeof(GratsDBContext))]
-    [Migration("20170226194833_InitialMigration")]
+    [Migration("20170301185339_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,9 +44,11 @@ namespace Grats.Migrations
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Birthday");
+                    b.Property<DateTime?>("Birthday");
 
                     b.Property<long>("CategoryID");
+
+                    b.Property<string>("PhotoUri");
 
                     b.Property<string>("ScreenName");
 
