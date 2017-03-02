@@ -9,76 +9,93 @@ using System.Diagnostics;
 using Grats.MessageTemplates;
 using VkNet.Model.RequestParams;
 using VkNet.Exception;
+using Microsoft.EntityFrameworkCore;
+using VkNet;
 
 namespace Grats.MessageDispatcher
 {
-    public class MessageDispatcher : Interfaces.IMessageDispatcher
+    public class MessageDispatcher : IMessageDispatcher
     {
         /// <summary>
         /// Создает объект MessageDispatcher
         /// </summary>
         /// <param name="db">Контекст, используемый для работы с БД</param>
-        public MessageDispatcher(GratsDBContext db)
+        /// <param name="vk">Объект, используемый для связи с ВК</param>
+        public MessageDispatcher(GratsDBContext db, MessageDispatcherVkConnector vk = null)
         {
             if (db == null)
             {
                 throw new ArgumentNullException(nameof(db));
             }
+            if (vk == null)
+            {
+                vk = new MessageDispatcherVkConnector();
+            }
             DB = db;
+            VK = vk;
         }
 
         public void Dispatch()
         {
-            var task = FindWaitingTask();
-            if (task == null)
+            var tasks = FindWaitingTasks();
+
+            foreach (var task in tasks)
             {
-                // делать пока нечего
-                return;
+                try
+                {
+                    string statusString;
+                    var messageSent = HandleTask(task, out statusString);
+                    UpdateTask(task, messageSent, statusString);
+                }
+                catch (VkApiException)
+                {
+                    UpdateTask(task, false, "Ошибка соединения с ВКонтакте");
+                    throw;
+                }
+                catch
+                {
+                    UpdateTask(task, false, "Неизветсная ошибка");
+                    throw;
+                }
             }
-
-            string statusString;
-            var messageSent = HandleTask(task, out statusString);
-
-            UpdateTask(task, messageSent, statusString);
-
-            OnTaskHandled?.Invoke(this, new MessageDispatcherEventArgs(task));
         }
 
         public event EventHandler<MessageDispatcherEventArgs> OnTaskHandled;
         
         private GratsDBContext DB;
+        private MessageDispatcherVkConnector VK;
 
-        private MessageTask FindWaitingTask()
+        private List<MessageTask> FindWaitingTasks()
         {
-            var now = DateTime.Now;
+            var today = DateTime.Now.Date;
             var tasksToDo =
                 from t in DB.MessageTasks
                 where t.Status == MessageTask.TaskStatus.New || t.Status == MessageTask.TaskStatus.Retry
-                where t.DispatchDate < now
-                orderby t.DispatchDate // ???
+                where t.DispatchDate <= today
+                orderby t.DispatchDate
                 select t;
-            return tasksToDo.FirstOrDefault();
+            return tasksToDo
+                .Include(t => t.Category)
+                .Include(t => t.Contact)
+                .ToList();
         }
 
 
         private bool HandleTask(MessageTask task, out string statusString)
         {
-            var app = App.Current as App;
-
             var category = task.Category;
-            var contact = new Contact(); // TODO: fix
+            var contact = task.Contact;
 
             try
             {
-                var template = new MessageTemplate(category.Template);
+                IMessageTemplate template = new MessageTemplate(category.Template);
+
                 var requiredFields = template.Fields;
-                var user = app.VKAPI.Users.Get(contact.VKID, requiredFields);
+                var user = VK.GetUser(contact.VKID, requiredFields);
+
                 var messageText = template.Substitute(user);
-                app.VKAPI.Messages.Send(new MessagesSendParams
-                {
-                    UserId = user.Id,
-                    Message = messageText,
-                });
+                VK.SendMessage(contact.VKID, messageText);
+
                 statusString = string.Format(
                     "Сообщение успешно отправлено пользователю {0}",
                     contact.ScreenName);
@@ -91,18 +108,17 @@ namespace Grats.MessageDispatcher
                     ex.Message);
                 return false;
             }
-            catch (VkApiException ex)
-            {
-                statusString = string.Format(
-                    "Ошибка связи с Вконтакте: {0}",
-                    ex.Message);
-                return false;
-            }
         }
 
         private void UpdateTask(MessageTask task, bool messageSent, string statusString)
         {
-            throw new NotImplementedException();
+            task.Status = messageSent ? MessageTask.TaskStatus.Done : MessageTask.TaskStatus.Pending;
+            task.StatusMessage = statusString;
+            task.LastTryDate = DateTime.Now;
+
+            DB.SaveChanges();
+
+            OnTaskHandled?.Invoke(this, new MessageDispatcherEventArgs(task));
         }
     }
 }

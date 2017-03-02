@@ -105,6 +105,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
+    <Compile Include="MessageDispatcher\MessageDispatcherVkConnector.cs" />
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
     <Compile Include="Migrations\20170302160443_InitialMigration.cs" />
