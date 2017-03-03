@@ -201,7 +201,11 @@ namespace GratsTests
 
             int counter = 0;
 
-            dispatcher.OnTaskHandled += (s, e) => { ++counter; };
+            dispatcher.OnTaskHandled += (s, e) =>
+            {
+                ++counter;
+                Assert.NotNull(e.Exception);
+            };
             dispatcher.Dispatch();
 
             db.Entry(task).Reload();
@@ -228,13 +232,17 @@ namespace GratsTests
             db.MessageTasks.Add(task);
             db.SaveChanges();
 
+            vk.Exception = new VkApiException();
+
             int counter = 0;
+            dispatcher.OnTaskHandled += (s, e) =>
+            {
+                ++counter;
+                Assert.NotNull(e.Exception);
+                Assert.True(e.Exception.InnerException is VkApiException);
+            };
 
-            dispatcher.OnTaskHandled += (s, e) => { ++counter; };
-
-            vk.Exception = new AccessTokenInvalidException();
-
-            Assert.Throws<AccessTokenInvalidException>(() => dispatcher.Dispatch());
+            dispatcher.Dispatch();
 
             db.Entry(task).Reload();
 

@@ -41,22 +41,7 @@ namespace Grats.MessageDispatcher
 
             foreach (var task in tasks)
             {
-                try
-                {
-                    string statusString;
-                    var messageSent = HandleTask(task, out statusString);
-                    UpdateTask(task, messageSent, statusString);
-                }
-                catch (VkApiException)
-                {
-                    UpdateTask(task, false, "Ошибка соединения с ВКонтакте");
-                    throw;
-                }
-                catch
-                {
-                    UpdateTask(task, false, "Неизвестная ошибка");
-                    throw;
-                }
+                HandleTask(task);
             }
         }
 
@@ -81,7 +66,7 @@ namespace Grats.MessageDispatcher
         }
 
 
-        private bool HandleTask(MessageTask task, out string statusString)
+        private void HandleTask(MessageTask task)
         {
             var category = task.Category;
             var contact = task.Contact;
@@ -96,21 +81,23 @@ namespace Grats.MessageDispatcher
                 var messageText = template.Substitute(user);
                 VK.SendMessage(contact.VKID, messageText);
 
-                statusString = string.Format(
-                    "Сообщение успешно отправлено пользователю {0}",
-                    contact.ScreenName);
-                return true;
+                UpdateTask(task, true, "Сообщение успешно отправлено");
             }
             catch (MessageTemplateSyntaxException ex)
             {
-                statusString = string.Format(
-                    "Синтаксическая ошибка в шаблоне: {0}",
-                    ex.Message);
-                return false;
+                UpdateTask(task, false, "Синтаксическая ошибка в шаблоне", ex);
+            }
+            catch (VkApiException ex)
+            {
+                UpdateTask(task, false, "Ошибка соединения с ВКонтакте", ex);
+            }
+            catch (Exception ex)
+            {
+                UpdateTask(task, false, "Неизвестная ошибка", ex);
             }
         }
 
-        private void UpdateTask(MessageTask task, bool messageSent, string statusString)
+        private void UpdateTask(MessageTask task, bool messageSent, string statusString, Exception exception = null)
         {
             task.Status = messageSent ? MessageTask.TaskStatus.Done : MessageTask.TaskStatus.Pending;
             task.StatusMessage = statusString;
@@ -118,7 +105,13 @@ namespace Grats.MessageDispatcher
 
             DB.SaveChanges();
 
-            OnTaskHandled?.Invoke(this, new MessageDispatcherEventArgs(task));
+            MessageDispatcherException mde = null;
+            if (exception != null)
+            {
+                mde = new MessageDispatcherException(statusString, exception);
+            }
+
+            OnTaskHandled?.Invoke(this, new MessageDispatcherEventArgs(task, mde));
         }
     }
 }
