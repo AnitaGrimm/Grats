@@ -54,7 +54,7 @@ namespace Grats.MessageDispatcher
                 }
                 catch
                 {
-                    UpdateTask(task, false, "Неизветсная ошибка");
+                    UpdateTask(task, false, "Неизвестная ошибка");
                     throw;
                 }
             }
