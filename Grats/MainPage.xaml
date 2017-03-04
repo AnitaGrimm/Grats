@@ -54,31 +54,30 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="72"/>
+            <RowDefinition Height="48"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.ColumnSpan="2"
-                       Margin="4">
+        <Grid Grid.ColumnSpan="2">
             <!-- /Секция текщего пользователя -->
             <!-- Секция текщего пользователя -->
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal">
-                <Ellipse Margin="4"
-                     Width="56">
+            <StackPanel Orientation="Horizontal"
+                        Margin="32,0">
+                <Ellipse
+                     Width="48">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{x:Bind Current.Photo}"/>
                     </Ellipse.Fill>
                 </Ellipse>
                 <TextBlock Text="{x:Bind Current.ScreenName}"
                        Style="{ThemeResource TitleTextBlockStyle}"
-                       Margin="4"
+                       Margin="8"
                        TextWrapping="WrapWholeWords" VerticalAlignment="Center"/>
             </StackPanel>
-            <CommandBar Margin="4"
-                        Grid.Column="1" Background="{x:Null}"
+            <CommandBar Grid.Column="1" Background="{x:Null}"
                         VerticalAlignment="Center">
                 <AppBarButton Icon="Setting" Content="Настройки">
                     <AppBarButton.Flyout>

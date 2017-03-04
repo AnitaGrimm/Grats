@@ -16,18 +16,24 @@
                        Margin="8"
                        TextAlignment="Center"
                        />
-            <TextBox Name="LoginTextBox"
+            <StackPanel Visibility="{x:Bind SignInFormVisibility, Mode=OneWay}">
+                <TextBox Name="LoginTextBox"
                      PlaceholderText="email или телефон"
                      Margin="4"/>
-            <PasswordBox Name="PasswordBox"
+                <PasswordBox Name="PasswordBox"
                          PlaceholderText="пароль"
                          Margin="4"/>
-            <Button Name="SubmitButton" 
+                <Button Name="SubmitButton" 
                     Margin="4"
                     HorizontalAlignment="Stretch"
                     Click="SubmitButton_Click">
-                Войти
-            </Button>
+                    Войти
+                </Button>
+            </StackPanel>
+            <ProgressRing Margin="24"
+                             VerticalAlignment="Stretch"
+                             IsActive="{x:Bind Authenticating, Mode=OneWay}"
+                             Visibility="{x:Bind ProgressRingVisibility, Mode=OneWay}"/>
         </StackPanel>
         <ContentDialog x:Name="CaptchaDialog"
                        Title="Введите каптчу"
