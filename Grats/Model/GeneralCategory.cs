@@ -22,5 +22,18 @@ namespace Grats.Model
         {
             throw new NotImplementedException();
         }
+
+        public GeneralCategory() { }
+
+        public GeneralCategory(Category category, DateTime date)
+        {
+            this.Name = category.Name;
+            this.Color = category.Color;
+            this.Contacts = (from contact in category.Contacts
+                             select new Contact(contact)).ToList();
+            this.OwnersVKID = category.OwnersVKID;
+            this.Template = category.Template;
+            this.Date = date;
+        }
     }
 }

@@ -24,6 +24,12 @@
                 </Ellipse.Fill>
             </Ellipse>
         </DataTemplate>
+        <DataTemplate x:Key="SelectedColorItemTemplate"
+                      x:DataType="SolidColorBrush">
+            <Grid Height="20">
+                <Rectangle Fill="{x:Bind}"/>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -32,6 +38,7 @@
         </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -42,38 +49,52 @@
                            Grid.Column="1"
                            Style="{ThemeResource TitleTextBlockStyle}"
                            VerticalAlignment="Center"/>
+            <CommandBar Grid.Column="2"
+                        Background="{x:Null}"
+                        Margin="48,0">
+                <AppBarButton Name="SaveButton" 
+                          Icon="Save"
+                          VerticalAlignment="Center"
+                              ToolTipService.ToolTip="Сохранить"
+                              Click="SaveButton_Click"
+                          Height="48"/>
+            </CommandBar>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden"
                       Grid.Row="1"
                       Margin="56,0">
             <StackPanel>
-                <StackPanel Margin="0,16">
+                <StackPanel Margin="0,8">
                     <TextBox Name="NameTextBox"
                              Margin="8,0"
                          PlaceholderText="Введите название"
                          VerticalAlignment="Center"
-                     Text="{x:Bind CategoryName}"/>
+                     Text="{x:Bind ViewModel.Name, Mode=TwoWay}"/>
                 </StackPanel>
-                <StackPanel Margin="0,16">
+                <StackPanel Margin="0,8">
                     <TextBlock Text="Участники"
                            Style="{ThemeResource TitleTextBlockStyle}"
                                Margin="8,0"/>
                     <GridView Name="ContactsListView"
-                          ItemsSource="{x:Bind Contacts}"
-                          ItemTemplate="{StaticResource ContactsItemTemplate}">
+                          ItemsSource="{x:Bind ViewModel.Contacts}"
+                          ItemTemplate="{StaticResource ContactsItemTemplate}"
+                              Margin="8,0">
                     </GridView>
                 </StackPanel>
-                <Grid Margin="0,16">
+                <Grid Margin="0,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel>
                         <CalendarDatePicker HorizontalAlignment="Stretch"
-                                        IsEnabled="{x:Bind IsGeneral}" Header="Дата"
-                                            Margin="8"/>
+                                        IsEnabled="{x:Bind ViewModel.IsGeneral, Mode=OneWay}" 
+                                            Header="Дата"
+                                            Margin="8"
+                                            Name="DatePicker"/>
                         <CheckBox Name="IsBithdayCheckBox"
-                                  Margin="8">
+                                  Margin="8"
+                                  IsChecked="{x:Bind ViewModel.IsBirthday, Mode=TwoWay}">
                             День рождения
                         </CheckBox>
                     </StackPanel>
@@ -83,11 +104,14 @@
                         <!-- TODO: Привязать текст -->
                         <ComboBox Name="ColorComboBox"
                               HorizontalAlignment="Stretch" 
-                                  SelectionChanged="ColorComboBox_SelectionChanged"
+                                  ItemsSource="{x:Bind Brushes}"
+                                  ItemTemplate="{StaticResource SelectedColorItemTemplate}"
+                                  SelectedValuePath="Color"
+                                  SelectedValue="{x:Bind ViewModel.Color, Mode=TwoWay}"
                                   Margin="8,0"/>
                     </StackPanel>
                 </Grid>
-                <StackPanel Margin="0,16">
+                <StackPanel Margin="0,8">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -99,19 +123,32 @@
                         <CommandBar
                                 Grid.Column="1"
                                 Background="{x:Null}"
-                                IsOpen="True">
+                            Margin="8,0">
                             <AppBarButton Icon="Preview"
-                                      Label="Предпросмотр"/>
+                                      Label="Предпросмотр"
+                                          Name="PreviewButton"
+                                          ToolTipService.ToolTip="Предпросмотр"
+                                          Click="PreviewButton_Click"/>
                             <AppBarButton Icon="Save"
-                                      Label="Сохранить"/>
+                                      Label="Сохранить"
+                                          ToolTipService.ToolTip="Сохранить"/>
                             <AppBarButton Icon="Folder"
-                                      Label="Открыть"/>
+                                      Label="Открыть"
+                                          ToolTipService.ToolTip="Открыть"/>
                         </CommandBar>
                     </Grid>
                     <TextBox Height="300"
                              Margin="8,0"
-                         Text="{x:Bind MessageText}"
-                         PlaceholderText="Введите тект поздравления"/>
+                             PlaceholderText="{x:Bind TemplatePlaceholderText}"
+                             Text="{x:Bind ViewModel.MessageText, Mode=TwoWay}"
+                             Visibility="{x:Bind TemplateVisibility, Mode=OneWay}"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"/>
+                    <TextBlock Text="{x:Bind TemplatePreviewText, Mode=OneWay}" 
+                             Margin="8,0"
+                               Padding="8"
+                             Visibility="{x:Bind PreviewVisibility, Mode=OneWay}"
+                               TextWrapping="Wrap"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

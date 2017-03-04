@@ -91,5 +91,48 @@ namespace GratsTests
                 db.Database.ExecuteSqlCommand("delete from [contacts]");
             }
         }
+
+        [Fact]
+        public void CanDreateGeneralCategoryFromBirthday()
+        {
+            var db = (App.Current as App).dbContext;
+            try
+            {
+                var category = new BirthdayCategory()
+                {
+                    Name = "Simple"
+                };
+
+                category.Contacts = new List<Contact>
+            {
+                new Contact()
+                {
+                    ScreenName = "Foobaar"
+                }
+            };
+                
+                db.Categories.Add(category);
+                db.SaveChanges();
+
+                category = db.BirthdayCategories
+                    .Include("Contacts")
+                    .First();
+                var generalCategory = new GeneralCategory(category, DateTime.Now);
+                db.BirthdayCategories.Remove(category);
+                db.GeneralCategories.Add(generalCategory);
+                db.SaveChanges();
+
+                generalCategory = db.GeneralCategories
+                    .Include("Contacts")
+                    .First();
+                Assert.NotEmpty(generalCategory.Contacts);
+                Assert.Equal(db.Contacts.Count(), 1);
+            }
+            finally
+            {
+                db.Database.ExecuteSqlCommand("delete from [categories]");
+                db.Database.ExecuteSqlCommand("delete from [contacts]");
+            }
+        }
     }
 }

@@ -32,7 +32,7 @@
                               x:Name="FriendsGroupedByKey"
                               IsSourceGrouped="True"/>
         <DataTemplate x:Key="CategoriesItemTemplate"
-                      x:DataType="viewmodels:CategoryViewModel">
+                      x:DataType="viewmodels:CategoryMasterViewModel">
             <Grid Height="64">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -132,7 +132,11 @@
             </PivotItem>
             <PivotItem Header="Поздравления">
                 <ListView ItemTemplate="{StaticResource CategoriesItemTemplate}" 
-                          ItemsSource="{x:Bind Categories}" />
+                          ItemsSource="{x:Bind Categories}"
+                          Name="CategoriesListView"
+                          ItemClick="CategoriesListView_ItemClick"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True"/>
             </PivotItem>
         </Pivot>
         <!-- MainFrame -->

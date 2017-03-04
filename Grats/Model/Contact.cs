@@ -47,5 +47,13 @@ namespace Grats.Model
             }
             this.PhotoUri = user.Photo100.AbsoluteUri;
         }
+
+        public Contact(Contact contact)
+        {
+            this.VKID = contact.VKID;
+            this.ScreenName = contact.ScreenName;
+            this.Birthday = contact.Birthday;
+            this.PhotoUri = contact.PhotoUri;
+        }
     }
 }

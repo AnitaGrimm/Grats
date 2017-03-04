@@ -10,6 +10,9 @@ using VkNet.Utils;
 using Windows.UI.Xaml.Controls;
 using System;
 using Grats.Model;
+using Microsoft.EntityFrameworkCore;
+using Windows.UI.Xaml.Media.Animation;
+using static Grats.EditorPage;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -21,12 +24,19 @@ namespace Grats
     public sealed partial class MainPage : Page
     {
         public VKCurrentUserViewModel Current { get; set; }
-        public ObservableCollection<CategoryViewModel> Categories = new ObservableCollection<CategoryViewModel>();
+        public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
 
         public MainPage()
         {
             this.InitializeComponent();
             UpdateUI();
+            MainFrame.Navigated += MainFrame_Navigated;
+        }
+
+        private void MainFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
+        {
+            if (e.NavigationMode == Windows.UI.Xaml.Navigation.NavigationMode.Back)
+                UpdateCategories();
         }
 
         /// <summary>
@@ -48,7 +58,8 @@ namespace Grats
                 db.BirthdayCategories,
                 db.GeneralCategories);
             var categoriesViewModels = from category in categories
-                                      select new CategoryViewModel(category);
+                                      select new CategoryMasterViewModel(category);
+            Categories.Clear();
             foreach (var viewModel in categoriesViewModels)
                 Categories.Add(viewModel);
         }
@@ -157,7 +168,31 @@ namespace Grats
 
         private void ShowCategoryEditorPage(Model.Category category)
         { 
-            MainFrame.Navigate(typeof(EditorPage), category);
+            MainFrame.Navigate(
+                typeof(EditorPage), 
+                new NewCategoryParameter()
+                {
+                    Category = category
+                },
+                new DrillInNavigationTransitionInfo());
+        }
+
+        private void ShowCategoryEditorPage(long id, Type categoryType)
+        {
+            MainFrame.Navigate(
+                typeof(EditorPage),
+                new EditCategoryParameter()
+                {
+                    ID = id,
+                    CategoryType = categoryType
+                }, 
+                new DrillInNavigationTransitionInfo());
+        }
+
+        private void CategoriesListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            var category = (e.ClickedItem as CategoryMasterViewModel).Category;
+            ShowCategoryEditorPage(category.ID, category.GetType());
         }
     }
 }
