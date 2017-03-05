@@ -131,7 +131,6 @@
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\EventCalendarView.cs" />
     <Compile Include="ViewModels\CategoryDetailViewModel.cs" />
     <Compile Include="ViewModels\CategoryMasterVIewModel.cs" />
