@@ -13,6 +13,7 @@ using Grats.Model;
 using Microsoft.EntityFrameworkCore;
 using Windows.UI.Xaml.Media.Animation;
 using static Grats.EditorPage;
+using VkNet.Exception;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -46,7 +47,6 @@ namespace Grats
         {
             // TODO: Подумать насчет переноса этого в параметры окна
             UpdateCurrentUser();
-            // TODO: Добавить перехват исключений
             UpdateFriends();
             UpdateCategories();
         }
@@ -107,7 +107,17 @@ namespace Grats
         {
             var app = App.Current as App;
             // Тянем друзей с VK
-            var friends = await FetchFriends();
+            List<User> friends = null;
+            try
+            {
+                friends = await FetchFriends();
+            }
+            // TODO: Перехват сетевых исключений
+            catch (AccessTokenInvalidException)
+            {
+                (App.Current as App).SignOut();
+                return;
+            }
             // Показываем сводную страницу
             UpdateSummaryPage(friends);
             var friendsVM = from friend in friends
