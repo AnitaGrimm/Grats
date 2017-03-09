@@ -5,11 +5,11 @@
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Dark">
             <!-- Colors -->
-            <Color x:Key="BackgroundDarkColor">#2D3E4E</Color>
-            <Color x:Key="BackgroundLightColor">#3382B5</Color>
+            <Color x:Key="BackgroundDarkColor">#4A346B</Color>
+            <Color x:Key="BackgroundLightColor">#E7E2DF</Color>
             <Color x:Key="PrimaryColor">#ECF0F1</Color>
             <Color x:Key="SecondaryColor">#409AD7</Color>
-            <Color x:Key="AccentColor">#E34E47</Color>
+            <Color x:Key="AccentColor">#BDB6C5</Color>
             <!-- /Colors -->
             <SolidColorBrush x:Key="BackgroundLightBrush"
                              Color="{ThemeResource BackgroundLightColor}"/>
