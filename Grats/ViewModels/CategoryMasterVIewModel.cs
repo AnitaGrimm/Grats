@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Grats.ViewModels
 {
-    public class CategoryViewModel
+    public class CategoryMasterViewModel
     {
         public Category Category { get; set; }
         public SolidColorBrush Fill
@@ -28,9 +28,9 @@ namespace Grats.ViewModels
             }
         }
 
-        public CategoryViewModel() { }
+        public CategoryMasterViewModel() { }
 
-        public CategoryViewModel(Category category)
+        public CategoryMasterViewModel(Category category)
         {
             this.Category = category;
         }

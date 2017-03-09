@@ -10,7 +10,7 @@ namespace Grats.Model
     /// Поздравление с днем рождения
     /// </summary>
     public class BirthdayCategory : Category, ITaskGenerator
-    { 
+    {
         public void Generate()
         {
             throw new NotImplementedException();
@@ -19,6 +19,23 @@ namespace Grats.Model
         public void Regenerate()
         {
             throw new NotImplementedException();
+        }
+
+        public BirthdayCategory() { }
+
+        public BirthdayCategory(Category category)
+        {
+            this.Name = category.Name;
+            this.Color = category.Color;
+            //this.Contacts = (from contact in category.Contacts
+            //                 where contact.Birthday.HasValue
+            //                 select new Contact(contact)).ToList();
+            this.CategoryContacts =
+                (from categoryContact in category.CategoryContacts
+                 where categoryContact.Contact.Birthday.HasValue
+                 select new CategoryContact(this, categoryContact.Contact)).ToList();
+            this.OwnersVKID = category.OwnersVKID;
+            this.Template = category.Template;
         }
     }
 }

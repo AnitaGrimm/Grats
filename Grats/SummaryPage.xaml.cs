@@ -29,14 +29,22 @@ namespace Grats
             this.InitializeComponent();
         }
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
             var friends = e.Parameter as List<User>;
             // TODO: Раскомментировать
-            UpdateCalendar(friends);
+            //UpdateCalendar(friends);
             // TODO: Раскомментировать
-            UpdateHistory();
+            //UpdateHistory();
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            // TODO: Раскомментировать
+            //UpdateCalendar(friends);
+            // TODO: Раскомментировать
+            //UpdateHistory();
         }
 
         #region Обновление секций

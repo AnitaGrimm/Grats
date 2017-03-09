@@ -95,6 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EditorPage.xaml.cs">
+      <DependentUpon>EditorPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\HexToColor.cs" />
     <Compile Include="Interfaces\IMessageDispatcher.cs" />
     <Compile Include="Interfaces\IMessageTemplate.cs" />
@@ -108,13 +111,14 @@
     <Compile Include="MessageDispatcher\MessageDispatcherVkConnector.cs" />
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
-    <Compile Include="Migrations\20170302160443_InitialMigration.cs" />
-    <Compile Include="Migrations\20170302160443_InitialMigration.designer.cs">
-      <DependentUpon>20170302160443_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\20170309155519_InitialMigration.cs" />
+    <Compile Include="Migrations\20170309155519_InitialMigration.designer.cs">
+      <DependentUpon>20170309155519_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />
     <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\CategoryContact.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\GeneralCategory.cs" />
     <Compile Include="Model\GratsDBContext.cs" />
@@ -124,7 +128,9 @@
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\CategoryDetailViewModel.cs" />
+    <Compile Include="ViewModels\CategoryMasterVIewModel.cs" />
+    <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\FriendsGroupByKey.cs" />
     <Compile Include="ViewModels\VKCurrentUserViewModel.cs" />
     <Compile Include="ViewModels\VKUserViewModel.cs" />
@@ -133,7 +139,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Grats_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
@@ -150,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="EditorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
