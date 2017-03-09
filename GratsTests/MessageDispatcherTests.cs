@@ -55,11 +55,11 @@ namespace GratsTests
             goodCategoryB,
             badCategory;
         Grats.Model.Contact
-            goodContactA1, goodContactA2,
-            goodContactB1, goodContactB2,
-            badContact1, badContact2;
+            contact1,
+            contact2;
         User
-            user1, user2;
+            user1,
+            user2;
         
         public MessageDispatcherTests()
         {
@@ -67,33 +67,24 @@ namespace GratsTests
             dispatcher = new MessageDispatcher(db, vk);
 
             goodCategoryA = new GeneralCategory { Name = "A", Template = "A" };
-            goodContactA1 = new Grats.Model.Contact { Category = goodCategoryA, VKID = 1, ScreenName = "User1" };
-            goodContactA2 = new Grats.Model.Contact { Category = goodCategoryA, VKID = 2, ScreenName = "User2" };
-
             goodCategoryB = new GeneralCategory { Name = "B", Template = "B" };
-            goodContactB1 = new Grats.Model.Contact { Category = goodCategoryB, VKID = 1, ScreenName = "User1" };
-            goodContactB2 = new Grats.Model.Contact { Category = goodCategoryB, VKID = 2, ScreenName = "User2" };
-
             badCategory = new GeneralCategory { Name = "bad", Template = "^" };
-            badContact1 = new Grats.Model.Contact { Category = badCategory, VKID = 1, ScreenName = "User1" };
-            badContact2 = new Grats.Model.Contact { Category = badCategory, VKID = 2, ScreenName = "User2" };
 
+            contact1 = new Grats.Model.Contact { VKID = 1, ScreenName = "UserX" };
+            contact2 = new Grats.Model.Contact { VKID = 2, ScreenName = "UserY" };
+            
             db.Add(goodCategoryA);
             db.Add(goodCategoryB);
             db.Add(badCategory);
 
-            db.Add(goodContactA1);
-            db.Add(goodContactA2);
-            db.Add(goodContactB1);
-            db.Add(goodContactB2);
-            db.Add(badContact1);
-            db.Add(badContact2);
-
+            db.Add(contact1);
+            db.Add(contact2);
+            
             db.SaveChanges();
 
             user1 = new User { Id = 1, ScreenName = "User1" };
             user2 = new User { Id = 2, ScreenName = "User2" };
-
+            
             vk.Users.Add(user1);
             vk.Users.Add(user2);
         }
@@ -102,6 +93,7 @@ namespace GratsTests
         {
             db.Database.ExecuteSqlCommand("delete from [categories]");
             db.Database.ExecuteSqlCommand("delete from [contacts]");
+            db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
             db.Database.ExecuteSqlCommand("delete from [messagetasks]");
             db.Dispose();
         }
@@ -112,7 +104,7 @@ namespace GratsTests
             var task = new MessageTask
             {
                 Category = goodCategoryA,
-                Contact = goodContactA1,
+                Contact = contact1,
                 DispatchDate = DateTime.Today.AddDays(-1),
                 Status = MessageTask.TaskStatus.New,
             };
@@ -141,7 +133,7 @@ namespace GratsTests
             var taskX = new MessageTask
             {
                 Category = goodCategoryA,
-                Contact = goodContactA1,
+                Contact = contact1,
                 DispatchDate = DateTime.Today.AddDays(-1),
                 Status = MessageTask.TaskStatus.New,
             };
@@ -149,7 +141,7 @@ namespace GratsTests
             var taskY = new MessageTask
             {
                 Category = goodCategoryA,
-                Contact = goodContactA2,
+                Contact = contact2,
                 DispatchDate = DateTime.Today.AddDays(-1),
                 Status = MessageTask.TaskStatus.Retry,
             };
@@ -157,7 +149,7 @@ namespace GratsTests
             var taskZ = new MessageTask
             {
                 Category = goodCategoryB,
-                Contact = goodContactB1,
+                Contact = contact1,
                 DispatchDate = DateTime.Today.AddDays(10), // не должна быть отправлена
                 Status = MessageTask.TaskStatus.New,
             };
@@ -191,7 +183,7 @@ namespace GratsTests
             var task = new MessageTask
             {
                 Category = badCategory,
-                Contact = badContact1,
+                Contact = contact1,
                 DispatchDate = DateTime.Today.AddDays(-1),
                 Status = MessageTask.TaskStatus.New,
             };
@@ -224,7 +216,7 @@ namespace GratsTests
             var task = new MessageTask
             {
                 Category = goodCategoryA,
-                Contact = goodContactA1,
+                Contact = contact1,
                 DispatchDate = DateTime.Today.AddDays(-1),
                 Status = MessageTask.TaskStatus.New,
             };
