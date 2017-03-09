@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Media.Animation;
+using System.Net.Http;
 
 namespace Grats
 {
@@ -101,6 +102,23 @@ namespace Grats
                 return;
             }
             catch (VkApiException exception)
+            {
+                await Dispatcher.RunAsync(
+                Windows.UI.Core.CoreDispatcherPriority.Normal,
+                () => { Authenticating = false; }
+            );
+                // TODO: Вывести куда-нибудь сообщения
+                var alert = new ContentDialog()
+                {
+                    Title = "Ошибка",
+                    Content = exception.Message,
+                    PrimaryButtonText = "OK"
+                };
+                Debug.WriteLine(exception.Message);
+                await alert.ShowAsync();
+                return;
+            }
+            catch (Exception exception)
             {
                 await Dispatcher.RunAsync(
                 Windows.UI.Core.CoreDispatcherPriority.Normal,

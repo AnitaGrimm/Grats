@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Windows.UI.Xaml.Media.Animation;
 using static Grats.EditorPage;
 using VkNet.Exception;
+using System.Net.Http;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -117,6 +118,27 @@ namespace Grats
             {
                 (App.Current as App).SignOut();
                 return;
+            }
+            catch (HttpRequestException e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    Title = "Не удалось получить список друзей",
+                    Content = e.Message,
+                    PrimaryButtonText = "Повторить",
+                    SecondaryButtonText = "Выход"
+                };
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    UpdateFriends();
+                    return;
+                }
+                else
+                {
+                    (App.Current as App).SignOut();
+                    return;
+                }
             }
             // Показываем сводную страницу
             UpdateSummaryPage(friends);
