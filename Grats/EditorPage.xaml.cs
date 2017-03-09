@@ -161,7 +161,8 @@ namespace Grats
                 if (parameter.CategoryType == typeof(GeneralCategory))
                 {
                     var category = DBContext.GeneralCategories
-                        .Include("Contacts")
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact)
                         .Single(s => s.ID == parameter.ID);
                     DatePicker.Date = category.Date;
                     ViewModel = new CategoryDetailViewModel(category);
@@ -169,7 +170,8 @@ namespace Grats
                 else
                 {
                     var category = DBContext.BirthdayCategories
-                        .Include("Contacts")
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact)
                         .Single(s => s.ID == parameter.ID);
                     ViewModel = new CategoryDetailViewModel(category);
                 }

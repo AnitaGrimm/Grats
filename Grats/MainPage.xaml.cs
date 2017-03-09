@@ -155,15 +155,15 @@ namespace Grats
 
         private void CreateCategory(IEnumerable<User> friends)
         {
-            var contacts = from friend in friends
-                           select new Model.Contact(friend);
             var app = App.Current as App;
             var category = new Model.Category()
             {
                 OwnersVKID = app.VKAPI.UserId.Value,
                 Color = Category.DefaultColor,
-                Contacts = contacts.ToList(),
             };
+            category.CategoryContacts =
+                (from friend in friends
+                 select new Model.CategoryContact(category, new Model.Contact(friend))).ToList();
             ShowCategoryEditorPage(category);
         }
 

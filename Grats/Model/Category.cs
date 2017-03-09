@@ -28,7 +28,8 @@ namespace Grats.Model
         public string Name { get; set; }
         public string Color { get; set; }
         public string Template { get; set; }
-        public List<Contact> Contacts { get; set; }
+        //public List<Contact> Contacts { get; set; }
+        public List<CategoryContact> CategoryContacts { get; set; }
         public List<MessageTask> Tasks { get; set; }
     }
 }

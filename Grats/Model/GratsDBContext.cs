@@ -17,6 +17,7 @@ namespace Grats.Model
         public DbSet<GeneralCategory> GeneralCategories { get; set; }
         public DbSet<BirthdayCategory> BirthdayCategories { get; set; }
         public DbSet<Contact> Contacts { get; set; }
+        public DbSet<CategoryContact> CategoryContacts { get; set; }
         public DbSet<MessageTask> MessageTasks { get; set; }
         public DbSet<Template> Templates { get; set; }
 
@@ -35,10 +36,25 @@ namespace Grats.Model
                 .HasOne(p => p.Contact)
                 .WithMany(c => c.Tasks)
                 .OnDelete(DeleteBehavior.Restrict);
-            modelBuilder.Entity<Contact>()
-                .HasOne(p => p.Category)
-                .WithMany(c => c.Contacts)
+
+            modelBuilder.Entity<CategoryContact>()
+                .HasKey(cc => new { cc.CategoryID, cc.ContactID });
+            modelBuilder.Entity<CategoryContact>()
+                .HasOne(cc => cc.Category)
+                .WithMany(c => c.CategoryContacts)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<CategoryContact>()
+                .HasOne(cc => cc.Contact)
+                .WithMany(c => c.CategoryContacts)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Contact>()
+                .HasAlternateKey(c => c.VKID);
+            
+            //modelBuilder.Entity<Contact>()
+            //    .HasOne(p => p.Category)
+            //    .WithMany(c => c.Contacts)
+            //    .OnDelete(DeleteBehavior.Cascade);
         }
 
     }

@@ -77,8 +77,8 @@ namespace Grats.ViewModels
         {
             this.Category = category;
             this.Color = ColorExtensions.FromHex(category.Color);
-            var contactViewModels = from contact in category.Contacts
-                                    select new ContactViewModel(contact);
+            var contactViewModels = from categoryContact in category.CategoryContacts
+                                    select new ContactViewModel(categoryContact.Contact);
             foreach (var vm in contactViewModels)
                 Contacts.Add(vm);
             if (category is GeneralCategory)
@@ -94,6 +94,15 @@ namespace Grats.ViewModels
 
         public void Save(GratsDBContext db)
         {
+            foreach (var categoryContact in Category.CategoryContacts)
+            {
+                var vkID = categoryContact.Contact.VKID;
+                var existingContact = db.Contacts
+                    .FirstOrDefault(c => c.VKID == vkID);
+                if (existingContact != null)
+                    categoryContact.Contact = existingContact;
+            }
+
             if (Category.ID == 0)
                 Create(db);
             else
