@@ -7,10 +7,21 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource BackgroundDarkBrush}"
+          Padding="32,0">
         <Hub Grid.Column="1"
              Grid.Row="1"
-             Header="Сводка">
+             Header="Сводка"
+             Padding="0,16,0,0">
+            <Hub.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Height="48">
+                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                                   Text="{Binding}"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </Hub.HeaderTemplate>
             <HubSection Header="Календарь" DataContext="{Binding}">
                 <DataTemplate>
                     <Frame Name="CalendarFrame"/>

@@ -17,8 +17,8 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Ellipse Width="36"
-                         Height="36">
+                <Ellipse Width="32"
+                         Height="32">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{x:Bind Photo}"/>
                     </Ellipse.Fill>
@@ -69,8 +69,8 @@
             <StackPanel Orientation="Horizontal"
                         Margin="0,16">
                 <Ellipse
-                     Width="36"
-                     Height="36">
+                     Width="40"
+                     Height="40">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{x:Bind Current.Photo}"/>
                     </Ellipse.Fill>
