@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
 using Microsoft.EntityFrameworkCore;
 using Grats.Model;
 using Windows.ApplicationModel.Resources;
@@ -25,6 +26,7 @@ using VkNet.Exception;
 using System.Diagnostics;
 using VkNet.Utils.AntiCaptcha;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI;
 
 namespace Grats
 {
@@ -93,6 +95,7 @@ namespace Grats
 #endif
             InitializeDB();
             InitializeVKAPI();
+            SetTitleBarColors();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -126,6 +129,15 @@ namespace Grats
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();
             }
+        }
+
+        private void SetTitleBarColors()
+        {
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor = Resources["BackgroundDarkColor"] as Color?;
+            titleBar.ForegroundColor = Resources["SecondaryColor"] as Color?;
+            titleBar.ButtonBackgroundColor = Resources["BackgroundDarkColor"] as Color?;
+            titleBar.ButtonPressedBackgroundColor = Resources["AccentColor"] as Color?;
         }
 
         /// <summary>

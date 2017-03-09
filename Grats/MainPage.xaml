@@ -48,7 +48,7 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource BackgroundDarkBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="320"/>
             <ColumnDefinition/>
@@ -73,13 +73,14 @@
                     </Ellipse.Fill>
                 </Ellipse>
                 <TextBlock Text="{x:Bind Current.ScreenName}"
-                       Style="{ThemeResource TitleTextBlockStyle}"
+                       Style="{ThemeResource Title}"
                        Margin="8"
                        TextWrapping="WrapWholeWords" VerticalAlignment="Center"/>
             </StackPanel>
             <CommandBar Grid.Column="1" Background="{x:Null}"
                         VerticalAlignment="Center">
-                <AppBarButton Icon="Setting" Content="Настройки">
+                <AppBarButton Icon="Setting" Content="Настройки"
+                              Style="{ThemeResource AppBarButtons}">
                     <AppBarButton.Flyout>
                         <MenuFlyout>
                             <!-- TODO: Здесь стоит использовать комманду -->
@@ -105,8 +106,9 @@
                     <ListView x:Name="FriendsListView" 
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
-                              SelectionMode="Multiple"
+                              SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
                               SelectedValuePath="User">
+                        <ScrollViewer VerticalScrollBarVisibility="Hidden"/>
                         <ListView.GroupStyle>
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
@@ -119,13 +121,32 @@
                         </ListView.GroupStyle>
                     </ListView>
                     <CommandBar Grid.Row="1" 
-                                Background="{x:Null}">
-                        <!-- TODO: Реализовать через команды -->
-                        <!-- TODO: Подобрать иконку -->
+                                Background="{x:Null}"
+                                Style="{ThemeResource CommandBarStyle}">
+                        <AppBarButton x:Name="SelectButton"
+                                      Label="Выбрать"
+                                      Icon="Add"
+                                      Click="SelectButton_Click"
+                                      ToolTipService.ToolTip="Выбрать"
+                                      Visibility="{x:Bind SelectButtonVisibility, Mode=OneWay}"/>
                         <AppBarButton x:Name="CreateCategoryButton" 
                                           Label="Поздравить" 
                                           Icon="Mail"
-                                      Click="CreateCategoryButton_Click"/>
+                                      Click="CreateCategoryButton_Click"
+                                      ToolTipService.ToolTip="Поздравить"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
+                        <AppBarButton x:Name="SelectAllButton"
+                                      Label="Выбрать всех"
+                                      Icon="SelectAll"
+                                      ToolTipService.ToolTip="Выбрать всех"
+                                      Click="SelectAllButton_Click"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
+                        <AppBarButton x:Name="ClearSelection"
+                                      Label="Отменить"
+                                      Icon="ClearSelection"
+                                      ToolTipService.ToolTip="Отменить"
+                                      Click="ClearSelection_Click"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
                     </CommandBar>
                 </Grid>
             </PivotItem>

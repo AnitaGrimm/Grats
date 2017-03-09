@@ -13,6 +13,9 @@ using Grats.Model;
 using Microsoft.EntityFrameworkCore;
 using Windows.UI.Xaml.Media.Animation;
 using static Grats.EditorPage;
+using System.ComponentModel;
+using Windows.UI.Xaml;
+using System.Runtime.CompilerServices;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -21,10 +24,12 @@ namespace Grats
     /// <summary>
     /// Главная страница приложения, содержит список друзей и поздравлений
     /// </summary>
-    public sealed partial class MainPage : Page
+    public sealed partial class MainPage : Page, INotifyPropertyChanged
     {
         public VKCurrentUserViewModel Current { get; set; }
         public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
+
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         public MainPage()
         {
@@ -137,7 +142,6 @@ namespace Grats
             MainFrame.Navigate(typeof(SummaryPage), friends);
         }
 
-
         private void LogoutMenuItem_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var app = App.Current as App;
@@ -151,6 +155,7 @@ namespace Grats
             if (selectedFriends.Count() != 0)
                 CreateCategory(selectedFriends);
             FriendsListView.SelectedItems.Clear();
+            IsSelecting = false;
         }
 
         private void CreateCategory(IEnumerable<User> friends)
@@ -195,5 +200,51 @@ namespace Grats
             var category = (e.ClickedItem as CategoryMasterViewModel).Category;
             ShowCategoryEditorPage(category.ID, category.GetType());
         }
+
+        #region Выбор пользователей
+
+        public bool isSelecting = false;
+        public bool IsSelecting
+        {
+            get { return isSelecting; }
+            set
+            {
+                isSelecting = value;
+                OnPropertyChanged();
+                OnPropertyChanged("SelectionButtonsVisibility");
+                OnPropertyChanged("FriendsSelectionMode");
+                OnPropertyChanged("SelectButtonVisibility");
+            }
+        }
+        public Visibility SelectionButtonsVisibility => 
+            IsSelecting ? Visibility.Visible : Visibility.Collapsed;
+        public ListViewSelectionMode FriendsSelectionMode =>
+            IsSelecting ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
+        public Visibility SelectButtonVisibility =>
+            IsSelecting ? Visibility.Collapsed : Visibility.Visible;
+
+        public void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ClearSelection_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsSelecting)
+                IsSelecting = false;
+        }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            FriendsListView.SelectAll();
+        }
+        
+        private void SelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsSelecting)
+                IsSelecting = true;
+        }
+
+        #endregion
     }
 }
