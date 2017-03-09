@@ -245,5 +245,38 @@ namespace GratsTests
 
             Assert.Equal(1, counter);
         }
+
+        [Fact]
+        public void ShouldRefreshTasks()
+        {
+            var dispatchDate = DateTime.Today.AddDays(-1);
+
+            var task = new MessageTask
+            {
+                Category = goodCategoryA,
+                Contact = contact1,
+                DispatchDate = dispatchDate,
+                Status = MessageTask.TaskStatus.New,
+            };
+
+            db.MessageTasks.Add(task);
+            db.SaveChanges();
+
+            dispatcher.Dispatch();
+
+            db.Entry(task).Reload();
+
+            Assert.Equal(MessageTask.TaskStatus.Done, task.Status);
+
+            Assert.Equal(2, db.MessageTasks.Count());
+
+            var newTask = db.MessageTasks
+                .OrderByDescending(t => t.DispatchDate).First();
+
+            Assert.Equal(goodCategoryA.ID, newTask.CategoryID);
+            Assert.Equal(contact1.ID, newTask.ContactID);
+            Assert.Equal(MessageTask.TaskStatus.New, newTask.Status);
+            Assert.Equal(dispatchDate.AddYears(1), newTask.DispatchDate);
+        }
     }
 }

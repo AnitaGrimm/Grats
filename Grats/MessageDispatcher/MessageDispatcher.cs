@@ -103,6 +103,18 @@ namespace Grats.MessageDispatcher
             task.StatusMessage = statusString;
             task.LastTryDate = DateTime.Now;
 
+            if (messageSent)
+            {
+                var newTask = new MessageTask
+                {
+                    Category = task.Category,
+                    Contact = task.Contact,
+                    DispatchDate = task.DispatchDate.AddYears(1),
+                    Status = MessageTask.TaskStatus.New,
+                };
+                DB.MessageTasks.Add(newTask);
+            }
+
             DB.SaveChanges();
 
             MessageDispatcherException mde = null;
