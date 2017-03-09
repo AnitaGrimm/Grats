@@ -5,9 +5,10 @@
     xmlns:local="using:Grats"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    RequestedTheme="Dark">
 
-    <Grid Background="{ThemeResource BackgroundDarkBrush}"
+    <Grid Background="{ThemeResource Background}"
           Padding="32,0">
         <Hub Grid.Column="1"
              Grid.Row="1"

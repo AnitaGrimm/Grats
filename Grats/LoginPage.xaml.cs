@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.ViewManagement;
 
 namespace Grats
 {
@@ -128,6 +129,18 @@ namespace Grats
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            ColorizeTitleBar();
+        }
+
+        private void ColorizeTitleBar()
+        {
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
         }
     }
 }

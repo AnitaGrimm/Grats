@@ -16,6 +16,9 @@ using static Grats.EditorPage;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using System.Runtime.CompilerServices;
+using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
+using Windows.UI.Xaml.Media;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -246,5 +249,17 @@ namespace Grats
         }
 
         #endregion
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            ColorizeTitleBar();
+        }
+
+        private void ColorizeTitleBar()
+        {
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
+        }
     }
 }

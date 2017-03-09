@@ -95,7 +95,6 @@ namespace Grats
 #endif
             InitializeDB();
             InitializeVKAPI();
-            SetTitleBarColors();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -129,15 +128,6 @@ namespace Grats
                 // Обеспечение активности текущего окна
                 Window.Current.Activate();
             }
-        }
-
-        private void SetTitleBarColors()
-        {
-            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.BackgroundColor = Resources["BackgroundDarkColor"] as Color?;
-            titleBar.ForegroundColor = Resources["SecondaryColor"] as Color?;
-            titleBar.ButtonBackgroundColor = Resources["BackgroundDarkColor"] as Color?;
-            titleBar.ButtonPressedBackgroundColor = Resources["AccentColor"] as Color?;
         }
 
         /// <summary>

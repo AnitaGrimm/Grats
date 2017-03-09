@@ -32,10 +32,7 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <Grid>
-        <Grid.Background>
-            <SolidColorBrush Color="{ThemeResource BackgroundLightColor}"/>
-        </Grid.Background>
+    <Grid Background="{ThemeResource Background}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -79,7 +76,7 @@
                 </StackPanel>
                 <StackPanel Margin="0,8">
                     <TextBlock Text="Участники"
-                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="8,0"/>
                     <GridView Name="ContactsListView"
                           ItemsSource="{x:Bind ViewModel.Contacts}"
@@ -124,7 +121,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Текст поздравления"
-                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Margin="8,0"/>
                         <CommandBar
                                 Grid.Column="1"
