@@ -27,6 +27,7 @@ using System.Diagnostics;
 using VkNet.Utils.AntiCaptcha;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace Grats
 {
@@ -120,6 +121,12 @@ namespace Grats
             {
                 // Создание фрейма, который станет контекстом навигации, и переход к первой странице
                 rootFrame = new Frame();
+
+                // Настройка переходов
+                rootFrame.ContentTransitions = new TransitionCollection();
+                var navigationTheme = new NavigationThemeTransition();
+                navigationTheme.DefaultNavigationTransitionInfo = new DrillInNavigationTransitionInfo();
+                rootFrame.ContentTransitions.Add(navigationTheme);
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
@@ -256,7 +263,7 @@ namespace Grats
 
         public void ShowLoginPage()
         {
-            (Window.Current.Content as Frame).Navigate(typeof(LoginPage));
+            (Window.Current.Content as Frame).Navigate(typeof(LoginPage), new DrillOutThemeAnimation());
         }
 
         #endregion
