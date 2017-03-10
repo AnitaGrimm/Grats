@@ -219,14 +219,14 @@ namespace Grats
 
         private void SaveTemplateAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(ViewModel.MessageText))
+            if (ViewModel.ValidateMessageText())
                 SaveTemplateFlyout.ShowAt(SaveTemplateAppBarButton);
         }
 
         private void SaveTemplate_Click(object sender, RoutedEventArgs e)
         {
             var db = (App.Current as App).dbContext;
-            if (!string.IsNullOrEmpty(ViewModel.MessageText) &&
+            if (ViewModel.ValidateMessageText() &&
                 !string.IsNullOrEmpty(TemplateName.Text)){
                 db.Templates.Add(new Model.Template()
                 {
