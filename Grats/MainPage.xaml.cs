@@ -296,6 +296,7 @@ namespace Grats
         {
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
+            titleBar.ButtonBackgroundColor = (this.Background as SolidColorBrush).Color;
         }
     }
 }
