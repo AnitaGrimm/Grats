@@ -14,6 +14,12 @@
                 <Setter Property="FontSize" Value="24"/>
             </Style.Setters>
         </Style>
+        <Style x:Key="ValidationErrorTextBlockStyle" TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="Red"/>
+            </Style.Setters>
+        </Style>
         <DataTemplate x:Key="ContactsItemTemplate"
                       x:DataType="viewmodels:ContactViewModel">
             <Ellipse Margin="4"
@@ -73,11 +79,15 @@
                          PlaceholderText="Введите название"
                          VerticalAlignment="Center"
                      Text="{x:Bind ViewModel.Name, Mode=TwoWay}"/>
+                    <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.NameValidationError, Mode=OneWay}"/>
                 </StackPanel>
                 <StackPanel Margin="0,8">
                     <TextBlock Text="Участники"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="8,0"/>
+                    <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.ContactsValidationError, Mode=OneWay}"/>
                     <GridView Name="ContactsListView"
                           ItemsSource="{x:Bind ViewModel.Contacts}"
                           ItemTemplate="{StaticResource ContactsItemTemplate}"
@@ -96,10 +106,12 @@
                                             Margin="8"
                                             Name="DatePicker"/>
                         <CheckBox Name="IsBithdayCheckBox"
-                                  Margin="8"
+                                  Margin="8,0"
                                   IsChecked="{x:Bind ViewModel.IsBirthday, Mode=TwoWay}">
                             День рождения
                         </CheckBox>
+                        <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.DateValidationError, Mode=OneWay}"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Цвет"
@@ -120,11 +132,19 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <TextBlock Text="Текст поздравления"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Margin="8,0"/>
+                        <TextBlock Grid.Row="1"
+                            Margin="16,4" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.MessageValidationError, Mode=OneWay}"/>
                         <CommandBar
                                 Grid.Column="1"
+                                Grid.RowSpan="2"
                                 Background="{x:Null}"
                             Margin="8,0">
                             <AppBarButton Icon="Preview"
