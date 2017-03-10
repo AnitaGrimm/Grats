@@ -33,6 +33,7 @@ namespace Grats
     {
         public VKCurrentUserViewModel Current { get; set; }
         public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
+        ObservableCollection<FriendsGroupByKey> friendsByKeyDefault;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -157,7 +158,17 @@ namespace Grats
                          group item by item.ScreenName[0] into g
                          orderby g.Key
                          select new { Key = g.Key, Friends = g };
-
+            friendsByKeyDefault = groupFriendsByKey(friendsVM);
+            FriendsGroupedByKey.Source = friendsByKeyDefault;
+        }
+        public ObservableCollection<FriendsGroupByKey> groupFriendsByKey(IEnumerable<VKUserViewModel> friendsVM)
+        {
+            if (friendsVM == null || friendsVM.Count() != null)
+                return new ObservableCollection<FriendsGroupByKey>();
+            var groups = from item in friendsVM
+                         group item by item.ScreenName[0] into g
+                         orderby g.Key
+                         select new { Key = g.Key, Friends = g };
             var collection = new ObservableCollection<FriendsGroupByKey>();
             foreach (var g in groups)
             {
@@ -166,10 +177,8 @@ namespace Grats
                 group.AddRange(g.Friends);
                 collection.Add(group);
             }
-            // Обновляем источник данных
-            FriendsGroupedByKey.Source = collection;
+            return collection;
         }
-
         #endregion
 
         private void UpdateSummaryPage(List<User> friends)
@@ -292,6 +301,48 @@ namespace Grats
         {
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
+        }
+
+        private void FriendsSearch_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textbox = ((TextBox)sender);
+            if (textbox.Text.Replace(" ", "") == "")
+            {
+                FriendsGroupedByKey.Source = friendsByKeyDefault;
+                textbox.Text = "Поиск";
+            }
+        }
+
+        private void FriendsSearch_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var textbox = ((TextBox)sender);
+            if (textbox.Text=="Поиск")
+                textbox.Text="";
+            
+        }
+
+        private void FriendsSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textbox = ((TextBox)sender);
+            if (textbox.FocusState == FocusState.Unfocused)
+                return;
+            if (textbox.Text.Replace(" ", "") == "")
+            {
+                FriendsGroupedByKey.Source = friendsByKeyDefault;
+            }
+            else
+            {
+                var searchResult = new ObservableCollection<FriendsGroupByKey>();
+                var validFriends = friendsByKeyDefault?.SelectMany(group => group.ToArray())?.Where(friend => IsValidToSearch(textbox.Text, friend.ScreenName));
+            }
+        }
+        public bool IsValidToSearch(string searchCall, string text)
+        {
+            if (text.IndexOf(searchCall) > 0)
+                return true;
+            else
+                return false;
+            
         }
     }
 }
