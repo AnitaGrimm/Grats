@@ -154,16 +154,12 @@ namespace Grats
             var friendsVM = from friend in friends
                             select new VKUserViewModel(friend);
             // Группируем по первой букве фамилии
-            var groups = from item in friendsVM
-                         group item by item.ScreenName[0] into g
-                         orderby g.Key
-                         select new { Key = g.Key, Friends = g };
-            friendsByKeyDefault = groupFriendsByKey(friendsVM);
+            friendsByKeyDefault = GroupFriendsByKey(friendsVM);
             FriendsGroupedByKey.Source = friendsByKeyDefault;
         }
-        public ObservableCollection<FriendsGroupByKey> groupFriendsByKey(IEnumerable<VKUserViewModel> friendsVM)
+        public ObservableCollection<FriendsGroupByKey> GroupFriendsByKey(IEnumerable<VKUserViewModel> friendsVM)
         {
-            if (friendsVM == null || friendsVM.Count() != null)
+            if (friendsVM == null || friendsVM.Count() == 0)
                 return new ObservableCollection<FriendsGroupByKey>();
             var groups = from item in friendsVM
                          group item by item.ScreenName[0] into g
@@ -333,16 +329,24 @@ namespace Grats
             else
             {
                 var searchResult = new ObservableCollection<FriendsGroupByKey>();
-                var validFriends = friendsByKeyDefault?.SelectMany(group => group.ToArray())?.Where(friend => IsValidToSearch(textbox.Text, friend.ScreenName));
+                var validFriends = friendsByKeyDefault?.SelectMany(group => group.ToArray())?.Where(friend => IsUserSearchResult(textbox.Text, friend.User));
+                searchResult = GroupFriendsByKey(validFriends);
+                FriendsGroupedByKey.Source = searchResult;
             }
         }
-        public bool IsValidToSearch(string searchCall, string text)
+        public bool IsUserSearchResult(string searchCall, User user)
         {
-            if (text.IndexOf(searchCall) > 0)
+            var screenName = user.ScreenName;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            return IsSearchResult(searchCall, screenName) || IsSearchResult(searchCall, lastName) || IsSearchResult(searchCall, firstName);
+        }
+        public bool IsSearchResult(string searchCall, string text)
+        {
+            if (text!=null && text.ToLower().IndexOf(searchCall.ToLower()) >= 0)
                 return true;
             else
                 return false;
-            
         }
     }
 }
