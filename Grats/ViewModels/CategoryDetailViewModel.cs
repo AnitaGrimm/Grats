@@ -1,4 +1,5 @@
 ﻿using Grats.Extensions;
+using Grats.MessageTemplates;
 using Grats.Model;
 using System;
 using System.Collections.Generic;
@@ -87,6 +88,17 @@ namespace Grats.ViewModels
                 IsBirthday = true;
         }
 
+        public bool ValidateMessageText()
+        {
+            try
+            {
+                var template = new MessageTemplate(MessageText);
+                return true;
+            }
+            catch (MessageTemplateSyntaxException) { return false; }
+            catch (ArgumentNullException) { return false; }
+        }
+
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -151,5 +163,6 @@ namespace Grats.ViewModels
                 (result as ITaskGenerator).Generate(db);
             }
         }
+
     }
 }

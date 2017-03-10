@@ -209,5 +209,40 @@ namespace Grats
             this.Focus(FocusState.Keyboard);
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void OpenTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(TemplatesMasterPage), ViewModel);
+        }
+
+        #region SaveTemplateButton
+
+        private void SaveTemplateAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ValidateMessageText())
+                SaveTemplateFlyout.ShowAt(SaveTemplateAppBarButton);
+        }
+
+        private void SaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            var db = (App.Current as App).dbContext;
+            if (ViewModel.ValidateMessageText() &&
+                !string.IsNullOrEmpty(TemplateName.Text)){
+                db.Templates.Add(new Model.Template()
+                {
+                    Name = TemplateName.Text,
+                    Text = ViewModel.MessageText
+                });
+                db.SaveChanges();
+                SaveTemplateFlyout.Hide();
+            }
+        }
+        
+        private void CancelSaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            SaveTemplateFlyout.Hide();
+        }
+
+        #endregion
     }
 }
