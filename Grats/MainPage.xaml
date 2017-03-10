@@ -115,7 +115,7 @@
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
                               SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
-                              SelectedValuePath="User">
+                              SelectedValuePath="User" SelectionChanged="FriendsListView_SelectionChanged">
                         <ScrollViewer VerticalScrollBarVisibility="Hidden"/>
                         <ListView.GroupStyle>
                             <GroupStyle>

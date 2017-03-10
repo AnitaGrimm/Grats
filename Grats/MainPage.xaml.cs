@@ -34,6 +34,8 @@ namespace Grats
         public VKCurrentUserViewModel Current { get; set; }
         public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
         ObservableCollection<FriendsGroupByKey> friendsByKeyDefault;
+        List<VKUserViewModel> selectedUsers;
+
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -304,7 +306,15 @@ namespace Grats
             var textbox = ((TextBox)sender);
             if (textbox.Text.Replace(" ", "") == "")
             {
-                FriendsGroupedByKey.Source = friendsByKeyDefault;
+                if (FriendsGroupedByKey.Source != friendsByKeyDefault)
+                {
+                    FriendsGroupedByKey.Source = friendsByKeyDefault;
+                    foreach (var item in selectedUsers)
+                    {
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
+                        FriendsListView.SelectRange(indexRange);
+                    }
+                }
                 textbox.Text = "Поиск";
             }
         }
@@ -324,14 +334,32 @@ namespace Grats
                 return;
             if (textbox.Text.Replace(" ", "") == "")
             {
-                FriendsGroupedByKey.Source = friendsByKeyDefault;
+                if (FriendsGroupedByKey.Source != friendsByKeyDefault)
+                {
+                    FriendsGroupedByKey.Source = friendsByKeyDefault;
+                    foreach (var item in selectedUsers)
+                    {
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
+                        FriendsListView.SelectRange(indexRange);
+                    }
+                }
+
             }
             else
             {
                 var searchResult = new ObservableCollection<FriendsGroupByKey>();
-                var validFriends = friendsByKeyDefault?.SelectMany(group => group.ToArray())?.Where(friend => IsUserSearchResult(textbox.Text, friend.User));
+                var validFriends = friendsByKeyDefault?.SelectMany(group => group.ToArray())?.Where(friend => IsUserSearchResult(textbox.Text, friend.User) || selectedUsers.IndexOf(friend)>=0);
                 searchResult = GroupFriendsByKey(validFriends);
                 FriendsGroupedByKey.Source = searchResult;
+                foreach (var item in selectedUsers)
+                {
+                    try
+                    {
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
+                        FriendsListView.SelectRange(indexRange);
+                    }
+                    catch { }
+                }
             }
         }
         public bool IsUserSearchResult(string searchCall, User user)
@@ -347,6 +375,14 @@ namespace Grats
                 return true;
             else
                 return false;
+        }
+
+        private void FriendsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var listView = ((ListView)sender);
+            if (listView.SelectedItems == null || listView.SelectedItems.Count() == 0)
+                return;
+            selectedUsers = listView.SelectedItems.Select(x => (VKUserViewModel)x)?.ToList();
         }
     }
 }
