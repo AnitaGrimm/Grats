@@ -21,6 +21,8 @@ using VkNet.Model;
 using System.Threading.Tasks;
 using VkNet.Model.RequestParams;
 using VkNet.Enums.Filters;
+using Grats.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -56,13 +58,12 @@ namespace Grats
         {
             var db = (App.Current as App).dbContext;
             var categories = Enumerable.Union<Category>(
-                db.BirthdayCategories,
-                db.GeneralCategories);
+                db.BirthdayCategories.Include(c => c.Tasks),
+                db.GeneralCategories.Include(c => c.Tasks));
             //добавление событий
             foreach (var category in categories)
             {
-                var colorFromName = AngleSharp.Css.Values.Color.FromName(category.Color).Value;
-                var color = Color.FromArgb(colorFromName.A, colorFromName.R, colorFromName.G, colorFromName.B);
+                var color = ColorExtensions.FromHex(category.Color);
                 CalendarEvents.AddRange(category?.Tasks?.Select(task => new EventCalendarView { EventColor = color, EventDate = task.DispatchDate }));
             }
             //добавление дней рождений
