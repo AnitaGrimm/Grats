@@ -128,6 +128,15 @@
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TemplatePlaceholderPage.xaml.cs">
+      <DependentUpon>TemplatePlaceholderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TemplatesDetailPage.xaml.cs">
+      <DependentUpon>TemplatesDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TemplatesMasterPage.xaml.cs">
+      <DependentUpon>TemplatesMasterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\CategoryDetailViewModel.cs" />
     <Compile Include="ViewModels\CategoryMasterVIewModel.cs" />
     <Compile Include="ViewModels\ContactViewModel.cs" />
@@ -178,6 +187,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="SummaryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplatePlaceholderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplatesDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplatesMasterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

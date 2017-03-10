@@ -66,6 +66,23 @@ namespace Grats
         private void InitializeDB()
         {
             dbContext.Database.Migrate();
+            CreateDefaultTemplates();
+        }
+
+        private void CreateDefaultTemplates()
+        {
+            var db = dbContext;
+            if (db.Templates.Count() == 0)
+            {
+                // TODO: Перенести в ресурсы
+                db.Add(new Template()
+                {
+                    Name = "День рождения",
+                    Text = "Дорог^пол{м:ой, ж:ая, ой} ^имя ^фамилия, поздравляю тебя с днем рождения!",
+                    IsEmbedded = true
+                });
+                db.SaveChanges();
+            }
         }
 
         private void InitializeVKAPI()

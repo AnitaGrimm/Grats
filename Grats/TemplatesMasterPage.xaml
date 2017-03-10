@@ -1,0 +1,96 @@
+﻿<Page
+    x:Class="Grats.TemplatesMasterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Grats"
+    xmlns:model="using:Grats.Model"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light">
+    <Page.Resources>
+        <DataTemplate x:Key="MessageTemplateItemTemplate" x:DataType="model:Template">
+            <TextBlock Text="{x:Bind Name}"/>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid Background="{ThemeResource Background}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Margin="0,16,0,0"
+                  Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <AppBarButton Name="BackButton"
+                              Icon="Back"
+                              Click="BackButton_Click" VerticalAlignment="Center" Height="48"/>
+                <TextBlock Text="Шаблоны"
+                           Grid.Column="1"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           VerticalAlignment="Center"
+                       Margin="16,0"/>
+            </Grid>
+            <CommandBar Grid.Column="1"
+                        Background="{x:Null}"
+                        Margin="48,0"
+                        VerticalAlignment="Bottom">
+                <AppBarButton Name="AcceptButton" 
+                          Icon="Accept"
+                          VerticalAlignment="Center"
+                          ToolTipService.ToolTip="Выбрать"
+                          Click="AcceptButton_Click"
+                              Visibility="{x:Bind AcceptButtonVisibility, Mode=OneWay}"
+                          Height="48"/>
+                <AppBarButton Icon="Delete"
+                              ToolTipService.ToolTip="Удалить"
+                              Visibility="{x:Bind DeleteButtonVisibility, Mode=OneWay}"
+                              Height="48">
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <TextBlock Margin="8">
+                                    Удалить шаблон?
+                                </TextBlock>
+                                <Button Name="DeleteButton"
+                                        Click="DeleteButton_Click"
+                                        Margin="8">
+                                    Да
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+            </CommandBar>
+            <ListView Name="TemplatesListView"
+                      Grid.Row="1"
+                      Width="240"
+                      Margin="32,0"
+                      Padding="0,16,0,0"
+                      ItemsSource="{x:Bind Templates}"
+                      ItemTemplate="{StaticResource MessageTemplateItemTemplate}"
+                      SelectionMode="Single"
+                      SelectionChanged="ListView_SelectionChanged">
+            </ListView>
+            <Border Grid.Column="1"
+                    Grid.Row="1"
+                    BorderBrush="Black"
+                    BorderThickness="1,0,0,0">
+                <Frame Name="TemplateDetailFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <ContentThemeTransition/>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

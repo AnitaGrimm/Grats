@@ -134,10 +134,34 @@
                                           Click="PreviewButton_Click"/>
                             <AppBarButton Icon="Save"
                                       Label="Сохранить"
-                                          ToolTipService.ToolTip="Сохранить"/>
+                                          Name="SaveTemplateAppBarButton"
+                                          ToolTipService.ToolTip="Сохранить"
+                                          Click="SaveTemplateAppBarButton_Click">
+                                <Flyout x:Name="SaveTemplateFlyout">
+                                    <StackPanel Width="240">
+                                        <TextBox Name="TemplateName"
+                                             Header="Название шаблона"
+                                                 Margin="8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Margin="8"
+                                                        Name="CancelSaveTemplate"
+                                                        Click="CancelSaveTemplate_Click">
+                                                Отмена
+                                            </Button>
+                                            <Button x:Name="SaveTemplate"
+                                                Margin="8"
+                                                    Click="SaveTemplate_Click">
+                                                Сохранить
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Flyout>
+                            </AppBarButton>
                             <AppBarButton Icon="Folder"
+                                          Name="OpenTemplateButton"
                                       Label="Открыть"
-                                          ToolTipService.ToolTip="Открыть"/>
+                                          ToolTipService.ToolTip="Открыть"
+                                          Click="OpenTemplateButton_Click"/>
                         </CommandBar>
                     </Grid>
                     <TextBox Height="300"
