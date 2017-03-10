@@ -27,7 +27,10 @@
             <HubSection Header="Календарь" DataContext="{Binding}">
                 <DataTemplate>
                     <Frame Name="CalendarFrame" DataContext="{Binding}">
-                        <local:EventsCalendar Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"></local:EventsCalendar>
+                        <CalendarView CalendarViewDayItemChanging="CalendarView_CalendarViewDayItemChanging" 
+                                      SelectedDatesChanged="calendar_SelectedDatesChanged" 
+                                      PointerMoved="calendar_PointerMoved"
+                                      Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"/>
                     </Frame>
                 </DataTemplate>
             </HubSection>
