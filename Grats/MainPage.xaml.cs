@@ -35,6 +35,8 @@ namespace Grats
         public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
         ObservableCollection<FriendsGroupByKey> friendsByKeyDefault;
         List<VKUserViewModel> selectedUsers;
+        bool IsFromCode = false;
+        object locker = new object();
 
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -44,6 +46,7 @@ namespace Grats
             this.InitializeComponent();
             UpdateUI();
             MainFrame.Navigated += MainFrame_Navigated;
+            FriendsListView.SelectedItem = null;
         }
 
         private void MainFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -313,11 +316,21 @@ namespace Grats
                 if (FriendsGroupedByKey.Source != friendsByKeyDefault)
                 {
                     FriendsGroupedByKey.Source = friendsByKeyDefault;
+                    IsFromCode = true;
                     foreach (var item in selectedUsers)
                     {
-                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
-                        FriendsListView.SelectRange(indexRange);
+                        var firstIndex = FriendsListView.Items.IndexOf(item);
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(firstIndex, 1);
+                        try
+                        {
+                            FriendsListView.SelectRange(indexRange);
+                        }
+                        catch
+                        {
+
+                        }
                     }
+                    IsFromCode = false;
                 }
                 textbox.Text = "Поиск";
             }
@@ -333,6 +346,7 @@ namespace Grats
 
         private void FriendsSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
+            IsFromCode = true;
             var textbox = ((TextBox)sender);
             if (textbox.FocusState == FocusState.Unfocused)
                 return;
@@ -343,8 +357,16 @@ namespace Grats
                     FriendsGroupedByKey.Source = friendsByKeyDefault;
                     foreach (var item in selectedUsers)
                     {
-                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
-                        FriendsListView.SelectRange(indexRange);
+                        var firstIndex = FriendsListView.Items.IndexOf(item);
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(firstIndex, 1);
+                        try
+                        {
+                            FriendsListView.SelectRange(indexRange);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
 
@@ -357,14 +379,23 @@ namespace Grats
                 FriendsGroupedByKey.Source = searchResult;
                 foreach (var item in selectedUsers)
                 {
-                    try
+                    var results = searchResult?.SelectMany(x => x.ToList())?.ToList();
+                    if (results!=null && results.IndexOf(item)>= 0)
                     {
-                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(FriendsListView.Items.IndexOf(item), 1);
-                        FriendsListView.SelectRange(indexRange);
+                        var firstIndex = FriendsListView.Items.IndexOf(item);
+                        var indexRange = new Windows.UI.Xaml.Data.ItemIndexRange(firstIndex, 1);
+                        try
+                        {
+                            FriendsListView.SelectRange(indexRange);
+                        }
+                        catch
+                        {
+
+                        }
                     }
-                    catch { }
                 }
             }
+            IsFromCode = false;
         }
         public bool IsUserSearchResult(string searchCall, User user)
         {
@@ -385,8 +416,12 @@ namespace Grats
         {
             var listView = ((ListView)sender);
             if (listView.SelectedItems == null || listView.SelectedItems.Count() == 0)
+            {
+                if (!IsFromCode)
+                    selectedUsers = new List<VKUserViewModel>();
                 return;
-            selectedUsers = listView.SelectedItems.Select(x => (VKUserViewModel)x)?.ToList();
+            }
+            selectedUsers = listView?.SelectedItems?.Select(x => (VKUserViewModel)x)?.Where(x=>x!=null)?.ToList();
         }
     }
 }
