@@ -57,6 +57,11 @@ namespace Grats.ViewModels
             }
         }
 
+        public string NameValidationError { get; set; }
+        public string ContactsValidationError { get; set; }
+        public string DateValidationError { get; set; }
+        public string MessageValidationError { get; set; }
+
         public Color Color
         {
             get { return ColorExtensions.FromHex(Category.Color);  }
@@ -88,15 +93,67 @@ namespace Grats.ViewModels
                 IsBirthday = true;
         }
 
+        public bool Validate()
+        {
+            NameValidationError = ValidateName();
+            ContactsValidationError = ValidateContacts();
+            DateValidationError = ValidateDate();
+            MessageValidationError = ValidateMessage();
+            OnPropertyChanged("NameValidationError");
+            OnPropertyChanged("ContactsValidationError");
+            OnPropertyChanged("DateValidationError");
+            OnPropertyChanged("MessageValidationError");
+            if (!string.IsNullOrEmpty(NameValidationError)) return false;
+            if (!string.IsNullOrEmpty(ContactsValidationError)) return false;
+            if (!string.IsNullOrEmpty(DateValidationError)) return false;
+            if (!string.IsNullOrEmpty(MessageValidationError)) return false;
+            return true;
+        }
+
         public bool ValidateMessageText()
         {
+            return string.IsNullOrEmpty(ValidateMessage());
+        }
+
+        private string ValidateName()
+        {
+            if (string.IsNullOrWhiteSpace(Name))
+                return "Необходимо указать название";
+            return "";
+        }
+
+        private string ValidateContacts()
+        {
+            if (Contacts.Count < 1)
+                return "Список контактов не должен быть пуст";
+            return "";
+        }
+
+        private string ValidateDate()
+        {
+            if (IsGeneral && Date == null)
+                return "Необходимо указать дату";
+            return "";
+        }
+
+        private string ValidateMessage()
+        {
+            if (string.IsNullOrWhiteSpace(MessageText))
+                return "Необходимо указать сообщение";
+
             try
             {
                 var template = new MessageTemplate(MessageText);
-                return true;
+                return "";
             }
-            catch (MessageTemplateSyntaxException) { return false; }
-            catch (ArgumentNullException) { return false; }
+            catch (MessageTemplateSyntaxException e)
+            {
+                return e.Message;
+            }
+            catch (ArgumentNullException e)
+            {
+                return e.Message;
+            }
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
