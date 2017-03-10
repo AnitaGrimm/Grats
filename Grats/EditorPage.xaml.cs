@@ -214,5 +214,35 @@ namespace Grats
         {
             this.Frame.Navigate(typeof(TemplatesMasterPage), ViewModel);
         }
+
+        #region SaveTemplateButton
+
+        private void SaveTemplateAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(ViewModel.MessageText))
+                SaveTemplateFlyout.ShowAt(SaveTemplateAppBarButton);
+        }
+
+        private void SaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            var db = (App.Current as App).dbContext;
+            if (!string.IsNullOrEmpty(ViewModel.MessageText) &&
+                !string.IsNullOrEmpty(TemplateName.Text)){
+                db.Templates.Add(new Model.Template()
+                {
+                    Name = TemplateName.Text,
+                    Text = ViewModel.MessageText
+                });
+                db.SaveChanges();
+                SaveTemplateFlyout.Hide();
+            }
+        }
+        
+        private void CancelSaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            SaveTemplateFlyout.Hide();
+        }
+
+        #endregion
     }
 }
