@@ -49,8 +49,28 @@
                           Click="AcceptButton_Click"
                               Visibility="{x:Bind AcceptButtonVisibility, Mode=OneWay}"
                           Height="48"/>
+                <AppBarButton Icon="Delete"
+                              ToolTipService.ToolTip="Удалить"
+                              Visibility="{x:Bind DeleteButtonVisibility, Mode=OneWay}"
+                              Height="48">
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <TextBlock Margin="8">
+                                    Удалить шаблон?
+                                </TextBlock>
+                                <Button Name="DeleteButton"
+                                        Click="DeleteButton_Click"
+                                        Margin="8">
+                                    Да
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </CommandBar>
-            <ListView Grid.Row="1"
+            <ListView Name="TemplatesListView"
+                      Grid.Row="1"
                       Width="240"
                       Margin="32,0"
                       Padding="0,16,0,0"

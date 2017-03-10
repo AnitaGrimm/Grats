@@ -36,12 +36,17 @@ namespace Grats
             {
                 selectedTemplate = value;
                 OnPropertyChanged("AcceptButtonVisibility");
+                OnPropertyChanged("DeleteButtonVisibility");
+                if (value == null)
+                    TemplateDetailFrame.GoBack();
             }
         }
         public CategoryDetailViewModel ViewModel;
 
         public Visibility AcceptButtonVisibility =>
             SelectedTemplate == null ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility DeleteButtonVisibility =>
+            SelectedTemplate != null && !SelectedTemplate.IsEmbedded ? Visibility.Visible : Visibility.Collapsed;
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -63,6 +68,7 @@ namespace Grats
         private void UpdateUI()
         {
             UpdateTemplateList();
+            TemplateDetailFrame.Navigate(typeof(TemplatePlaceholderPage));
         }
 
         private void UpdateTemplateList()
@@ -81,8 +87,12 @@ namespace Grats
         {
             SelectedTemplate = (sender as ListView).SelectedItem as Template;
             if (SelectedTemplate != null)
+            {
+                while (TemplateDetailFrame.CanGoBack)
+                    TemplateDetailFrame.GoBack();
                 TemplateDetailFrame.Navigate(typeof(TemplatesDetailPage), SelectedTemplate);
-            
+            }
+
         }
 
         private void AcceptButton_Click(object sender, RoutedEventArgs e)
@@ -94,6 +104,16 @@ namespace Grats
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var db = (App.Current as App).dbContext;
+            db.Templates.Remove(SelectedTemplate);
+            db.SaveChanges();
+            Templates.Remove(SelectedTemplate);
+            TemplatesListView.SelectedItem = null;
+        
         }
     }
 }

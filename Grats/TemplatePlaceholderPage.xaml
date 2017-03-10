@@ -1,0 +1,18 @@
+﻿<Page
+    x:Class="Grats.TemplatePlaceholderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Grats"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light">
+
+    <RelativePanel Background="{ThemeResource Background}">
+        <TextBlock RelativePanel.AlignHorizontalCenterWithPanel="True"
+                   RelativePanel.AlignVerticalCenterWithPanel="True"
+                   Style="{ThemeResource TitleTextBlockStyle}">
+            Выберите шаблон
+        </TextBlock>
+    </RelativePanel>
+</Page>
