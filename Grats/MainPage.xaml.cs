@@ -213,7 +213,9 @@ namespace Grats
         }
 
         private void ShowCategoryEditorPage(Model.Category category)
-        { 
+        {
+            while (MainFrame.CanGoBack)
+                MainFrame.GoBack();
             MainFrame.Navigate(
                 typeof(EditorPage), 
                 new NewCategoryParameter()
@@ -225,6 +227,8 @@ namespace Grats
 
         private void ShowCategoryEditorPage(long id, Type categoryType)
         {
+            while (MainFrame.CanGoBack)
+                MainFrame.GoBack();
             MainFrame.Navigate(
                 typeof(EditorPage),
                 new EditCategoryParameter()
