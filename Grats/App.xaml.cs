@@ -65,6 +65,18 @@ namespace Grats
         private void InitializeDB()
         {
             dbContext.Database.Migrate();
+            CreateDefaultTemplates();
+        }
+
+        private void CreateDefaultTemplates()
+        {
+            var db = dbContext;
+            if (db.Templates.Count() == 0)
+            {
+                var defaultTemplates = Resources["DefaultTemplates"] as TemplatesCollection;
+                db.AddRange(defaultTemplates);
+                db.SaveChanges();
+            }
         }
 
         private void InitializeVKAPI()

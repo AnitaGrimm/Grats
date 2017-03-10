@@ -10,6 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Secret.xaml"/>
                 <ResourceDictionary Source="Styles.xaml"/>
+                <ResourceDictionary Source="DefaultTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -209,5 +209,10 @@ namespace Grats
             this.Focus(FocusState.Keyboard);
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void OpenTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(TemplatesMasterPage), ViewModel);
+        }
     }
 }

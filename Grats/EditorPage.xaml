@@ -136,8 +136,10 @@
                                       Label="Сохранить"
                                           ToolTipService.ToolTip="Сохранить"/>
                             <AppBarButton Icon="Folder"
+                                          Name="OpenTemplateButton"
                                       Label="Открыть"
-                                          ToolTipService.ToolTip="Открыть"/>
+                                          ToolTipService.ToolTip="Открыть"
+                                          Click="OpenTemplateButton_Click"/>
                         </CommandBar>
                     </Grid>
                     <TextBox Height="300"
