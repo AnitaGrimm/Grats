@@ -1,0 +1,23 @@
+﻿<Page
+    x:Class="Grats.TemplatesDetailPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Grats"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    RequestedTheme="Light">
+
+    <Grid Background="{ThemeResource Background}">
+        <StackPanel Margin="32,0"
+                        Grid.Row="1"
+                        Grid.Column="1">
+            <TextBlock Text="{x:Bind MessageTemplate.Name}"
+                           Margin="0,16"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="{x:Bind MessageTemplate.Text}"
+                           Style="{ThemeResource BodyTextBlockStyle}"
+                           Margin="0,16"/>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -170,6 +170,13 @@
         <!-- MainFrame -->
         <Frame x:Name="MainFrame"
                Grid.Column="1"
-               Grid.Row="1"/>
+               Grid.Row="1">
+            <Frame.ContentTransitions>
+                <TransitionCollection>
+                    <NavigationThemeTransition/>
+                    <NavigationThemeTransition/>
+                </TransitionCollection>
+            </Frame.ContentTransitions>
+        </Frame>
     </Grid>
 </Page>
