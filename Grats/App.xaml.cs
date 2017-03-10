@@ -73,8 +73,13 @@ namespace Grats
             var db = dbContext;
             if (db.Templates.Count() == 0)
             {
-                var defaultTemplates = Resources["DefaultTemplates"] as TemplatesCollection;
-                db.AddRange(defaultTemplates);
+                // TODO: Перенести в ресурсы
+                db.Add(new Template()
+                {
+                    Name = "День рождения",
+                    Text = "Дорог^пол{м:ой, ж:ая, ой} ^имя ^фамилия, поздравляю тебя с днем рождения!",
+                    IsEmbedded = true
+                });
                 db.SaveChanges();
             }
         }

@@ -124,7 +124,6 @@
     <Compile Include="Model\GratsDBContext.cs" />
     <Compile Include="Model\MessageTask.cs" />
     <Compile Include="Model\Template.cs" />
-    <Compile Include="Model\TemplatesCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
@@ -165,11 +164,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DefaultTemplates.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Page>
     <Page Include="EditorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
