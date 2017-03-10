@@ -8,22 +8,23 @@
     xmlns:viewmodels="using:Grats.ViewModels"
     x:Class="Grats.MainPage"
     mc:Ignorable="d"
-    >
+    Background="{ThemeResource Background}">
     <Page.Resources>
         <DataTemplate x:Key="FriendsItempTemplate"
                       x:DataType="viewmodels:VKUserViewModel">
-            <Grid Height="40">
+            <Grid Padding="0,4">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Ellipse Margin="4">
+                <Ellipse Width="32"
+                         Height="32">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{x:Bind Photo}"/>
                     </Ellipse.Fill>
                 </Ellipse>
                 <TextBlock Text="{x:Bind ScreenName}"
-                           Margin="4,0"
+                           Margin="8,0"
                            Grid.Column="1"
                            VerticalAlignment="Center"/>
             </Grid>
@@ -48,16 +49,17 @@
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="360"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.ColumnSpan="2">
+        <Grid Grid.ColumnSpan="2"
+              Margin="32,0">
             <!-- /Секция текщего пользователя -->
             <!-- Секция текщего пользователя -->
             <Grid.ColumnDefinitions>
@@ -65,16 +67,17 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal"
-                        Margin="32,0">
+                        Margin="0,16">
                 <Ellipse
-                     Width="48">
+                     Width="40"
+                     Height="40">
                     <Ellipse.Fill>
                         <ImageBrush ImageSource="{x:Bind Current.Photo}"/>
                     </Ellipse.Fill>
                 </Ellipse>
                 <TextBlock Text="{x:Bind Current.ScreenName}"
                        Style="{ThemeResource TitleTextBlockStyle}"
-                       Margin="8"
+                       Margin="16,0"
                        TextWrapping="WrapWholeWords" VerticalAlignment="Center"/>
             </StackPanel>
             <CommandBar Grid.Column="1" Background="{x:Null}"
@@ -95,8 +98,11 @@
         <!-- /Списки друзей и поздравлений -->
         <!-- /MainFrame -->
         <!-- Списки друзей и поздравлений -->
-        <Pivot Grid.Row="1">
-            <PivotItem Header="Друзья">
+        <Pivot Grid.Row="1"
+               Margin="32,0"
+               Padding="0,16,0,0">
+            <PivotItem Header="Друзья"
+                       Margin="0,16,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -105,8 +111,9 @@
                     <ListView x:Name="FriendsListView" 
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
-                              SelectionMode="Multiple"
+                              SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
                               SelectedValuePath="User">
+                        <ScrollViewer VerticalScrollBarVisibility="Hidden"/>
                         <ListView.GroupStyle>
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
@@ -120,16 +127,35 @@
                     </ListView>
                     <CommandBar Grid.Row="1" 
                                 Background="{x:Null}">
-                        <!-- TODO: Реализовать через команды -->
-                        <!-- TODO: Подобрать иконку -->
+                        <AppBarButton x:Name="SelectButton"
+                                      Label="Выбрать"
+                                      Icon="Add"
+                                      Click="SelectButton_Click"
+                                      ToolTipService.ToolTip="Выбрать"
+                                      Visibility="{x:Bind SelectButtonVisibility, Mode=OneWay}"/>
                         <AppBarButton x:Name="CreateCategoryButton" 
                                           Label="Поздравить" 
                                           Icon="Mail"
-                                      Click="CreateCategoryButton_Click"/>
+                                      Click="CreateCategoryButton_Click"
+                                      ToolTipService.ToolTip="Поздравить"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
+                        <AppBarButton x:Name="SelectAllButton"
+                                      Label="Выбрать всех"
+                                      Icon="SelectAll"
+                                      ToolTipService.ToolTip="Выбрать всех"
+                                      Click="SelectAllButton_Click"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
+                        <AppBarButton x:Name="ClearSelection"
+                                      Label="Отменить"
+                                      Icon="ClearSelection"
+                                      ToolTipService.ToolTip="Отменить"
+                                      Click="ClearSelection_Click"
+                                Visibility="{x:Bind SelectionButtonsVisibility, Mode=OneWay}"/>
                     </CommandBar>
                 </Grid>
             </PivotItem>
-            <PivotItem Header="Поздравления">
+            <PivotItem Header="Поздравления"
+                       Margin="0,16,0,0">
                 <ListView ItemTemplate="{StaticResource CategoriesItemTemplate}" 
                           ItemsSource="{x:Bind Categories}"
                           Name="CategoriesListView"

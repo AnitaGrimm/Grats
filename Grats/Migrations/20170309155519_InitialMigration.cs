@@ -27,6 +27,23 @@ namespace Grats.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Contacts",
+                columns: table => new
+                {
+                    ID = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Birthday = table.Column<DateTime>(nullable: true),
+                    PhotoUri = table.Column<string>(nullable: true),
+                    ScreenName = table.Column<string>(nullable: true),
+                    VKID = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contacts", x => x.ID);
+                    table.UniqueConstraint("AK_Contacts_VKID", x => x.VKID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Templates",
                 columns: table => new
                 {
@@ -42,24 +59,25 @@ namespace Grats.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Contacts",
+                name: "CategoryContacts",
                 columns: table => new
                 {
-                    ID = table.Column<long>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Birthday = table.Column<DateTime>(nullable: true),
                     CategoryID = table.Column<long>(nullable: false),
-                    PhotoUri = table.Column<string>(nullable: true),
-                    ScreenName = table.Column<string>(nullable: true),
-                    VKID = table.Column<long>(nullable: false)
+                    ContactID = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Contacts", x => x.ID);
+                    table.PrimaryKey("PK_CategoryContacts", x => new { x.CategoryID, x.ContactID });
                     table.ForeignKey(
-                        name: "FK_Contacts_Categories_CategoryID",
+                        name: "FK_CategoryContacts_Categories_CategoryID",
                         column: x => x.CategoryID,
                         principalTable: "Categories",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CategoryContacts_Contacts_ContactID",
+                        column: x => x.ContactID,
+                        principalTable: "Contacts",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -95,9 +113,9 @@ namespace Grats.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Contacts_CategoryID",
-                table: "Contacts",
-                column: "CategoryID");
+                name: "IX_CategoryContacts_ContactID",
+                table: "CategoryContacts",
+                column: "ContactID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MessageTasks_CategoryID",
@@ -113,16 +131,19 @@ namespace Grats.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CategoryContacts");
+
+            migrationBuilder.DropTable(
                 name: "MessageTasks");
 
             migrationBuilder.DropTable(
                 name: "Templates");
 
             migrationBuilder.DropTable(
-                name: "Contacts");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Contacts");
         }
     }
 }

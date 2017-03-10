@@ -5,12 +5,14 @@
     xmlns:local="using:Grats"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d"
+    RequestedTheme="Light"
+    Background="{ThemeResource Background}">
+    <RelativePanel>
         <StackPanel
             RelativePanel.AlignHorizontalCenterWithPanel="True"
             RelativePanel.AlignVerticalCenterWithPanel="True"
-            Width="320">
+            Width="250">
             <TextBlock Text="Grats"
                        Style="{ThemeResource HeaderTextBlockStyle}"
                        Margin="8"

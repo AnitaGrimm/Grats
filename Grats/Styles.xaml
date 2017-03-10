@@ -1,0 +1,20 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Grats">
+    <Color x:Key="BackgroundDarkColor">#4A346B</Color>
+    <Color x:Key="BackgroundLightColor">#E7E2DF</Color>
+    <Color x:Key="PrimaryColor">#ECF0F1</Color>
+    <Color x:Key="SecondaryColor">#409AD7</Color>
+    <Color x:Key="AccentColor">#BDB6C5</Color>
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="Background"
+                             Color="{StaticResource BackgroundDarkColor}"/>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="Background"
+                             Color="{StaticResource BackgroundLightColor}"/>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+</ResourceDictionary>

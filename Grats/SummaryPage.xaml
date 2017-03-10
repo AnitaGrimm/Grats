@@ -6,12 +6,25 @@
     xmlns:viewmodels="using:Grats.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    mc:Ignorable="d"
+    RequestedTheme="Dark">
+
+    <Grid Background="{ThemeResource Background}"
+          Padding="32,0">
         <Hub Grid.Column="1"
              Grid.Row="1"
-             Header="Сводка">
-            <HubSection Header="Календарь">
+             Header="Сводка"
+             Padding="0,16,0,0">
+            <Hub.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Height="48">
+                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
+                                   Text="{Binding}"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </Hub.HeaderTemplate>
+            <HubSection Header="Календарь" DataContext="{Binding}">
                 <DataTemplate>
                     <Frame Name="CalendarFrame" DataContext="{Binding}">
                         <local:EventsCalendar Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"></local:EventsCalendar>

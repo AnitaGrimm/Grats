@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.ViewManagement;
 using Microsoft.EntityFrameworkCore;
 using Grats.Model;
 using Windows.ApplicationModel.Resources;
@@ -25,6 +26,7 @@ using VkNet.Exception;
 using System.Diagnostics;
 using VkNet.Utils.AntiCaptcha;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI;
 
 namespace Grats
 {
@@ -74,8 +76,7 @@ namespace Grats
 
         private void VKAPI_OnTokenExpires(VkApi api)
         {
-            // TODO: Реализовать
-            throw new NotImplementedException();
+            this.SignOut();
         }
 
         /// <summary>

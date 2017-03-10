@@ -77,8 +77,8 @@ namespace Grats.ViewModels
         {
             this.Category = category;
             this.Color = ColorExtensions.FromHex(category.Color);
-            var contactViewModels = from contact in category.Contacts
-                                    select new ContactViewModel(contact);
+            var contactViewModels = from categoryContact in category.CategoryContacts
+                                    select new ContactViewModel(categoryContact.Contact);
             foreach (var vm in contactViewModels)
                 Contacts.Add(vm);
             if (category is GeneralCategory)
@@ -94,6 +94,15 @@ namespace Grats.ViewModels
 
         public void Save(GratsDBContext db)
         {
+            foreach (var categoryContact in Category.CategoryContacts)
+            {
+                var vkID = categoryContact.Contact.VKID;
+                var existingContact = db.Contacts
+                    .FirstOrDefault(c => c.VKID == vkID);
+                if (existingContact != null)
+                    categoryContact.Contact = existingContact;
+            }
+
             if (Category.ID == 0)
                 Create(db);
             else
@@ -107,14 +116,22 @@ namespace Grats.ViewModels
                 var result = new BirthdayCategory(Category);
                 db.GeneralCategories.Remove(Category as GeneralCategory);
                 db.BirthdayCategories.Add(result);
+                db.SaveChanges();
+                (result as ITaskGenerator).Regenerate(db);
             }
             else if(IsGeneral && Category is BirthdayCategory)
             {
                 var result = new GeneralCategory(Category, Date.Value.DateTime);
                 db.BirthdayCategories.Remove(Category as BirthdayCategory);
                 db.GeneralCategories.Add(result);
+                db.SaveChanges();
+                (result as ITaskGenerator).Regenerate(db);
             }
-            db.SaveChanges();
+            else
+            {
+                db.SaveChanges();
+                (Category as ITaskGenerator).Regenerate(db);
+            }
         }
 
         private void Create(GratsDBContext db)
@@ -123,13 +140,16 @@ namespace Grats.ViewModels
             {
                 var result = new BirthdayCategory(Category);
                 db.BirthdayCategories.Add(result);
+                db.SaveChanges();
+                (result as ITaskGenerator).Generate(db);
             }
             else
             {
                 var result = new GeneralCategory(Category, Date.Value.DateTime);
                 db.GeneralCategories.Add(result);
+                db.SaveChanges();
+                (result as ITaskGenerator).Generate(db);
             }
-            db.SaveChanges();
         }
     }
 }

@@ -55,14 +55,12 @@ namespace GratsTests
                 var contact = new Grats.Model.Contact()
                 {
                     ScreenName = "Maru",
-                    Category = new Category()
                 };
                 db.Contacts.Add(contact);
                 db.SaveChanges();
             }
             finally
             {
-                db.Database.ExecuteSqlCommand("delete from [categories]");
                 db.Database.ExecuteSqlCommand("delete from [contacts]");
             }
 

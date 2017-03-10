@@ -19,6 +19,8 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Media.Animation;
+using System.Net.Http;
+using Windows.UI.ViewManagement;
 
 namespace Grats
 {
@@ -117,6 +119,23 @@ namespace Grats
                 await alert.ShowAsync();
                 return;
             }
+            catch (Exception exception)
+            {
+                await Dispatcher.RunAsync(
+                Windows.UI.Core.CoreDispatcherPriority.Normal,
+                () => { Authenticating = false; }
+            );
+                // TODO: Вывести куда-нибудь сообщения
+                var alert = new ContentDialog()
+                {
+                    Title = "Ошибка",
+                    Content = exception.Message,
+                    PrimaryButtonText = "OK"
+                };
+                Debug.WriteLine(exception.Message);
+                await alert.ShowAsync();
+                return;
+            }
             await Dispatcher.RunAsync(
                 Windows.UI.Core.CoreDispatcherPriority.Normal,
                 () => { Authenticating = false; }
@@ -128,6 +147,18 @@ namespace Grats
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            ColorizeTitleBar();
+        }
+
+        private void ColorizeTitleBar()
+        {
+            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+            titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
         }
     }
 }
