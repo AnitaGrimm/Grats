@@ -8,7 +8,7 @@ using Grats.Model;
 namespace Grats.Migrations
 {
     [DbContext(typeof(GratsDBContext))]
-    [Migration("20170302160443_InitialMigration")]
+    [Migration("20170309155519_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,14 +39,25 @@ namespace Grats.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Category");
                 });
 
+            modelBuilder.Entity("Grats.Model.CategoryContact", b =>
+                {
+                    b.Property<long>("CategoryID");
+
+                    b.Property<long>("ContactID");
+
+                    b.HasKey("CategoryID", "ContactID");
+
+                    b.HasIndex("ContactID");
+
+                    b.ToTable("CategoryContacts");
+                });
+
             modelBuilder.Entity("Grats.Model.Contact", b =>
                 {
                     b.Property<long>("ID")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime?>("Birthday");
-
-                    b.Property<long>("CategoryID");
 
                     b.Property<string>("PhotoUri");
 
@@ -56,7 +67,7 @@ namespace Grats.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("CategoryID");
+                    b.HasAlternateKey("VKID");
 
                     b.ToTable("Contacts");
                 });
@@ -124,11 +135,16 @@ namespace Grats.Migrations
                     b.HasDiscriminator().HasValue("GeneralCategory");
                 });
 
-            modelBuilder.Entity("Grats.Model.Contact", b =>
+            modelBuilder.Entity("Grats.Model.CategoryContact", b =>
                 {
                     b.HasOne("Grats.Model.Category", "Category")
-                        .WithMany("Contacts")
+                        .WithMany("CategoryContacts")
                         .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Grats.Model.Contact", "Contact")
+                        .WithMany("CategoryContacts")
+                        .HasForeignKey("ContactID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

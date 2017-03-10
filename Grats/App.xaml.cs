@@ -76,8 +76,7 @@ namespace Grats
 
         private void VKAPI_OnTokenExpires(VkApi api)
         {
-            // TODO: Реализовать
-            throw new NotImplementedException();
+            this.SignOut();
         }
 
         /// <summary>

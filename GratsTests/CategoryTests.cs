@@ -22,25 +22,33 @@ namespace GratsTests
                     Date = new DateTime(2016, 05, 14)
                 };
 
-                category.Contacts = new List<Contact>
-            {
-                new Contact()
+                category.CategoryContacts = new List<CategoryContact>
                 {
-                    ScreenName = "Foobaar"
-                }
-            };
+                    new CategoryContact()
+                    {
+                        Category = category,
+                        Contact = new Contact()
+                        {
+                            ScreenName = "Foobaar"
+                        }
+                    }
+                };
 
                 db.Categories.Add(category);
                 db.SaveChanges();
 
-                var contact = db.Contacts.ToList().First();
-                Assert.True(contact.Category is GeneralCategory);
-                Assert.False(contact.Category is BirthdayCategory);
+                var contact = db.Contacts
+                    .Include(c => c.CategoryContacts)
+                    .ThenInclude(cc => cc.Category)
+                    .ToList().First();
+                Assert.True(contact.CategoryContacts.First().Category is GeneralCategory);
+                Assert.False(contact.CategoryContacts.First().Category is BirthdayCategory);
             }
             finally
             {
                 db.Database.ExecuteSqlCommand("delete from [categories]");
                 db.Database.ExecuteSqlCommand("delete from [contacts]");
+                db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
             }
         }
 
@@ -56,20 +64,24 @@ namespace GratsTests
                     Date = new DateTime(2016, 05, 14)
                 };
 
-                category.Contacts = new List<Contact>
-            {
-                new Contact()
+                category.CategoryContacts = new List<CategoryContact>
                 {
-                    ScreenName = "Foobaar"
-                }
-            };
+                    new CategoryContact()
+                    {
+                        Category = category,
+                        Contact = new Contact()
+                        {
+                            ScreenName = "Foobaar"
+                        }
+                    }
+                };
 
                 category.Tasks = new List<MessageTask>
                 {
                     new MessageTask()
                     {
                         DispatchDate = DateTime.Now,
-                        Contact = category.Contacts.First()
+                        Contact = category.CategoryContacts.First().Contact
                     }
                 };
 
@@ -77,23 +89,26 @@ namespace GratsTests
                 db.SaveChanges();
 
                 Assert.NotEmpty(db.Contacts);
+                Assert.NotEmpty(db.CategoryContacts);
                 Assert.NotEmpty(db.MessageTasks);
 
                 db.Categories.Remove(db.Categories.First());
                 db.SaveChanges();
 
-                Assert.Empty(db.Contacts);
+                Assert.NotEmpty(db.Contacts);
+                Assert.Empty(db.CategoryContacts);
                 Assert.Empty(db.MessageTasks);
             }
             finally
             {
                 db.Database.ExecuteSqlCommand("delete from [categories]");
                 db.Database.ExecuteSqlCommand("delete from [contacts]");
+                db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
             }
         }
 
         [Fact]
-        public void CanDreateGeneralCategoryFromBirthday()
+        public void CanCreateGeneralCategoryFromBirthday()
         {
             var db = (App.Current as App).dbContext;
             try
@@ -103,19 +118,24 @@ namespace GratsTests
                     Name = "Simple"
                 };
 
-                category.Contacts = new List<Contact>
-            {
-                new Contact()
+                category.CategoryContacts = new List<CategoryContact>
                 {
-                    ScreenName = "Foobaar"
-                }
-            };
-                
+                    new CategoryContact()
+                    {
+                        Category = category,
+                        Contact = new Contact()
+                        {
+                            ScreenName = "Foobaar"
+                        }
+                    }
+                };
+
                 db.Categories.Add(category);
                 db.SaveChanges();
 
                 category = db.BirthdayCategories
-                    .Include("Contacts")
+                    .Include(c => c.CategoryContacts)
+                    .ThenInclude(cc => cc.Category)
                     .First();
                 var generalCategory = new GeneralCategory(category, DateTime.Now);
                 db.BirthdayCategories.Remove(category);
@@ -123,15 +143,18 @@ namespace GratsTests
                 db.SaveChanges();
 
                 generalCategory = db.GeneralCategories
-                    .Include("Contacts")
+                    .Include(c => c.CategoryContacts)
+                    .ThenInclude(cc => cc.Category)
                     .First();
-                Assert.NotEmpty(generalCategory.Contacts);
+                Assert.NotEmpty(generalCategory.CategoryContacts);
+                Assert.Equal(db.CategoryContacts.Count(), 1);
                 Assert.Equal(db.Contacts.Count(), 1);
             }
             finally
             {
                 db.Database.ExecuteSqlCommand("delete from [categories]");
                 db.Database.ExecuteSqlCommand("delete from [contacts]");
+                db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
             }
         }
     }

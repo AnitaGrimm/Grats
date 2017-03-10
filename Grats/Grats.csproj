@@ -107,15 +107,18 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
+    <Compile Include="MessageDispatcher\MessageDispatcherVkConnector.cs" />
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
-    <Compile Include="Migrations\20170302160443_InitialMigration.cs" />
-    <Compile Include="Migrations\20170302160443_InitialMigration.designer.cs">
-      <DependentUpon>20170302160443_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\20170309155519_InitialMigration.cs" />
+    <Compile Include="Migrations\20170309155519_InitialMigration.designer.cs">
+      <DependentUpon>20170309155519_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />
     <Compile Include="Model\Category.cs" />
+    <Compile Include="Model\CategoryContact.cs" />
     <Compile Include="Model\Contact.cs" />
     <Compile Include="Model\GeneralCategory.cs" />
     <Compile Include="Model\GratsDBContext.cs" />

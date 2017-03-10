@@ -27,9 +27,13 @@ namespace Grats.Model
         {
             this.Name = category.Name;
             this.Color = category.Color;
-            this.Contacts = (from contact in category.Contacts
-                             where contact.Birthday.HasValue
-                             select new Contact(contact)).ToList();
+            //this.Contacts = (from contact in category.Contacts
+            //                 where contact.Birthday.HasValue
+            //                 select new Contact(contact)).ToList();
+            this.CategoryContacts =
+                (from categoryContact in category.CategoryContacts
+                 where categoryContact.Contact.Birthday.HasValue
+                 select new CategoryContact(this, categoryContact.Contact)).ToList();
             this.OwnersVKID = category.OwnersVKID;
             this.Template = category.Template;
         }

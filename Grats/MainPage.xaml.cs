@@ -19,6 +19,8 @@ using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Media;
+using VkNet.Exception;
+using System.Net.Http;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -54,7 +56,6 @@ namespace Grats
         {
             // TODO: Подумать насчет переноса этого в параметры окна
             UpdateCurrentUser();
-            // TODO: Добавить перехват исключений
             UpdateFriends();
             UpdateCategories();
         }
@@ -115,7 +116,38 @@ namespace Grats
         {
             var app = App.Current as App;
             // Тянем друзей с VK
-            var friends = await FetchFriends();
+            List<User> friends = null;
+            try
+            {
+                friends = await FetchFriends();
+            }
+            // TODO: Перехват сетевых исключений
+            catch (AccessTokenInvalidException)
+            {
+                (App.Current as App).SignOut();
+                return;
+            }
+            catch (HttpRequestException e)
+            {
+                var dialog = new ContentDialog()
+                {
+                    Title = "Не удалось получить список друзей",
+                    Content = e.Message,
+                    PrimaryButtonText = "Повторить",
+                    SecondaryButtonText = "Выход"
+                };
+                var result = await dialog.ShowAsync();
+                if (result == ContentDialogResult.Primary)
+                {
+                    UpdateFriends();
+                    return;
+                }
+                else
+                {
+                    (App.Current as App).SignOut();
+                    return;
+                }
+            }
             // Показываем сводную страницу
             UpdateSummaryPage(friends);
             var friendsVM = from friend in friends
@@ -163,15 +195,15 @@ namespace Grats
 
         private void CreateCategory(IEnumerable<User> friends)
         {
-            var contacts = from friend in friends
-                           select new Model.Contact(friend);
             var app = App.Current as App;
             var category = new Model.Category()
             {
                 OwnersVKID = app.VKAPI.UserId.Value,
                 Color = Category.DefaultColor,
-                Contacts = contacts.ToList(),
             };
+            category.CategoryContacts =
+                (from friend in friends
+                 select new Model.CategoryContact(category, new Model.Contact(friend))).ToList();
             ShowCategoryEditorPage(category);
         }
 

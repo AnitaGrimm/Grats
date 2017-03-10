@@ -20,8 +20,9 @@ namespace Grats.Model
         public DateTime? Birthday { get; set; }
         public string PhotoUri { get; set; }
 
-        public Category Category { get; set; }
-        public long CategoryID { get; set; }
+        //public Category Category { get; set; }
+        //public long CategoryID { get; set; }
+        public List<CategoryContact> CategoryContacts { get; set; }
 
         public List<MessageTask> Tasks { get; set; }
 
