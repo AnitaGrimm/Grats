@@ -189,12 +189,17 @@ namespace Grats
             // TOOD: Добавить валидацию
             // TODO: Выделить в отдельный класс, покрыть тестами
             ViewModel.Date = DatePicker.Date;
-            try
+            if (ViewModel.Validate())
             {
-                ViewModel.Save(DBContext);
-                this.Frame.GoBack();
-            } catch (InvalidOperationException exception) {
+                try
+                {
+                    ViewModel.Save(DBContext);
+                    this.Frame.GoBack();
+                }
+                catch (InvalidOperationException exception)
+                {
 
+                }
             }
         }
         
