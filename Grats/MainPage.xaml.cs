@@ -306,6 +306,7 @@ namespace Grats
         {
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
+            titleBar.ButtonBackgroundColor = (this.Background as SolidColorBrush).Color;
         }
 
         private void FriendsSearch_LostFocus(object sender, RoutedEventArgs e)

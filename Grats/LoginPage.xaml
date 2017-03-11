@@ -11,14 +11,12 @@
     <RelativePanel>
         <StackPanel
             RelativePanel.AlignHorizontalCenterWithPanel="True"
-            RelativePanel.AlignVerticalCenterWithPanel="True"
+            RelativePanel.AlignVerticalCenterWithPanel="True">
+            <Image Source="Assets/Logo.png" Stretch="Fill"
+                   Margin="0,32"
+                   Width="250"/>
+            <StackPanel Visibility="{x:Bind SignInFormVisibility, Mode=OneWay}" 
             Width="250">
-            <TextBlock Text="Grats"
-                       Style="{ThemeResource HeaderTextBlockStyle}"
-                       Margin="8"
-                       TextAlignment="Center"
-                       />
-            <StackPanel Visibility="{x:Bind SignInFormVisibility, Mode=OneWay}">
                 <TextBox Name="LoginTextBox"
                      PlaceholderText="email или телефон"
                      Margin="4"/>
@@ -35,7 +33,7 @@
             <ProgressRing Margin="24"
                              VerticalAlignment="Stretch"
                              IsActive="{x:Bind Authenticating, Mode=OneWay}"
-                             Visibility="{x:Bind ProgressRingVisibility, Mode=OneWay}"/>
+                             Visibility="{x:Bind ProgressRingVisibility, Mode=OneWay}" Foreground="Black"/>
         </StackPanel>
         <ContentDialog x:Name="CaptchaDialog"
                        Title="Введите каптчу"
