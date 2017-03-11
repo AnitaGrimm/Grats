@@ -30,7 +30,9 @@
                         <CalendarView CalendarViewDayItemChanging="CalendarView_CalendarViewDayItemChanging" 
                                       SelectedDatesChanged="calendar_SelectedDatesChanged" 
                                       PointerMoved="calendar_PointerMoved"
-                                      Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"/>
+                                      Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"
+                                      Background="{ThemeResource Background}"
+                                      CalendarItemBackground="{ThemeResource Background}"/>
                     </Frame>
                 </DataTemplate>
             </HubSection>
