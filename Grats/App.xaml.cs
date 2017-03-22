@@ -28,6 +28,7 @@ using VkNet.Utils.AntiCaptcha;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.ApplicationModel.Background;
 
 namespace Grats
 {

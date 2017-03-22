@@ -21,6 +21,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Media;
 using VkNet.Exception;
 using System.Net.Http;
+using Windows.ApplicationModel.Background;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -41,6 +42,7 @@ namespace Grats
             this.InitializeComponent();
             UpdateUI();
             MainFrame.Navigated += MainFrame_Navigated;
+            RegisterTask();
         }
 
         private void MainFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -68,7 +70,7 @@ namespace Grats
                 db.BirthdayCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value),
                 db.GeneralCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value));
             var categoriesViewModels = from category in categories
-                                      select new CategoryMasterViewModel(category);
+                                       select new CategoryMasterViewModel(category);
             Categories.Clear();
             foreach (var viewModel in categoriesViewModels)
                 Categories.Add(viewModel);
@@ -161,8 +163,10 @@ namespace Grats
             var collection = new ObservableCollection<FriendsGroupByKey>();
             foreach (var g in groups)
             {
-                var group = new FriendsGroupByKey();
-                group.Key = g.Key;
+                var group = new FriendsGroupByKey()
+                {
+                    Key = g.Key
+                };
                 group.AddRange(g.Friends);
                 collection.Add(group);
             }
@@ -212,7 +216,7 @@ namespace Grats
             while (MainFrame.CanGoBack)
                 MainFrame.GoBack();
             MainFrame.Navigate(
-                typeof(EditorPage), 
+                typeof(EditorPage),
                 new NewCategoryParameter()
                 {
                     Category = category
@@ -230,7 +234,7 @@ namespace Grats
                 {
                     ID = id,
                     CategoryType = categoryType
-                }, 
+                },
                 new DrillInNavigationTransitionInfo());
         }
 
@@ -255,7 +259,7 @@ namespace Grats
                 OnPropertyChanged("SelectButtonVisibility");
             }
         }
-        public Visibility SelectionButtonsVisibility => 
+        public Visibility SelectionButtonsVisibility =>
             IsSelecting ? Visibility.Visible : Visibility.Collapsed;
         public ListViewSelectionMode FriendsSelectionMode =>
             IsSelecting ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
@@ -298,5 +302,30 @@ namespace Grats
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
             titleBar.ButtonBackgroundColor = (this.Background as SolidColorBrush).Color;
         }
+
+        private void RegisterTask()
+        {
+            var taskRegistered = false;
+            var taskName = "SendGrats";
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if(task.Value.Name==taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            if(!taskRegistered)
+            {
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName,
+                    TaskEntryPoint = "Grats.Background.BackgroungTask"
+                };
+                builder.SetTrigger(new SystemTrigger(SystemTriggerType.InternetAvailable, true));
+                BackgroundTaskRegistration task = builder.Register();
+            }
+        }
+
     }
 }

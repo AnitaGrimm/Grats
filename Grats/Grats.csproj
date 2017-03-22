@@ -95,6 +95,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Background\BackgroundTask.cs" />
     <Compile Include="EditorPage.xaml.cs">
       <DependentUpon>EditorPage.xaml</DependentUpon>
     </Compile>
