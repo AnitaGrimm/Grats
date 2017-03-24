@@ -265,9 +265,21 @@ namespace Grats
         #endregion
 
         #region Фоновые задачи
+
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+          MessageDispatcher.MessageDispatcher messageDispatcher = new MessageDispatcher.MessageDispatcher(dbContext,null);
+            try
+            {
+                messageDispatcher.Dispatch();
+            }
+            catch(VkApiException e)
+            {
+                //Обработка исключений VK
+            }
+        }
         private async void RegisterTask()
         {
-            
             var taskRegistered = false;
             ApplicationTrigger trigger = null;
             var taskName = "SendGrats";
@@ -285,12 +297,11 @@ namespace Grats
                 var builder = new BackgroundTaskBuilder()
                 {
                     Name = taskName,
-                    TaskEntryPoint = "Background.BackgroundTask"
                 };
-                var condition = new SystemCondition(SystemConditionType.InternetAvailable);
+                builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
                 trigger = new ApplicationTrigger();
+                await BackgroundExecutionManager.RequestAccessAsync();
                 builder.SetTrigger(trigger);
-                builder.AddCondition(condition);
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
                 await trigger.RequestAsync();
