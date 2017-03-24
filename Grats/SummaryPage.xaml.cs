@@ -18,6 +18,8 @@ using Grats.Model;
 using Windows.UI;
 using static Grats.EditorPage;
 using Windows.UI.Xaml.Media.Animation;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -63,31 +65,84 @@ namespace Grats
         public async void UpdateEvents(List<User> friends)
         {
             var db = (App.Current as App).dbContext;
-            var categories = Enumerable.Union<Category>(
-                db.BirthdayCategories,
-                db.GeneralCategories);
-            //добавление событий
-            foreach (var category in categories)
+            var generalCategories = db.GeneralCategories
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact);
+            var birthdayCategories = db.BirthdayCategories
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact);
+            //добавление генеральных событий
+            CalendarEvents.Clear();
+            foreach (var category in generalCategories)
             {
-                var colorFromName = AngleSharp.Css.Values.Color.FromName(category.Color).Value;
-                var color = Color.FromArgb(colorFromName.A, colorFromName.R, colorFromName.G, colorFromName.B);
-                CalendarEvents.AddRange(category?.Tasks?.Select(task => new EventCalendarView { EventColor = color, EventDate = task.DispatchDate, Contacts = category, EventName = category.Name }));
-            }
-            //добавление дней рождений
-            CalendarEvents.AddRange(db?.Contacts?.Select(contact => new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = contact.Birthday.Value }));
-            foreach (var friend in friends)
-            {
-                BirthdayCategory cat = new BirthdayCategory();
-                cat.Color = "#00FF00FF";
-                cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName;
-                cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
+                var color = Extensions.ColorExtensions.FromHex(category.Color);
+                EventCalendarView val;
                 try
                 {
-                    CalendarEvents.Add(new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = DateTime.Parse(friend.BirthDate), Contacts = cat, EventName = cat.Name });
+                    val = new EventCalendarView { EventColor = color, EventDate = category.Date, Contacts = category, EventName = category.Name ?? "безымянное событие" };
                 }
-                catch { }
+                catch
+                {
+                    val = null;
+                }
+                if (val!=null)
+                    CalendarEvents.Add(val);
+            }
+            //добавление дней рождений, для которых нет поздравлений
+            foreach (var friend in friends)
+            {
+                if (IsInBithdayCategories(birthdayCategories, friend))
+                    continue;
+                BirthdayCategory cat = new BirthdayCategory();
+                cat.Color = "#00FF00FF";
+                cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName + "(поздравление не установлено)";
+                cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
+                EventCalendarView val;
+                try
+                {
+                    var date = DateTime.Parse(friend.BirthDate);
+                    val = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = date, Contacts = cat, EventName = cat.Name };
+                }
+                catch
+                {
+                    val = null;
+                }
+                if(val!=null)
+                    CalendarEvents.Add(val);
+            }
+            //добавление дней рождений, для которых есть поздравление
+            foreach(var category in birthdayCategories)
+            {
+                var color = Extensions.ColorExtensions.FromHex(category.Color);
+                if(category.CategoryContacts!=null)
+                    foreach (var cont in category.CategoryContacts)
+                    {
+                        EventCalendarView val;
+                        try
+                        {
+                            val = new EventCalendarView { EventColor = color, EventDate = cont.Contact.Birthday.Value, Contacts = category, EventName = "День рождения пользователя " + cont.Contact.ScreenName + " (" + (category.Name ?? "безымянное событие") + ")" };
+                        }
+                        catch
+                        {
+                            val = null;
+                        }
+                        if (val != null)
+                            CalendarEvents.Add(val);
+                    }
             }
         }
+
+        private bool IsInBithdayCategories(IIncludableQueryable<BirthdayCategory, Model.Contact> birthdayCategories, User friend)
+        {
+            if (birthdayCategories != null)
+                foreach (var cat in birthdayCategories)
+                    if (cat.CategoryContacts!=null)
+                        foreach(var cont in cat.CategoryContacts)
+                            if (cont.Contact.VKID == friend.Id)
+                                return true;
+            return false;
+        }
+
         private void CalendarView_CalendarViewDayItemChanging(CalendarView sender, CalendarViewDayItemChangingEventArgs args)
         {
             // Render basic day items.
@@ -122,7 +177,7 @@ namespace Grats
                     // further processing is needed to fit within the max of 10 density bars.
                     foreach (var calendarEvent in CalendarEvents)
                     {
-                        if (calendarEvent.EventDate.Day == args.Item.Date.Day && calendarEvent.EventDate.Month == args.Item.Date.Month)
+                        if (calendarEvent.EventDate.Day == args.Item.Date.Day && calendarEvent.EventDate.Month == args.Item.Date.Month )
                             densityColors.Add(calendarEvent.EventColor);
                     }
                     if (densityColors.Count > 0)
@@ -153,7 +208,7 @@ namespace Grats
                 {
                     var flyoutItem = new MenuFlyoutItem();
                     flyoutItem.DataContext = item;
-                    flyoutItem.Text = item.EventName;
+                    flyoutItem.Text = item.EventName??" ";
                     flyoutItem.Click += MenuFlyoutItem_Click;
                     flyoutItem.Foreground = new SolidColorBrush(item.EventColor);
                     flyout.Items.Add(flyoutItem);
