@@ -22,7 +22,7 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#E7E2DF" />
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="Grats.Background.BackgroundTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="Background.BackgroundTask">
           <BackgroundTasks>
             <Task Type="systemEvent"/>
           </BackgroundTasks>

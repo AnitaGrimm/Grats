@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VkNet.Exception;
 using Windows.ApplicationModel.Background;
 
 namespace Grats.Background
@@ -14,17 +15,21 @@ namespace Grats.Background
         {
             _deferral = taskInstance.GetDeferral();
             MessageDispatcher.MessageDispatcher messageDispatcher = new
-                MessageDispatcher.MessageDispatcher(new Grats.Model.GratsDBContext(),null);
-            
+                MessageDispatcher.MessageDispatcher(new Model.GratsDBContext(),null);
+
             try
             {
                 messageDispatcher.Dispatch();
             }
-            catch (Exception)
+            catch (VkApiException e)
             {
                 //Обработка исключений вк.
             }
-            _deferral.Complete();
+            finally
+            {
+                _deferral.Complete();
+            }
         }
+
     }
 }

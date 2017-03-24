@@ -145,7 +145,10 @@ namespace Grats
                 if (rootFrame.Content == null)
                 {
                     if (TrySignIn())
+                    {
+                         RegisterTask();
                         rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    }
                     else
                         rootFrame.Navigate(typeof(LoginPage), e.Arguments);
                 }
@@ -236,9 +239,10 @@ namespace Grats
             });
             SaveCredentials(login, password);
         }
-        
+
         public void SignOut()
         {
+            UnregisterTask("SendGrats");
             ClearCredentials();
             ShowLoginPage();
         }
@@ -258,6 +262,51 @@ namespace Grats
             localSettings.Values.Remove(VK_API_PASSWORD_KEY);
         }
 
+        #endregion
+
+        #region Фоновые задачи
+        private async void RegisterTask()
+        {
+            
+            var taskRegistered = false;
+            ApplicationTrigger trigger = null;
+            var taskName = "SendGrats";
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            if (!taskRegistered)
+            {
+
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName,
+                    TaskEntryPoint = "Background.BackgroundTask"
+                };
+                var condition = new SystemCondition(SystemConditionType.InternetAvailable);
+                trigger = new ApplicationTrigger();
+                builder.SetTrigger(trigger);
+                builder.AddCondition(condition);
+                builder.IsNetworkRequested = true;
+                BackgroundTaskRegistration task = builder.Register();
+                await trigger.RequestAsync();
+            }
+        }
+
+        private void UnregisterTask(string taskName)
+        {
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == taskName)
+                {
+                    task.Value.Unregister(true);
+                }
+            }
+        }
         #endregion
 
         #region Общая навигация

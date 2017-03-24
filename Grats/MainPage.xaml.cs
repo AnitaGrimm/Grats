@@ -42,7 +42,7 @@ namespace Grats
             this.InitializeComponent();
             UpdateUI();
             MainFrame.Navigated += MainFrame_Navigated;
-            RegisterTask();
+            //RegisterTask();
         }
 
         private void MainFrame_Navigated(object sender, Windows.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -301,30 +301,6 @@ namespace Grats
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
             titleBar.ButtonBackgroundColor = (this.Background as SolidColorBrush).Color;
-        }
-
-        private void RegisterTask()
-        {
-            var taskRegistered = false;
-            var taskName = "SendGrats";
-            foreach (var task in BackgroundTaskRegistration.AllTasks)
-            {
-                if(task.Value.Name==taskName)
-                {
-                    taskRegistered = true;
-                    break;
-                }
-            }
-            if(!taskRegistered)
-            {
-                var builder = new BackgroundTaskBuilder()
-                {
-                    Name = taskName,
-                    TaskEntryPoint = "Grats.Background.BackgroungTask"
-                };
-                builder.SetTrigger(new SystemTrigger(SystemTriggerType.InternetAvailable, true));
-                BackgroundTaskRegistration task = builder.Register();
-            }
         }
 
     }
