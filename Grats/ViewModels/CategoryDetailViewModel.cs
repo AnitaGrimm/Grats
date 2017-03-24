@@ -85,7 +85,11 @@ namespace Grats.ViewModels
         public CategoryDetailViewModel(Category category)
         {
             this.Category = category;
-            this.Color = ColorExtensions.FromHex(category.Color);
+            try
+            {
+                this.Color = ColorExtensions.FromHex(category.Color);
+            }
+            catch { }
             if (category is GeneralCategory)
                 Date = (category as GeneralCategory).Date;
             else if (category is BirthdayCategory)

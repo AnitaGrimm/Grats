@@ -31,7 +31,6 @@
         </DataTemplate>
         <CollectionViewSource x:Key="FriendsGroupedByKey"
                               x:Name="FriendsGroupedByKey"
-                              Source="{x:Bind Friends}"
                               IsSourceGrouped="True"/>
         <DataTemplate x:Key="CategoriesItemTemplate"
                       x:DataType="viewmodels:CategoryMasterViewModel">
@@ -106,10 +105,13 @@
                        Margin="0,16,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <ListView x:Name="FriendsListView" 
+                    <TextBox x:Name="FriendsSearch" TextChanged="FriendsSearch_TextChanged" ></TextBox>
+                    <ListView x:Name="FriendsListView" Grid.Row="2"
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
                               SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
@@ -129,7 +131,7 @@
                             </GroupStyle>
                         </ListView.GroupStyle>
                     </ListView>
-                    <CommandBar Grid.Row="1" 
+                    <CommandBar Grid.Row="3" 
                                 Background="{x:Null}">
                         <AppBarButton x:Name="SelectButton"
                                       Label="Выбрать"

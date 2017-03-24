@@ -119,6 +119,7 @@ namespace Grats
             this.InitializeComponent();
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
         private void UpdateUI()
@@ -149,6 +150,8 @@ namespace Grats
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            if (e.NavigationMode == NavigationMode.Back)
+                return;
             if (!(e.Parameter is IEditorPageParameter))
                 throw new NotSupportedException("Parameter is not supported");
             if (e.Parameter is NewCategoryParameter)
@@ -181,6 +184,7 @@ namespace Grats
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.Frame.GoBack();
         }
 
@@ -195,6 +199,7 @@ namespace Grats
                 try
                 {
                     ViewModel.Save(DBContext);
+                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
                     this.Frame.GoBack();
                 }
                 catch (InvalidOperationException exception)

@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Grats"
+    xmlns:viewmodels="using:Grats.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
@@ -25,12 +26,21 @@
             </Hub.HeaderTemplate>
             <HubSection Header="Календарь" DataContext="{Binding}">
                 <DataTemplate>
-                    <Frame Name="CalendarFrame"/>
+                    <Frame Name="CalendarFrame" DataContext="{Binding}">
+                        <CalendarView CalendarViewDayItemChanging="CalendarView_CalendarViewDayItemChanging" 
+                                      SelectedDatesChanged="calendar_SelectedDatesChanged" 
+                                      PointerMoved="calendar_PointerMoved"
+                                      Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"
+                                      Background="{ThemeResource Background}"
+                                      CalendarItemBackground="{ThemeResource Background}"/>
+                    </Frame>
                 </DataTemplate>
             </HubSection>
             <HubSection Header="История">
                 <DataTemplate>
-                    <Frame Name="HistoryFrame"/>
+                    <Frame Name="HistoryFrame">
+                        <local:HistoryPage/>
+                    </Frame>
                 </DataTemplate>
             </HubSection>
         </Hub>
