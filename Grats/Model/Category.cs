@@ -11,8 +11,8 @@ namespace Grats.Model
     /// </summary>
     public interface ITaskGenerator
     {
-        void Generate();
-        void Regenerate();
+        void Generate(GratsDBContext db);
+        void Regenerate(GratsDBContext db);
     }
     /// <summary>
     /// Класс поздравления, содержащий контактов, которые участвуют в рассылке,

@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
+using Windows.ApplicationModel.DataTransfer;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -122,6 +123,7 @@ namespace Grats
             this.InitializeComponent();
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
         private void UpdateUI()
@@ -152,6 +154,8 @@ namespace Grats
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            if (e.NavigationMode == NavigationMode.Back)
+                return;
             if (!(e.Parameter is IEditorPageParameter))
                 throw new NotSupportedException("Parameter is not supported");
             if (e.Parameter is NewCategoryParameter)
@@ -184,6 +188,7 @@ namespace Grats
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.Frame.GoBack();
         }
 
@@ -193,12 +198,18 @@ namespace Grats
             // TOOD: Добавить валидацию
             // TODO: Выделить в отдельный класс, покрыть тестами
             ViewModel.Date = DatePicker.Date;
-            try
+            if (ViewModel.Validate())
             {
-                ViewModel.Save(DBContext);
-                this.Frame.GoBack();
-            } catch (InvalidOperationException exception) {
+                try
+                {
+                    ViewModel.Save(DBContext);
+                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                    this.Frame.GoBack();
+                }
+                catch (InvalidOperationException exception)
+                {
 
+                }
             }
         }
         
@@ -212,6 +223,94 @@ namespace Grats
         {
             this.Focus(FocusState.Keyboard);
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void OpenTemplateButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.Navigate(typeof(TemplatesMasterPage), ViewModel);
+        }
+
+        #region SaveTemplateButton
+
+        private void SaveTemplateAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ValidateMessageText())
+                SaveTemplateFlyout.ShowAt(SaveTemplateAppBarButton);
+        }
+
+        private void SaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            var db = (App.Current as App).dbContext;
+            if (ViewModel.ValidateMessageText() &&
+                !string.IsNullOrEmpty(TemplateName.Text)){
+                db.Templates.Add(new Model.Template()
+                {
+                    Name = TemplateName.Text,
+                    Text = ViewModel.MessageText
+                });
+                db.SaveChanges();
+                SaveTemplateFlyout.Hide();
+            }
+        }
+        
+        private void CancelSaveTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            SaveTemplateFlyout.Hide();
+        }
+
+        #endregion
+
+        private void ContactsListView_DragEnter(object sender, DragEventArgs e)
+        {
+            object data;
+            if (e.DataView.Properties.TryGetValue("friends", out data)
+                && data is IEnumerable<User>)
+            {
+                e.DragUIOverride.IsGlyphVisible = false;
+                e.AcceptedOperation = e.AllowedOperations;
+            }
+            else if (e.DataView.Properties.TryGetValue("friendId", out data)
+                && data is long)
+            {
+                e.DragUIOverride.IsGlyphVisible = false;
+                e.AcceptedOperation = e.AllowedOperations;
+            }
+            else
+            {
+                e.AcceptedOperation = DataPackageOperation.None;
+            }
+        }
+
+        private void ContactsListView_Drop(object sender, DragEventArgs e)
+        {
+            object data;
+            if (e.DataView.Properties.TryGetValue("friends", out data)
+                && data is IEnumerable<User>)
+            {
+                var friends = (IEnumerable<User>)data;
+                ViewModel.AddContacts(friends.Select(friend => new Model.Contact(friend)));
+            }
+        }
+
+        private void ContactsListView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            if (e.Items == null || e.Items.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+            var contact = (ContactViewModel)e.Items.First();
+            e.Data.RequestedOperation = DataPackageOperation.Copy;
+            e.Data.SetText(contact.ScreenName);
+            e.Data.Properties.Add("friendId", contact.Contact.VKID);
+        }
+
+        private void ContactsListView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs e)
+        {
+            if (e.DropResult == DataPackageOperation.None)
+            {
+                ViewModel.RemoveContacts(from ContactViewModel contact in e.Items select contact.Contact);
+            }
         }
     }
 }

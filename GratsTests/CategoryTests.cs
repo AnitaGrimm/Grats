@@ -157,5 +157,70 @@ namespace GratsTests
                 db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
             }
         }
+
+        [Fact]
+        public void CanGenerateTasksFromCategory()
+        {
+            var db = (App.Current as App).dbContext;
+            try
+            {
+                var category = new GeneralCategory()
+                {
+                    Name = "Simple",
+                    Date = new DateTime(2016, 05, 14)
+                };
+
+                category.CategoryContacts = new List<CategoryContact>
+                {
+                    new CategoryContact()
+                    {
+                        Category = category,
+                        Contact = new Contact()
+                        {
+                            VKID = 1,
+                            ScreenName = "Foo"
+                        }
+                    },
+                    new CategoryContact()
+                    {
+                        Category = category,
+                        Contact = new Contact()
+                        {
+                            VKID = 2,
+                            ScreenName = "Bar"
+                        }
+                    }
+                };
+
+                db.Categories.Add(category);
+                db.SaveChanges();
+
+                category.Generate(db);
+
+                var tasks = db.MessageTasks
+                    .Include(t => t.Category)
+                    .Include(t => t.Contact)
+                    .ToList();
+
+                Assert.Equal(2, tasks.Count);
+                Assert.All(tasks, t => Assert.Equal(category, t.Category));
+                Assert.True(tasks.Any(t => t.Contact.ScreenName == "Foo"));
+                Assert.True(tasks.Any(t => t.Contact.ScreenName == "Bar"));
+                Assert.All(tasks, t =>
+                {
+                    Assert.True(t.DispatchDate >= DateTime.Today);
+                    Assert.Equal(category.Date.Day, t.DispatchDate.Day);
+                    Assert.Equal(category.Date.Month, t.DispatchDate.Month);
+                    Assert.Equal(MessageTask.TaskStatus.New, t.Status);
+                });
+            }
+            finally
+            {
+                db.Database.ExecuteSqlCommand("delete from [categories]");
+                db.Database.ExecuteSqlCommand("delete from [contacts]");
+                db.Database.ExecuteSqlCommand("delete from [categorycontacts]");
+                db.Database.ExecuteSqlCommand("delete from [messagetasks]");
+            }
+        }
     }
 }

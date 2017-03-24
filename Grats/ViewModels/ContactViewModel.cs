@@ -12,6 +12,7 @@ namespace Grats.ViewModels
     {
         public Contact Contact { get; set; }
         public BitmapImage Photo { get; private set; }
+        public double Opacity { get; set; }
         public string ScreenName
         {
             get
@@ -22,10 +23,11 @@ namespace Grats.ViewModels
 
         public ContactViewModel() { }
 
-        public ContactViewModel(Contact contact)
+        public ContactViewModel(Contact contact, bool IsBirthday = false)
         {
             this.Contact = contact;
             this.Photo = new BitmapImage(new Uri(contact.PhotoUri));
+            this.Opacity = IsBirthday && Contact.Birthday == null ? 0.25 : 1;
         }
     }
 }

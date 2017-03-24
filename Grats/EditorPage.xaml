@@ -14,12 +14,19 @@
                 <Setter Property="FontSize" Value="24"/>
             </Style.Setters>
         </Style>
+        <Style x:Key="ValidationErrorTextBlockStyle" TargetType="TextBlock">
+            <Style.Setters>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="Red"/>
+            </Style.Setters>
+        </Style>
         <DataTemplate x:Key="ContactsItemTemplate"
                       x:DataType="viewmodels:ContactViewModel">
             <Ellipse Margin="4"
                      Width="48"
                      Height="48"
-                     ToolTipService.ToolTip="{x:Bind ScreenName}">
+                     ToolTipService.ToolTip="{x:Bind ScreenName}"
+                     Opacity="{x:Bind Opacity}">
                 <Ellipse.Fill>
                     <ImageBrush ImageSource="{x:Bind Photo}"/>
                 </Ellipse.Fill>
@@ -73,15 +80,25 @@
                          PlaceholderText="Введите название"
                          VerticalAlignment="Center"
                      Text="{x:Bind ViewModel.Name, Mode=TwoWay}"/>
+                    <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.NameValidationError, Mode=OneWay}"/>
                 </StackPanel>
-                <StackPanel Margin="0,8">
+                <StackPanel Margin="0,8"
+                            AllowDrop="True"
+                            DragEnter="ContactsListView_DragEnter"
+                            Drop="ContactsListView_Drop">
                     <TextBlock Text="Участники"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="8,0"/>
+                    <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.ContactsValidationError, Mode=OneWay}"/>
                     <GridView Name="ContactsListView"
-                          ItemsSource="{x:Bind ViewModel.Contacts}"
-                          ItemTemplate="{StaticResource ContactsItemTemplate}"
-                              Margin="8,0">
+                              ItemsSource="{x:Bind ViewModel.Contacts}"
+                              ItemTemplate="{StaticResource ContactsItemTemplate}"
+                              Margin="8,0"
+                              CanDragItems="True"
+                              DragItemsStarting="ContactsListView_DragItemsStarting"
+                              DragItemsCompleted="ContactsListView_DragItemsCompleted">
                     </GridView>
                 </StackPanel>
                 <Grid Margin="0,8">
@@ -98,10 +115,12 @@
                                             MaxDate="{x:Bind MaxDate}"
                                             MinDate="{x:Bind MinDate}"/>
                         <CheckBox Name="IsBithdayCheckBox"
-                                  Margin="8"
+                                  Margin="8,0"
                                   IsChecked="{x:Bind ViewModel.IsBirthday, Mode=TwoWay}">
                             День рождения
                         </CheckBox>
+                        <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.DateValidationError, Mode=OneWay}"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Цвет"
@@ -122,11 +141,19 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <TextBlock Text="Текст поздравления"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                    Margin="8,0"/>
+                        <TextBlock Grid.Row="1"
+                            Margin="16,4" Style="{StaticResource ValidationErrorTextBlockStyle}"
+                               Text="{x:Bind ViewModel.MessageValidationError, Mode=OneWay}"/>
                         <CommandBar
                                 Grid.Column="1"
+                                Grid.RowSpan="2"
                                 Background="{x:Null}"
                             Margin="8,0">
                             <AppBarButton Icon="Preview"
@@ -136,10 +163,34 @@
                                           Click="PreviewButton_Click"/>
                             <AppBarButton Icon="Save"
                                       Label="Сохранить"
-                                          ToolTipService.ToolTip="Сохранить"/>
+                                          Name="SaveTemplateAppBarButton"
+                                          ToolTipService.ToolTip="Сохранить"
+                                          Click="SaveTemplateAppBarButton_Click">
+                                <Flyout x:Name="SaveTemplateFlyout">
+                                    <StackPanel Width="240">
+                                        <TextBox Name="TemplateName"
+                                             Header="Название шаблона"
+                                                 Margin="8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Margin="8"
+                                                        Name="CancelSaveTemplate"
+                                                        Click="CancelSaveTemplate_Click">
+                                                Отмена
+                                            </Button>
+                                            <Button x:Name="SaveTemplate"
+                                                Margin="8"
+                                                    Click="SaveTemplate_Click">
+                                                Сохранить
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Flyout>
+                            </AppBarButton>
                             <AppBarButton Icon="Folder"
+                                          Name="OpenTemplateButton"
                                       Label="Открыть"
-                                          ToolTipService.ToolTip="Открыть"/>
+                                          ToolTipService.ToolTip="Открыть"
+                                          Click="OpenTemplateButton_Click"/>
                         </CommandBar>
                     </Grid>
                     <TextBox Height="300"
