@@ -32,7 +32,7 @@
                                       PointerMoved="calendar_PointerMoved"
                                       Height="{Binding ElementName=CalendarFrame, Path=Height}" Width="{Binding ElementName=CalendarFrame, Path=Width}"
                                       Background="{ThemeResource Background}"
-                                      CalendarItemBackground="{ThemeResource Background}"/>
+                                      CalendarItemBackground="{ThemeResource Background}" Loaded="CalendarView_Loaded"/>
                     </Frame>
                 </DataTemplate>
             </HubSection>

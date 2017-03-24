@@ -91,24 +91,30 @@ namespace Grats
             //добавление дней рождений, для которых нет поздравлений
             foreach (var friend in friends)
             {
-                if (IsInBithdayCategories(birthdayCategories, friend))
-                    continue;
                 BirthdayCategory cat = new BirthdayCategory();
                 cat.Color = "#00FF00FF";
                 cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName + "(поздравление не установлено)";
                 cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
-                EventCalendarView val;
+                EventCalendarView val1=null, val2=null;
                 try
                 {
                     var date = DateTime.Parse(friend.BirthDate);
-                    val = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = date, Contacts = cat, EventName = cat.Name };
+                    if (!IsInBithdayCategories(birthdayCategories, friend))
+                    {
+                        val1 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = new DateTime(DateTime.Now.Year, date.Month, date.Day), Contacts = cat, EventName = cat.Name };
+                    }
+                    var nextyearbd = new DateTime(DateTime.Now.Year + 1, date.Month, date.Day);
+                    if (nextyearbd<=DateTime.Now.AddYears(1))
+                        val2 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = nextyearbd, Contacts = cat, EventName = cat.Name };
                 }
                 catch
                 {
-                    val = null;
+                    val1= val2 = null;
                 }
-                if(val!=null)
-                    CalendarEvents.Add(val);
+                if(val1!=null)
+                    CalendarEvents.Add(val1);
+                if (val2 != null)
+                    CalendarEvents.Add(val2);
             }
             //добавление дней рождений, для которых есть поздравление
             foreach(var category in birthdayCategories)
@@ -142,7 +148,6 @@ namespace Grats
                                 return true;
             return false;
         }
-
         private void CalendarView_CalendarViewDayItemChanging(CalendarView sender, CalendarViewDayItemChangingEventArgs args)
         {
             // Render basic day items.
@@ -177,7 +182,7 @@ namespace Grats
                     // further processing is needed to fit within the max of 10 density bars.
                     foreach (var calendarEvent in CalendarEvents)
                     {
-                        if (calendarEvent.EventDate.Day == args.Item.Date.Day && calendarEvent.EventDate.Month == args.Item.Date.Month )
+                        if (calendarEvent.EventDate.Day == args.Item.Date.Day && calendarEvent.EventDate.Month == args.Item.Date.Month &&  calendarEvent.EventDate.Year == args.Item.Date.Year)
                             densityColors.Add(calendarEvent.EventColor);
                     }
                     if (densityColors.Count > 0)
@@ -199,7 +204,7 @@ namespace Grats
             var selectedDate = args.AddedDates?.FirstOrDefault();
             if (selectedDate == null || !selectedDate.HasValue)
                 return;
-            var eventsOfDay = CalendarEvents?.Where(x => x.EventDate.Day == selectedDate.Value.Day && x.EventDate.Month == selectedDate.Value.Month);
+            var eventsOfDay = CalendarEvents?.Where(x => x.EventDate.Day == selectedDate.Value.Day && x.EventDate.Month == selectedDate.Value.Month && x.EventDate.Year == selectedDate.Value.Year);
             if (eventsOfDay != null && eventsOfDay.Count() > 0)
             {
                 var flyout = new MenuFlyout();
@@ -235,6 +240,13 @@ namespace Grats
                     Category = eventDesc.Contacts
                 },
                 new DrillInNavigationTransitionInfo());
+        }
+
+        private void CalendarView_Loaded(object sender, RoutedEventArgs e)
+        {
+            var calendar = (CalendarView)sender;
+            calendar.MinDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            calendar.MaxDate = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
         }
     }
 }
