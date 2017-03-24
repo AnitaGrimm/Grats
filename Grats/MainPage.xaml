@@ -110,7 +110,7 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBox x:Name="FriendsSearch" Text="Поиск" LostFocus="FriendsSearch_LostFocus" GotFocus="FriendsSearch_GotFocus" TextChanged="FriendsSearch_TextChanged"></TextBox>
+                    <TextBox x:Name="FriendsSearch" TextChanged="FriendsSearch_TextChanged" ></TextBox>
                     <ListView x:Name="FriendsListView" Grid.Row="2"
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
