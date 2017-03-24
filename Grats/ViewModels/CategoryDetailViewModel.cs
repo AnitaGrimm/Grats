@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using VkNet.Model;
 
 namespace Grats.ViewModels
 {
@@ -161,6 +162,27 @@ namespace Grats.ViewModels
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public void AddContacts(IEnumerable<Model.Contact> contacts)
+        {
+            foreach (var contact in contacts)
+            {
+                if (Contacts.Any(contactVM => contactVM.Contact.VKID == contact.VKID))
+                    continue;
+                Contacts.Add(new ContactViewModel(contact));
+                var categoryContact = new CategoryContact(Category, contact);
+                Category.CategoryContacts.Add(categoryContact);
+            }
+        }
+
+        public void RemoveContacts(IEnumerable<Model.Contact> contacts)
+        {
+            foreach (var contact in contacts)
+            {
+                Contacts.Remove(Contacts.First(contactVM => contactVM.Contact.VKID == contact.VKID));
+                Category.CategoryContacts.RemoveAll(categoryContact => categoryContact.Contact.VKID == contact.VKID);
+            }
+        }
+
         public void Save(GratsDBContext db)
         {
             foreach (var categoryContact in Category.CategoryContacts)
@@ -220,6 +242,5 @@ namespace Grats.ViewModels
                 (result as ITaskGenerator).Generate(db);
             }
         }
-
     }
 }

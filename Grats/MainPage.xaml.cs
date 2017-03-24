@@ -21,6 +21,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Media;
 using VkNet.Exception;
 using System.Net.Http;
+using Windows.ApplicationModel.DataTransfer;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -296,6 +297,27 @@ namespace Grats
         {
             var titleBar = ApplicationView.GetForCurrentView().TitleBar;
             titleBar.BackgroundColor = (this.Background as SolidColorBrush).Color;
+        }
+
+        private void FriendsListView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            if (e.Items == null || e.Items.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+            var friends = (from VKUserViewModel userVM in e.Items
+                           select userVM.User).ToList();
+            e.Data.RequestedOperation = DataPackageOperation.Copy;
+            e.Data.Properties.Add("friends", friends);
+        }
+
+        private void FriendsListView_DragItemsCompleted(object sender, DragItemsCompletedEventArgs e)
+        {
+            if (e.DropResult != DataPackageOperation.None)
+            {
+                FriendsListView.SelectedItem = null;
+            }
         }
     }
 }

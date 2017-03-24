@@ -82,16 +82,22 @@
                     <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
                                Text="{x:Bind ViewModel.NameValidationError, Mode=OneWay}"/>
                 </StackPanel>
-                <StackPanel Margin="0,8">
+                <StackPanel Margin="0,8"
+                            AllowDrop="True"
+                            DragEnter="ContactsListView_DragEnter"
+                            Drop="ContactsListView_Drop">
                     <TextBlock Text="Участники"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="8,0"/>
                     <TextBlock Margin="16,2" Style="{StaticResource ValidationErrorTextBlockStyle}"
                                Text="{x:Bind ViewModel.ContactsValidationError, Mode=OneWay}"/>
                     <GridView Name="ContactsListView"
-                          ItemsSource="{x:Bind ViewModel.Contacts}"
-                          ItemTemplate="{StaticResource ContactsItemTemplate}"
-                              Margin="8,0">
+                              ItemsSource="{x:Bind ViewModel.Contacts}"
+                              ItemTemplate="{StaticResource ContactsItemTemplate}"
+                              Margin="8,0"
+                              CanDragItems="True"
+                              DragItemsStarting="ContactsListView_DragItemsStarting"
+                              DragItemsCompleted="ContactsListView_DragItemsCompleted">
                     </GridView>
                 </StackPanel>
                 <Grid Margin="0,8">
