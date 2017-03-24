@@ -1,5 +1,6 @@
 ﻿using Grats.Model;
 using Grats.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,8 +34,8 @@ namespace Grats
         {
             var db = (App.Current as App).dbContext;
             var categories = Enumerable.Union<Category>(
-                db.BirthdayCategories,
-                db.GeneralCategories);
+                db.BirthdayCategories.Include(c => c.Tasks),
+                db.GeneralCategories.Include(c => c.Tasks));
             var messageTaskViewModels = categories?.SelectMany(category => category.Tasks)?.Where(task=>task.Status== MessageTask.TaskStatus.Done || task.Status== MessageTask.TaskStatus.Pending)?.Select(task=>new MessageTaskViewModel(task));
             foreach (var viewModel in messageTaskViewModels)
                 Messages.Add(viewModel);
