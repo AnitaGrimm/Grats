@@ -92,20 +92,21 @@ namespace Grats
             foreach (var friend in friends)
             {
                 BirthdayCategory cat = new BirthdayCategory();
-                cat.Color = "#00FF00FF";
+                cat.Color = "#00FFFFF0"; 
                 cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName + "(поздравление не установлено)";
                 cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
                 EventCalendarView val1=null, val2=null;
                 try
                 {
                     var date = DateTime.Parse(friend.BirthDate);
+                    var color = Color.FromArgb(255, 255, 255, 240);
                     if (!IsInBithdayCategories(birthdayCategories, friend))
                     {
-                        val1 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = new DateTime(DateTime.Now.Year, date.Month, date.Day), Contacts = cat, EventName = cat.Name };
+                        val1 = new EventCalendarView { EventColor = color, EventDate = new DateTime(DateTime.Now.Year, date.Month, date.Day), Contacts = cat, EventName = cat.Name };
                     }
                     var nextyearbd = new DateTime(DateTime.Now.Year + 1, date.Month, date.Day);
                     if (nextyearbd<=DateTime.Now.AddYears(1))
-                        val2 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = nextyearbd, Contacts = cat, EventName = cat.Name };
+                        val2 = new EventCalendarView { EventColor = color, EventDate = nextyearbd, Contacts = cat, EventName = cat.Name };
                 }
                 catch
                 {
