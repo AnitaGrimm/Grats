@@ -34,6 +34,7 @@ namespace Grats
     {
         public VKCurrentUserViewModel Current { get; set; }
         public ObservableCollection<CategoryMasterViewModel> Categories = new ObservableCollection<CategoryMasterViewModel>();
+        public ObservableCollection<FriendsGroupByKey> Friends = new ObservableCollection<FriendsGroupByKey>();
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
@@ -159,16 +160,14 @@ namespace Grats
                          orderby g.Key
                          select new { Key = g.Key, Friends = g };
 
-            var collection = new ObservableCollection<FriendsGroupByKey>();
+            Friends.Clear();
             foreach (var g in groups)
             {
                 var group = new FriendsGroupByKey();
                 group.Key = g.Key;
                 group.AddRange(g.Friends);
-                collection.Add(group);
+                Friends.Add(group);
             }
-            // Обновляем источник данных
-            FriendsGroupedByKey.Source = collection;
         }
 
         #endregion
@@ -318,6 +317,11 @@ namespace Grats
             {
                 FriendsListView.SelectedItem = null;
             }
+        }
+
+        private void FriendsListView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            FriendsGroupedByKey.Source = Friends;
         }
     }
 }

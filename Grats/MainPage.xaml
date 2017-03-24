@@ -31,6 +31,7 @@
         </DataTemplate>
         <CollectionViewSource x:Key="FriendsGroupedByKey"
                               x:Name="FriendsGroupedByKey"
+                              Source="{x:Bind Friends}"
                               IsSourceGrouped="True"/>
         <DataTemplate x:Key="CategoriesItemTemplate"
                       x:DataType="viewmodels:CategoryMasterViewModel">
