@@ -82,7 +82,11 @@ namespace Grats.ViewModels
         public CategoryDetailViewModel(Category category)
         {
             this.Category = category;
-            this.Color = ColorExtensions.FromHex(category.Color);
+            try
+            {
+                this.Color = ColorExtensions.FromHex(category.Color);
+            }
+            catch { }
             var contactViewModels = from categoryContact in category.CategoryContacts
                                     select new ContactViewModel(categoryContact.Contact);
             foreach (var vm in contactViewModels)
