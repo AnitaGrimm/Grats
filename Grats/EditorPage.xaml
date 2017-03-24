@@ -67,6 +67,11 @@
                               ToolTipService.ToolTip="Сохранить"
                               Click="SaveButton_Click"
                           Height="48"/>
+                <AppBarButton Name="DeleteButton" 
+                          Icon="Delete"
+                          VerticalAlignment="Center"
+                              ToolTipService.ToolTip="Удалить"
+                          Height="48" Click="DeleteButton_Click"/>
             </CommandBar>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden"
