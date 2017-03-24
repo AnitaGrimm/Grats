@@ -211,6 +211,11 @@ namespace Grats.ViewModels
             else
                 Update(db);
         }
+        public void Delete(GratsDBContext db)
+        {
+            db.Categories.Remove(Category);
+            db.SaveChanges();
+        }
 
         private void Update(GratsDBContext db)
         {
