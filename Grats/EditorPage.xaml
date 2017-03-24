@@ -25,7 +25,8 @@
             <Ellipse Margin="4"
                      Width="48"
                      Height="48"
-                     ToolTipService.ToolTip="{x:Bind ScreenName}">
+                     ToolTipService.ToolTip="{x:Bind ScreenName}"
+                     Opacity="{x:Bind Opacity}">
                 <Ellipse.Fill>
                     <ImageBrush ImageSource="{x:Bind Photo}"/>
                 </Ellipse.Fill>

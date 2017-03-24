@@ -45,6 +45,7 @@ namespace Grats.ViewModels
                 this.isBirthday = value;
                 this.OnPropertyChanged();
                 this.OnPropertyChanged("IsGeneral");
+                UpdateContactsList();
             }
         }
         public bool IsGeneral => !IsBirthday;
@@ -85,14 +86,20 @@ namespace Grats.ViewModels
         {
             this.Category = category;
             this.Color = ColorExtensions.FromHex(category.Color);
-            var contactViewModels = from categoryContact in category.CategoryContacts
-                                    select new ContactViewModel(categoryContact.Contact);
-            foreach (var vm in contactViewModels)
-                Contacts.Add(vm);
             if (category is GeneralCategory)
                 Date = (category as GeneralCategory).Date;
             else if (category is BirthdayCategory)
                 IsBirthday = true;
+            UpdateContactsList();
+        }
+
+        private void UpdateContactsList()
+        {
+            Contacts.Clear();
+            var contactViewModels = from categoryContact in Category.CategoryContacts
+                                    select new ContactViewModel(categoryContact.Contact, IsBirthday);
+            foreach (var vm in contactViewModels)
+                Contacts.Add(vm);
         }
 
         public bool Validate()
@@ -169,7 +176,7 @@ namespace Grats.ViewModels
             {
                 if (Contacts.Any(contactVM => contactVM.Contact.VKID == contact.VKID))
                     continue;
-                Contacts.Add(new ContactViewModel(contact));
+                Contacts.Add(new ContactViewModel(contact, IsBirthday));
                 var categoryContact = new CategoryContact(Category, contact);
                 Category.CategoryContacts.Add(categoryContact);
             }
