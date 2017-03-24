@@ -112,9 +112,13 @@ namespace Grats
                 return !Preview ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+        public DateTime MaxDate { get; private set; }
+        public DateTime MinDate { get; private set; }
 
         public EditorPage()
         {
+            MinDate = DateTime.Now;
+            MaxDate = DateTime.Now.AddYears(1);
             this.InitializeComponent();
             UpdateUI();
             DBContext = (App.Current as App).dbContext;

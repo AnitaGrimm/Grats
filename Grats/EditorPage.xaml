@@ -94,7 +94,9 @@
                                         IsEnabled="{x:Bind ViewModel.IsGeneral, Mode=OneWay}" 
                                             Header="Дата"
                                             Margin="8"
-                                            Name="DatePicker"/>
+                                            Name="DatePicker"
+                                            MaxDate="{x:Bind MaxDate}"
+                                            MinDate="{x:Bind MinDate}"/>
                         <CheckBox Name="IsBithdayCheckBox"
                                   Margin="8"
                                   IsChecked="{x:Bind ViewModel.IsBirthday, Mode=TwoWay}">
