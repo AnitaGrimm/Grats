@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
+using Windows.ApplicationModel.Background;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -183,7 +184,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -193,8 +194,18 @@ namespace Grats
             {
                 try
                 {
-                    ViewModel.Save(DBContext);
-                    this.Frame.GoBack();
+                    foreach (var task in BackgroundTaskRegistration.AllTasks)
+                    {
+                        
+                        ViewModel.Save(DBContext);
+                        if (task.Value.Name == "SendGrats")
+                        {
+                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                            await appTr.RequestAsync();
+                        }
+                        this.Frame.GoBack();
+                    }
                 }
                 catch (InvalidOperationException exception)
                 {

@@ -268,7 +268,7 @@ namespace Grats
 
         protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
         {
-          MessageDispatcher.MessageDispatcher messageDispatcher = new MessageDispatcher.MessageDispatcher(dbContext,null);
+          MessageDispatcher.MessageDispatcher messageDispatcher = new MessageDispatcher.MessageDispatcher((App.Current as App).dbContext,null);
             try
             {
                 messageDispatcher.Dispatch();
