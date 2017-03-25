@@ -72,8 +72,8 @@ namespace Grats
             var db = (App.Current as App).dbContext;
             var VKAPI = (App.Current as App).VKAPI;
             var categories = Enumerable.Union<Category>(
-                db.BirthdayCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value),
-                db.GeneralCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value));
+                db.BirthdayCategories/*.Where(c => c.OwnersVKID == VKAPI.UserId.Value)*/,
+                db.GeneralCategories/*.Where(c => c.OwnersVKID == VKAPI.UserId.Value)*/);
             var categoriesViewModels = from category in categories
                                       select new CategoryMasterViewModel(category);
             Categories.Clear();

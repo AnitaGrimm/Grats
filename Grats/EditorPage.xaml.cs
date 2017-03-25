@@ -52,11 +52,12 @@ namespace Grats
         // TODO: Подобрать цвета
         static List<Color> AvailableColors = new List<Color>
         {
-            Color.FromArgb(255,254,0,0),
-            Color.FromArgb(255,253,254,2),
-            Color.FromArgb(255,11,255,1),
-            Color.FromArgb(255,1,30,254),
-            Color.FromArgb(255,254,0,246)
+
+            Color.FromArgb(255,238,64,53),
+            Color.FromArgb(255,243,119,54),
+            Color.FromArgb(255,253,244,152),
+            Color.FromArgb(255,123,192,67),
+            Color.FromArgb(255,3,146,207)
         };
 
         static User DummyUser = new User()
