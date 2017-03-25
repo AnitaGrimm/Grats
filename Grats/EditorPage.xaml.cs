@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Background;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
@@ -52,11 +53,11 @@ namespace Grats
         // TODO: Подобрать цвета
         static List<Color> AvailableColors = new List<Color>
         {
-            Colors.Azure,
-            Colors.Firebrick,
-            Colors.SkyBlue,
-            Colors.LawnGreen,
-            Colors.Ivory
+            Color.FromArgb(255,254,0,0),
+            Color.FromArgb(255,253,254,2),
+            Color.FromArgb(255,11,255,1),
+            Color.FromArgb(255,1,30,254),
+            Color.FromArgb(255,254,0,246)
         };
 
         static User DummyUser = new User()
@@ -113,12 +114,18 @@ namespace Grats
                 return !Preview ? Visibility.Collapsed : Visibility.Visible;
             }
         }
+        public DateTime MaxDate { get; private set; }
+        public DateTime MinDate { get; private set; }
 
         public EditorPage()
         {
+            MinDate = DateTime.Now;
+            MaxDate = DateTime.Now.AddYears(1);
             this.InitializeComponent();
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
+            NavigationCacheMode = NavigationCacheMode.Enabled;
+
         }
 
         private void UpdateUI()
@@ -149,16 +156,20 @@ namespace Grats
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            if (e.NavigationMode == NavigationMode.Back)
+                return;
             if (!(e.Parameter is IEditorPageParameter))
                 throw new NotSupportedException("Parameter is not supported");
             if (e.Parameter is NewCategoryParameter)
             {
                 var parameter = (e.Parameter as NewCategoryParameter);
+                DeleteButton.Visibility = Visibility.Collapsed;
                 ViewModel = new CategoryDetailViewModel(parameter.Category);
             }
             else
             {
                 var parameter = (e.Parameter as EditCategoryParameter);
+                DeleteButton.Visibility = Visibility.Visible;
                 if (parameter.CategoryType == typeof(GeneralCategory))
                 {
                     var category = DBContext.GeneralCategories
@@ -181,6 +192,7 @@ namespace Grats
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
+            this.NavigationCacheMode = NavigationCacheMode.Disabled;
             this.Frame.GoBack();
         }
 
@@ -204,10 +216,10 @@ namespace Grats
                             ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
                             await appTr.RequestAsync();
                         }
+                        this.NavigationCacheMode = NavigationCacheMode.Disabled;
                         this.Frame.GoBack();
                     }
-                }
-                catch (InvalidOperationException exception)
+                } catch (InvalidOperationException exception)
                 {
 
                 }
@@ -260,5 +272,76 @@ namespace Grats
         }
 
         #endregion
+
+        private void ContactsListView_DragEnter(object sender, DragEventArgs e)
+        {
+            object data;
+            if (e.DataView.Properties.TryGetValue("friends", out data)
+                && data is IEnumerable<User>)
+            {
+                e.DragUIOverride.IsGlyphVisible = false;
+                e.AcceptedOperation = e.AllowedOperations;
+            }
+            else if (e.DataView.Properties.TryGetValue("friendId", out data)
+                && data is long)
+            {
+                e.DragUIOverride.IsGlyphVisible = false;
+                e.AcceptedOperation = e.AllowedOperations;
+            }
+            else
+            {
+                e.AcceptedOperation = DataPackageOperation.None;
+            }
+        }
+
+        private void ContactsListView_Drop(object sender, DragEventArgs e)
+        {
+            object data;
+            if (e.DataView.Properties.TryGetValue("friends", out data)
+                && data is IEnumerable<User>)
+            {
+                var friends = (IEnumerable<User>)data;
+                ViewModel.AddContacts(friends.Select(friend => new Model.Contact(friend)));
+            }
+        }
+
+        private void ContactsListView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+        {
+            if (e.Items == null || e.Items.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+            var contact = (ContactViewModel)e.Items.First();
+            e.Data.RequestedOperation = DataPackageOperation.Copy;
+            e.Data.SetText(contact.ScreenName);
+            e.Data.Properties.Add("friendId", contact.Contact.VKID);
+        }
+
+        private void ContactsListView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs e)
+        {
+            if (e.DropResult == DataPackageOperation.None)
+            {
+                ViewModel.RemoveContacts(from ContactViewModel contact in e.Items select contact.Contact);
+            }
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Date = DatePicker.Date;
+            if (ViewModel.Validate())
+            {
+                try
+                {
+                    ViewModel.Delete(DBContext);
+                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                    this.Frame.GoBack();
+                }
+                catch (InvalidOperationException exception)
+                {
+
+                }
+            }
+        }
     }
 }

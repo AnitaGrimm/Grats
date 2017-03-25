@@ -105,14 +105,20 @@
                        Margin="0,16,0,0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <ListView x:Name="FriendsListView" 
+                    <TextBox x:Name="FriendsSearch" TextChanged="FriendsSearch_TextChanged" ></TextBox>
+                    <ListView x:Name="FriendsListView" Grid.Row="2"
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
                               SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
-                              SelectedValuePath="User">
+                              SelectedValuePath="User"
+                              CanDragItems="True"
+                              DragItemsStarting="FriendsListView_DragItemsStarting"
+                              DragItemsCompleted="FriendsListView_DragItemsCompleted">
                         <ScrollViewer VerticalScrollBarVisibility="Hidden"/>
                         <ListView.GroupStyle>
                             <GroupStyle>
@@ -125,7 +131,7 @@
                             </GroupStyle>
                         </ListView.GroupStyle>
                     </ListView>
-                    <CommandBar Grid.Row="1" 
+                    <CommandBar Grid.Row="3" 
                                 Background="{x:Null}">
                         <AppBarButton x:Name="SelectButton"
                                       Label="Выбрать"
