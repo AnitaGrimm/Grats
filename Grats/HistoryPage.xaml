@@ -17,12 +17,12 @@
                 </Grid.ColumnDefinitions>
                 <Rectangle>
                     <Rectangle.Fill>
-                        <SolidColorBrush Color="Red"/>
+                        <SolidColorBrush Color="{x:Bind Color}"/>
                     </Rectangle.Fill>
                 </Rectangle>
                 <StackPanel Grid.Column="1"
                             Margin="8,0">
-                    <RelativePanel Margin="0,16">
+                    <RelativePanel Margin="0,8">
                         <TextBlock Text="{x:Bind Name}"
                                    Name="CategoryNameTextBlock"
                                Style="{ThemeResource TitleTextBlockStyle}"
@@ -32,7 +32,7 @@
                             <TextBlock Text="{x:Bind LastTryDate}"
                                    Name="LastTryTextBlock"
                                       Margin="8,0"/>
-                            <TextBlock Text="{x:Bind StatusSymbol}"/>
+                            <SymbolIcon Symbol="{x:Bind StatusSymbol}"/>
                         </StackPanel>
                     </RelativePanel>
                     <TextBlock Text="{x:Bind StatusMessage}"
@@ -53,7 +53,8 @@
     <Grid x:Name="hGrid" 
           Background="{ThemeResource Background}">
         <ListView  ItemTemplate="{StaticResource MessageTaskItemTemplate}" 
-                              ItemsSource="{x:Bind Messages}">
+                              ItemsSource="{x:Bind Messages}"
+                   Padding="-12,0,0,0">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"
