@@ -15,7 +15,7 @@ namespace Grats.Background
         {
             _deferral = taskInstance.GetDeferral();
             MessageDispatcher.MessageDispatcher messageDispatcher = new
-                MessageDispatcher.MessageDispatcher(new Model.GratsDBContext(),null);
+                MessageDispatcher.MessageDispatcher((App.Current as App).dbContext, null);
 
             try
             {

@@ -146,7 +146,8 @@ namespace Grats
                 {
                     if (TrySignIn())
                     {
-                         RegisterTask();
+                        RegisterTask();
+                        //RegisterTaskByTime();
                         rootFrame.Navigate(typeof(MainPage), e.Arguments);
                     }
                     else
@@ -300,11 +301,40 @@ namespace Grats
                 };
                 builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
                 trigger = new ApplicationTrigger();
-                await BackgroundExecutionManager.RequestAccessAsync();
+                var x= await BackgroundExecutionManager.RequestAccessAsync();
                 builder.SetTrigger(trigger);
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
                 await trigger.RequestAsync();
+            }
+        }
+
+        private async void RegisterTaskByTime()
+        {
+            var taskRegistered = false;
+            var trigger = new TimeTrigger(15, false);
+            var taskName = "SendGratsByTime";
+            foreach(var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name==taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            if (!taskRegistered)
+            {
+
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName, TaskEntryPoint= "BackgroundTaskByTime.BackgroundTaskTime"
+                };
+                builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
+                var x = await BackgroundExecutionManager.RequestAccessAsync();
+                builder.SetTrigger(new TimeTrigger(15,false));
+                builder.IsNetworkRequested = true;
+                BackgroundTaskRegistration task = builder.Register();
+                //await trigger.RequestAsync();
             }
         }
 
