@@ -44,15 +44,19 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Margin="0,16,0,0">
+        <Grid Margin="0,16,0,0"
+              Height="48">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <AppBarButton Name="BackButton"
-                              Icon="Back"
-                              Click="BackButton_Click" VerticalAlignment="Center" Height="48"/>
+            <Button Name="BackButton"
+                              Click="BackButton_Click"
+                    Background="{x:Null}"
+                    Margin="8,0">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
             <TextBlock Text="Поздравление"
                            Grid.Column="1"
                            Style="{ThemeResource TitleTextBlockStyle}"
@@ -66,13 +70,16 @@
                           VerticalAlignment="Center"
                               ToolTipService.ToolTip="Сохранить"
                               Click="SaveButton_Click"
-                              Background="{x:Null}">
+                              Background="{x:Null}"
+                        Margin="8,0">
                     <SymbolIcon Symbol="Save"/>
                 </Button>
                 <Button Name="DeleteButton"
                         VerticalAlignment="Center"
                         ToolTipService.ToolTip="Удалить"
-                        Click="DeleteButton_Click">
+                        Click="DeleteButton_Click"
+                        Background="{x:Null}"
+                        Margin="8,0">
                     <SymbolIcon Symbol="Delete"/>
                 </Button>
             </StackPanel>
