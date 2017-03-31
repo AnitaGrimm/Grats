@@ -125,6 +125,7 @@ namespace Grats
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
             NavigationCacheMode = NavigationCacheMode.Enabled;
+
         }
 
         private void UpdateUI()
@@ -162,11 +163,13 @@ namespace Grats
             if (e.Parameter is NewCategoryParameter)
             {
                 var parameter = (e.Parameter as NewCategoryParameter);
+                DeleteButton.Visibility = Visibility.Collapsed;
                 ViewModel = new CategoryDetailViewModel(parameter.Category);
             }
             else
             {
                 var parameter = (e.Parameter as EditCategoryParameter);
+                DeleteButton.Visibility = Visibility.Visible;
                 if (parameter.CategoryType == typeof(GeneralCategory))
                 {
                     var category = DBContext.GeneralCategories
@@ -311,6 +314,24 @@ namespace Grats
             if (e.DropResult == DataPackageOperation.None)
             {
                 ViewModel.RemoveContacts(from ContactViewModel contact in e.Items select contact.Contact);
+            }
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Date = DatePicker.Date;
+            if (ViewModel.Validate())
+            {
+                try
+                {
+                    ViewModel.Delete(DBContext);
+                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                    this.Frame.GoBack();
+                }
+                catch (InvalidOperationException exception)
+                {
+
+                }
             }
         }
     }
