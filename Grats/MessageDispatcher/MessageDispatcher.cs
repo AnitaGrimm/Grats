@@ -52,7 +52,7 @@ namespace Grats.MessageDispatcher
 
         private List<MessageTask> FindWaitingTasks()
         {
-            var today = DateTime.Now.Date;
+            var today = DateTime.Now;
             var tasksToDo =
                 from t in DB.MessageTasks
                 where t.Status == MessageTask.TaskStatus.New || t.Status == MessageTask.TaskStatus.Retry

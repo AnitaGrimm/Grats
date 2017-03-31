@@ -26,6 +26,7 @@ using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Background;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -196,7 +197,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -204,16 +205,25 @@ namespace Grats
             ViewModel.Date = DatePicker.Date;
             if (ViewModel.Validate())
             {
+                ViewModel.Save(DBContext);
                 try
                 {
-                    ViewModel.Save(DBContext);
-                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                    this.Frame.GoBack();
+                    foreach(var task in BackgroundTaskRegistration.AllTasks)
+                    {   
+                        if (task.Value.Name == "SendGrats")
+                        {
+                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                            await appTr.RequestAsync();
+                        }
+                    }
                 }
                 catch (InvalidOperationException exception)
                 {
-
+                    Console.WriteLine(exception.Message);
                 }
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
             }
         }
         

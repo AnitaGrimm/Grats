@@ -28,6 +28,7 @@ using VkNet.Utils.AntiCaptcha;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Animation;
+using Windows.ApplicationModel.Background;
 
 namespace Grats
 {
@@ -144,7 +145,9 @@ namespace Grats
                 if (rootFrame.Content == null)
                 {
                     if (TrySignIn())
+                    {
                         rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    }
                     else
                         rootFrame.Navigate(typeof(LoginPage), e.Arguments);
                 }
@@ -219,6 +222,7 @@ namespace Grats
                 CaptchaSid = captchaSid,
                 CaptchaKey = captchaValue
             });
+            RegisterTask();
             SaveCredentials(login, password);
         }
 
@@ -233,11 +237,13 @@ namespace Grats
                 CaptchaSid = captchaSid,
                 CaptchaKey = captchaValue
             });
+            RegisterTask();
             SaveCredentials(login, password);
         }
-        
+
         public void SignOut()
         {
+            UnregisterTask("SendGrats");
             ClearCredentials();
             ShowLoginPage();
         }
@@ -257,6 +263,91 @@ namespace Grats
             localSettings.Values.Remove(VK_API_PASSWORD_KEY);
         }
 
+        #endregion
+
+        #region Фоновые задачи
+
+        protected override void OnBackgroundActivated(BackgroundActivatedEventArgs args)
+        {
+          MessageDispatcher.MessageDispatcher messageDispatcher = new MessageDispatcher.MessageDispatcher((App.Current as App).dbContext,null);
+            try
+            {
+                messageDispatcher.Dispatch();
+            }
+            catch(VkApiException e)
+            {
+                //Обработка исключений VK
+            }
+        }
+        private async void RegisterTask()
+        {
+            var taskRegistered = false;
+            ApplicationTrigger trigger = null;
+            var taskName = "SendGrats";
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            if (!taskRegistered)
+            {
+
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName,
+                };
+                builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
+                trigger = new ApplicationTrigger();
+                var x= await BackgroundExecutionManager.RequestAccessAsync();
+                builder.SetTrigger(trigger);
+                builder.IsNetworkRequested = true;
+                BackgroundTaskRegistration task = builder.Register();
+                await trigger.RequestAsync();
+            }
+        }
+
+        private async void RegisterTaskByTime()
+        {
+            var taskRegistered = false;
+            var trigger = new TimeTrigger(15, false);
+            var taskName = "SendGratsByTime";
+            foreach(var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name==taskName)
+                {
+                    taskRegistered = true;
+                    break;
+                }
+            }
+            if (!taskRegistered)
+            {
+
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName, TaskEntryPoint= "BackgroundTaskByTime.BackgroundTaskTime"
+                };
+                builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
+                var x = await BackgroundExecutionManager.RequestAccessAsync();
+                builder.SetTrigger(new TimeTrigger(15,false));
+                builder.IsNetworkRequested = true;
+                BackgroundTaskRegistration task = builder.Register();
+                //await trigger.RequestAsync();
+            }
+        }
+
+        private void UnregisterTask(string taskName)
+        {
+            foreach (var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == taskName)
+                {
+                    task.Value.Unregister(true);
+                }
+            }
+        }
         #endregion
 
         #region Общая навигация
