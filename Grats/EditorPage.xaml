@@ -137,8 +137,12 @@
                                   Margin="8,0"/>
                     </StackPanel>
                 </Grid>
-                <Frame Name="MessageFrame"
-                       Margin="0,8">
+                <Frame Name="MessageFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <ContentThemeTransition/>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
                 </Frame>
             </StackPanel>
         </ScrollViewer>

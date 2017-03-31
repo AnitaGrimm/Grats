@@ -42,7 +42,8 @@
                     <Button Name="SaveTemplateAppBarButton"
                                     ToolTipService.ToolTip="Сохранить"
                                     Click="SaveTemplateAppBarButton_Click"
-                                    Background="{x:Null}">
+                                    Background="{x:Null}"
+                            Margin="8">
                         <Button.Flyout>
                             <Flyout x:Name="SaveTemplateFlyout">
                                 <StackPanel Width="240">
@@ -69,19 +70,22 @@
                     <Button Name="OpenTemplateButton"
                                     ToolTipService.ToolTip="Открыть"
                                     Click="OpenTemplateButton_Click"
-                                    Background="{x:Null}">
+                                    Background="{x:Null}"
+                            Margin="8">
                         <SymbolIcon Symbol="Folder"/>
                     </Button>
                     <Button Name="PreviewButton"
                                     ToolTipService.ToolTip="Предпросмотр"
                                     Click="PreviewButton_Click"
-                                    Background="{x:Null}">
+                                    Background="{x:Null}"
+                            Margin="8">
                         <SymbolIcon Symbol="Preview"/>
                     </Button>
                     <Button Name="OpenTemplateReferenceButton"
                                     Background="{x:Null}"
                                     Click="OpenTemplateReferenceButton_Click"
-                                    ToolTipService.ToolTip="Справка">
+                                    ToolTipService.ToolTip="Справка"
+                            Margin="8">
                         <SymbolIcon Symbol="Help"/>
                     </Button>
                 </StackPanel>
