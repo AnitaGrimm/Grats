@@ -146,8 +146,6 @@ namespace Grats
                 {
                     if (TrySignIn())
                     {
-                        RegisterTask();
-                        //RegisterTaskByTime();
                         rootFrame.Navigate(typeof(MainPage), e.Arguments);
                     }
                     else
@@ -224,6 +222,7 @@ namespace Grats
                 CaptchaSid = captchaSid,
                 CaptchaKey = captchaValue
             });
+            RegisterTask();
             SaveCredentials(login, password);
         }
 
@@ -238,6 +237,7 @@ namespace Grats
                 CaptchaSid = captchaSid,
                 CaptchaKey = captchaValue
             });
+            RegisterTask();
             SaveCredentials(login, password);
         }
 
