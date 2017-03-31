@@ -10,38 +10,56 @@
     <Page.Resources>
         <DataTemplate x:Key="MessageTaskItemTemplate"
                       x:DataType="viewmodels:MessageTaskViewModel">
-            <Grid Height="90">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="5"/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="5"/>
-                </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="10"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Text="{x:Bind ID}" 
-                           VerticalAlignment="Center"
-                           Grid.Row="1" Grid.ColumnSpan="3"/>
-                <TextBlock Text="{x:Bind DispatchDate}" 
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Left"
-                           Grid.Row="2"/>
-                <TextBlock Text="{x:Bind LastTryDate}" 
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Right"
-                           Grid.Row="2" Grid.Column="2"/>
-                <TextBlock Text="{x:Bind StatusMessage}"
-                           VerticalAlignment="Center"
-                           Grid.Row="3" Grid.ColumnSpan="3"/>
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="Red"/>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <StackPanel Grid.Column="1"
+                            Margin="8,0">
+                    <RelativePanel Margin="0,16">
+                        <TextBlock Text="{x:Bind Name}"
+                                   Name="CategoryNameTextBlock"
+                               Style="{ThemeResource TitleTextBlockStyle}"
+                                   HorizontalAlignment="Left" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"/>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True">
+                            <TextBlock Text="{x:Bind LastTryDate}"
+                                   Name="LastTryTextBlock"
+                                      Margin="8,0"/>
+                            <TextBlock Text="{x:Bind StatusSymbol}"/>
+                        </StackPanel>
+                    </RelativePanel>
+                    <TextBlock Text="{x:Bind StatusMessage}"
+                               Margin="0,8"
+                               Style="{ThemeResource BodyTextBlockStyle}"/>
+                    <Grid>
+                        <Button Name="ResendButton"
+                                Margin="0,8"
+                                HorizontalAlignment="Right"
+                                Visibility="{x:Bind CanBeResended}">
+                            Повторить отправку
+                        </Button>
+                    </Grid>
+                </StackPanel>
             </Grid>
         </DataTemplate>
     </Page.Resources>
-    <Grid x:Name="hGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="hGrid" 
+          Background="{ThemeResource Background}">
         <ListView  ItemTemplate="{StaticResource MessageTaskItemTemplate}" 
-                              ItemsSource="{x:Bind Messages}"/>
+                              ItemsSource="{x:Bind Messages}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment"
+                            Value="Stretch"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
     </Grid>
 </Page>
