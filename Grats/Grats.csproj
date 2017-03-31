@@ -109,6 +109,9 @@
     </Compile>
     <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
     <Compile Include="MessageDispatcher\MessageDispatcherVkConnector.cs" />
+    <Compile Include="MessageEditorPage.xaml.cs">
+      <DependentUpon>MessageEditorPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
     <Compile Include="Migrations\20170309155519_InitialMigration.cs" />
@@ -217,6 +220,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="HistoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MessageEditorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

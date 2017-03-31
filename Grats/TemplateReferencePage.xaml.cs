@@ -97,5 +97,10 @@ namespace Grats
         {
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void GoBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.GoBack();
+        }
     }
 }

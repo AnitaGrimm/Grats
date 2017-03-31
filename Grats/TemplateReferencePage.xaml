@@ -8,32 +8,47 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <SplitView Background="{ThemeResource Background}"
-               IsPaneOpen="True">
-        <SplitView.Pane>
-            <ListView Name="ModifiersListView" 
-                      Header="Модификаторы"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Name="GoBackButton"
+                    Click="GoBackButton_Click"
+                    Background="{x:Null}">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+            <TextBlock Text="Справка"
+                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                   Margin="8,0"/>
+        </StackPanel>
+        <SplitView Background="{ThemeResource Background}"
+               DisplayMode="Inline"
+               IsPaneOpen="True"
+               Margin="8"
+               VerticalAlignment="Stretch"
+                   Grid.Row="1"
+                   MinHeight="300">
+            <SplitView.Pane>
+                <ListView Name="ModifiersListView"
                       ItemsSource="{x:Bind Items}"
                       IsItemClickEnabled="True"
                       ItemClick="ModifiersListView_ItemClick">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="viewmodels:ReferenceViewModel">
-                        <TextBlock Text="{x:Bind Title}"/>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-                <ListView.HeaderTemplate>
-                    <DataTemplate x:DataType="x:String">
-                        <TextBlock Style="{ThemeResource TitleTextBlockStyle}"
-                                   Text="{x:Bind}"
-                                   Margin="8"/>
-                    </DataTemplate>
-                </ListView.HeaderTemplate>
-            </ListView>  
-        </SplitView.Pane>
-        <StackPanel Background="White">
-            <TextBlock Margin="0,8"
-                       Text="{x:Bind DetailTitle, Mode=OneWay}"/>
-            <TextBlock Text="{x:Bind DetailDescription, Mode=OneWay}"/>
-        </StackPanel>
-    </SplitView>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:ReferenceViewModel">
+                            <TextBlock Text="{x:Bind Title}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SplitView.Pane>
+            <StackPanel Background="White">
+                <TextBlock Margin="16"
+                       Text="{x:Bind DetailTitle, Mode=OneWay}"
+                       Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind DetailDescription, Mode=OneWay}"
+                       Margin="16,0"/>
+            </StackPanel>
+        </SplitView>
+    </Grid>
 </Page>
