@@ -26,6 +26,7 @@ using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Background;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -52,11 +53,12 @@ namespace Grats
         // TODO: Подобрать цвета
         static List<Color> AvailableColors = new List<Color>
         {
-            Colors.Azure,
-            Colors.Firebrick,
-            Colors.SkyBlue,
-            Colors.LawnGreen,
-            Colors.Ivory
+
+            Color.FromArgb(255,238,64,53),
+            Color.FromArgb(255,243,119,54),
+            Color.FromArgb(255,253,244,152),
+            Color.FromArgb(255,123,192,67),
+            Color.FromArgb(255,3,146,207)
         };
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -76,6 +78,7 @@ namespace Grats
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
             NavigationCacheMode = NavigationCacheMode.Enabled;
+
         }
 
         private void UpdateUI()
@@ -96,11 +99,13 @@ namespace Grats
             if (e.Parameter is NewCategoryParameter)
             {
                 var parameter = (e.Parameter as NewCategoryParameter);
+                DeleteButton.Visibility = Visibility.Collapsed;
                 ViewModel = new CategoryDetailViewModel(parameter.Category);
             }
             else
             {
                 var parameter = (e.Parameter as EditCategoryParameter);
+                DeleteButton.Visibility = Visibility.Visible;
                 if (parameter.CategoryType == typeof(GeneralCategory))
                 {
                     var category = DBContext.GeneralCategories
@@ -128,7 +133,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -136,16 +141,25 @@ namespace Grats
             ViewModel.Date = DatePicker.Date;
             if (ViewModel.Validate())
             {
+                ViewModel.Save(DBContext);
                 try
                 {
-                    ViewModel.Save(DBContext);
-                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                    this.Frame.GoBack();
+                    foreach(var task in BackgroundTaskRegistration.AllTasks)
+                    {   
+                        if (task.Value.Name == "SendGrats")
+                        {
+                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                            await appTr.RequestAsync();
+                        }
+                    }
                 }
                 catch (InvalidOperationException exception)
                 {
-
+                    Console.WriteLine(exception.Message);
                 }
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
             }
         }
         
@@ -207,5 +221,22 @@ namespace Grats
             }
         }
 
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.Date = DatePicker.Date;
+            if (ViewModel.Validate())
+            {
+                try
+                {
+                    ViewModel.Delete(DBContext);
+                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                    this.Frame.GoBack();
+                }
+                catch (InvalidOperationException exception)
+                {
+
+                }
+            }
+        }
     }
 }

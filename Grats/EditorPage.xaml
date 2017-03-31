@@ -69,6 +69,12 @@
                               Background="{x:Null}">
                     <SymbolIcon Symbol="Save"/>
                 </Button>
+                <Button Name="DeleteButton"
+                        VerticalAlignment="Center"
+                        ToolTipService.ToolTip="Удалить"
+                        Click="DeleteButton_Click">
+                    <SymbolIcon Symbol="Delete"/>
+                </Button>
             </StackPanel>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden"

@@ -92,20 +92,21 @@ namespace Grats
             foreach (var friend in friends)
             {
                 BirthdayCategory cat = new BirthdayCategory();
-                cat.Color = "#00FF00FF";
+                cat.Color = "#00FFFFF0"; 
                 cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName + "(поздравление не установлено)";
                 cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
                 EventCalendarView val1=null, val2=null;
                 try
                 {
                     var date = DateTime.Parse(friend.BirthDate);
+                    var color = Color.FromArgb(255, 255, 255, 240);
                     if (!IsInBithdayCategories(birthdayCategories, friend))
                     {
-                        val1 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = new DateTime(DateTime.Now.Year, date.Month, date.Day), Contacts = cat, EventName = cat.Name };
+                        val1 = new EventCalendarView { EventColor = color, EventDate = new DateTime(DateTime.Now.Year, date.Month, date.Day), Contacts = cat, EventName = cat.Name };
                     }
                     var nextyearbd = new DateTime(DateTime.Now.Year + 1, date.Month, date.Day);
                     if (nextyearbd<=DateTime.Now.AddYears(1))
-                        val2 = new EventCalendarView { EventColor = Colors.LightSkyBlue, EventDate = nextyearbd, Contacts = cat, EventName = cat.Name };
+                        val2 = new EventCalendarView { EventColor = color, EventDate = nextyearbd, Contacts = cat, EventName = cat.Name };
                 }
                 catch
                 {
@@ -204,22 +205,30 @@ namespace Grats
             var selectedDate = args.AddedDates?.FirstOrDefault();
             if (selectedDate == null || !selectedDate.HasValue)
                 return;
+            var flyout = new MenuFlyout();
+            MenuFlyoutItem flyoutItem;
             var eventsOfDay = CalendarEvents?.Where(x => x.EventDate.Day == selectedDate.Value.Day && x.EventDate.Month == selectedDate.Value.Month && x.EventDate.Year == selectedDate.Value.Year);
             if (eventsOfDay != null && eventsOfDay.Count() > 0)
             {
-                var flyout = new MenuFlyout();
                 calendar.ContextFlyout = flyout;
                 foreach (var item in eventsOfDay)
                 {
-                    var flyoutItem = new MenuFlyoutItem();
+                    flyoutItem = new MenuFlyoutItem();
                     flyoutItem.DataContext = item;
                     flyoutItem.Text = item.EventName??" ";
                     flyoutItem.Click += MenuFlyoutItem_Click;
                     flyoutItem.Foreground = new SolidColorBrush(item.EventColor);
                     flyout.Items.Add(flyoutItem);
                 }
-                flyout.ShowAt(this, pointerPosition);
             }
+            calendar.ContextFlyout = flyout;
+            flyoutItem = new MenuFlyoutItem();
+            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime , CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
+            flyoutItem.Text = "Добавить событие";
+            flyoutItem.Click += MenuFlyoutItem_Click;
+            flyoutItem.Foreground = new SolidColorBrush(Colors.LightGray);
+            flyout.Items.Add(flyoutItem);
+            flyout.ShowAt(this, pointerPosition);
         }
         #endregion
 
@@ -233,14 +242,37 @@ namespace Grats
         {
             var eventDesc = (EventCalendarView)((MenuFlyoutItem)sender).DataContext;
             var MainFrame = (Frame)this.Parent;
+            var Cat = eventDesc.Contacts;
+            var db = (App.Current as App).dbContext;
+            var generalCategories = db.GeneralCategories
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact);
+            var birthdayCategories = db.BirthdayCategories
+                        .Include(c => c.CategoryContacts)
+                        .ThenInclude(cc => cc.Contact);
+            bool IsEdit = false;
+            if (Cat is GeneralCategory )
+                IsEdit = generalCategories.ToList().IndexOf(Cat as GeneralCategory) != -1;
+            if (Cat is BirthdayCategory)
+                IsEdit = birthdayCategories.ToList().IndexOf(Cat as BirthdayCategory) != -1;
+            if (IsEdit)
+                MainFrame.Navigate(
+                    typeof(EditorPage),
+                    new EditCategoryParameter()
+                    {
+                        ID = Cat.ID
+                    },
+                    new DrillInNavigationTransitionInfo());
+            else
             MainFrame.Navigate(
                 typeof(EditorPage),
                 new NewCategoryParameter()
                 {
-                    Category = eventDesc.Contacts
+                    Category = Cat
                 },
                 new DrillInNavigationTransitionInfo());
         }
+        
 
         private void CalendarView_Loaded(object sender, RoutedEventArgs e)
         {
