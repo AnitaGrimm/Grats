@@ -204,25 +204,25 @@ namespace Grats
             ViewModel.Date = DatePicker.Date;
             if (ViewModel.Validate())
             {
+                ViewModel.Save(DBContext);
                 try
                 {
-                    foreach (var task in BackgroundTaskRegistration.AllTasks)
-                    {
-                        
-                        ViewModel.Save(DBContext);
+                    foreach(var task in BackgroundTaskRegistration.AllTasks)
+                    {   
                         if (task.Value.Name == "SendGrats")
                         {
                             BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
                             ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
                             await appTr.RequestAsync();
                         }
-                        this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                        this.Frame.GoBack();
                     }
-                } catch (InvalidOperationException exception)
-                {
-
                 }
+                catch (InvalidOperationException exception)
+                {
+                    Console.WriteLine(exception.Message);
+                }
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
             }
         }
         
