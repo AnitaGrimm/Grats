@@ -134,6 +134,9 @@
     <Compile Include="TemplatePlaceholderPage.xaml.cs">
       <DependentUpon>TemplatePlaceholderPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TemplateReferencePage.xaml.cs">
+      <DependentUpon>TemplateReferencePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TemplatesDetailPage.xaml.cs">
       <DependentUpon>TemplatesDetailPage.xaml</DependentUpon>
     </Compile>
@@ -146,6 +149,7 @@
     <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\FriendsGroupByKey.cs" />
     <Compile Include="ViewModels\MessageTaskViewModel.cs" />
+    <Compile Include="ViewModels\ReferenceViewModel.cs" />
     <Compile Include="ViewModels\VKCurrentUserViewModel.cs" />
     <Compile Include="ViewModels\VKUserViewModel.cs" />
   </ItemGroup>
@@ -231,6 +235,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TemplatePlaceholderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplateReferencePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

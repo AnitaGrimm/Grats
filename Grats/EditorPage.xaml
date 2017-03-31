@@ -58,16 +58,18 @@
                            Style="{ThemeResource TitleTextBlockStyle}"
                            VerticalAlignment="Center"
                        Margin="16,0"/>
-            <CommandBar Grid.Column="2"
-                        Background="{x:Null}"
-                        Margin="48,0">
-                <AppBarButton Name="SaveButton" 
-                          Icon="Save"
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        FlowDirection="RightToLeft"
+                        Margin="36,0">
+                <Button Name="SaveButton"
                           VerticalAlignment="Center"
                               ToolTipService.ToolTip="Сохранить"
                               Click="SaveButton_Click"
-                          Height="48"/>
-            </CommandBar>
+                              Background="{x:Null}">
+                    <SymbolIcon Symbol="Save"/>
+                </Button>
+            </StackPanel>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden"
                       Grid.Row="1"
@@ -151,47 +153,59 @@
                         <TextBlock Grid.Row="1"
                             Margin="16,4" Style="{StaticResource ValidationErrorTextBlockStyle}"
                                Text="{x:Bind ViewModel.MessageValidationError, Mode=OneWay}"/>
-                        <CommandBar
+                        <StackPanel
                                 Grid.Column="1"
                                 Grid.RowSpan="2"
                                 Background="{x:Null}"
-                            Margin="8,0">
-                            <AppBarButton Icon="Preview"
-                                      Label="Предпросмотр"
-                                          Name="PreviewButton"
-                                          ToolTipService.ToolTip="Предпросмотр"
-                                          Click="PreviewButton_Click"/>
-                            <AppBarButton Icon="Save"
-                                      Label="Сохранить"
-                                          Name="SaveTemplateAppBarButton"
-                                          ToolTipService.ToolTip="Сохранить"
-                                          Click="SaveTemplateAppBarButton_Click">
-                                <Flyout x:Name="SaveTemplateFlyout">
-                                    <StackPanel Width="240">
-                                        <TextBox Name="TemplateName"
+                                Orientation="Horizontal"
+                                FlowDirection="RightToLeft"
+                                Margin="8,0">
+                            <Button Name="SaveTemplateAppBarButton"
+                                    ToolTipService.ToolTip="Сохранить"
+                                    Click="SaveTemplateAppBarButton_Click"
+                                    Background="{x:Null}">
+                                <Button.Flyout>
+                                    <Flyout x:Name="SaveTemplateFlyout">
+                                        <StackPanel Width="240">
+                                            <TextBox Name="TemplateName"
                                              Header="Название шаблона"
                                                  Margin="8"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Margin="8"
+                                            <StackPanel Orientation="Horizontal">
+                                                <Button Margin="8"
                                                         Name="CancelSaveTemplate"
                                                         Click="CancelSaveTemplate_Click">
-                                                Отмена
-                                            </Button>
-                                            <Button x:Name="SaveTemplate"
+                                                    Отмена
+                                                </Button>
+                                                <Button x:Name="SaveTemplate"
                                                 Margin="8"
                                                     Click="SaveTemplate_Click">
-                                                Сохранить
-                                            </Button>
+                                                    Сохранить
+                                                </Button>
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
-                                </Flyout>
-                            </AppBarButton>
-                            <AppBarButton Icon="Folder"
-                                          Name="OpenTemplateButton"
-                                      Label="Открыть"
-                                          ToolTipService.ToolTip="Открыть"
-                                          Click="OpenTemplateButton_Click"/>
-                        </CommandBar>
+                                    </Flyout>
+                                </Button.Flyout>
+                                <SymbolIcon Symbol="Save"/>
+                            </Button>
+                            <Button Name="OpenTemplateButton"
+                                    ToolTipService.ToolTip="Открыть"
+                                    Click="OpenTemplateButton_Click"
+                                    Background="{x:Null}">
+                                <SymbolIcon Symbol="Folder"/>
+                            </Button>
+                            <Button Name="PreviewButton"
+                                    ToolTipService.ToolTip="Предпросмотр"
+                                    Click="PreviewButton_Click"
+                                    Background="{x:Null}">
+                                <SymbolIcon Symbol="Preview"/>
+                            </Button>
+                            <Button Name="OpenTemplateReferenceButton"
+                                    Background="{x:Null}"
+                                    Click="OpenTemplateReferenceButton_Click"
+                                    ToolTipService.ToolTip="Справка">
+                                <SymbolIcon Symbol="Help"/>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                     <TextBox Height="300"
                              Margin="8,0"

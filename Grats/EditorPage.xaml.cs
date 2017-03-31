@@ -215,13 +215,11 @@ namespace Grats
         
         private void PreviewButton_Click(object sender, RoutedEventArgs e)
         {
-            (sender as AppBarButton).Focus(FocusState.Keyboard);
             Preview = !Preview;
         }
 
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            this.Focus(FocusState.Keyboard);
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
@@ -311,6 +309,11 @@ namespace Grats
             {
                 ViewModel.RemoveContacts(from ContactViewModel contact in e.Items select contact.Contact);
             }
+        }
+
+        private void OpenTemplateReferenceButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
