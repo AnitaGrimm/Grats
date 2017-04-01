@@ -306,12 +306,14 @@ namespace Grats
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
                 await trigger.RequestAsync();
+                RegisterTaskByTime();
             }
         }
 
         private async void RegisterTaskByTime()
         {
             var taskRegistered = false;
+            var x = await BackgroundExecutionManager.RequestAccessAsync();
             var trigger = new TimeTrigger(15, false);
             var taskName = "SendGratsByTime";
             foreach(var task in BackgroundTaskRegistration.AllTasks)
@@ -325,16 +327,30 @@ namespace Grats
             if (!taskRegistered)
             {
 
-                var builder = new BackgroundTaskBuilder()
-                {
-                    Name = taskName, TaskEntryPoint= "BackgroundTaskByTime.BackgroundTaskTime"
-                };
+                var builder = new BackgroundTaskBuilder();
+                builder.Name = taskName;
+                builder.TaskEntryPoint = typeof(TimerTask.BackgroundTaskbyTime).ToString();
                 builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
-                var x = await BackgroundExecutionManager.RequestAccessAsync();
+                
                 builder.SetTrigger(new TimeTrigger(15,false));
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
+                task.Completed += Task_Completed;
                 //await trigger.RequestAsync();
+            }
+        }
+
+        private async void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+         foreach(var task in BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == "SendGrats")
+                {
+                    BackgroundTaskRegistration taskReg = task.Value as BackgroundTaskRegistration;
+                    ApplicationTrigger appTr = taskReg.Trigger as ApplicationTrigger;
+                    await appTr.RequestAsync();
+                    break; 
+                }
             }
         }
 

@@ -128,6 +128,7 @@
     <Compile Include="HistoryPage.xaml.cs">
       <DependentUpon>HistoryPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Notification\Toaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
@@ -243,6 +244,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TimerTask\TimerTask.csproj">
+      <Project>{95c6b9b8-9e36-48eb-9ebe-5aa247e06bd9}</Project>
+      <Name>TimerTask</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

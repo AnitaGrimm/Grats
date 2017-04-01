@@ -82,18 +82,22 @@ namespace Grats.MessageDispatcher
                 VK.SendMessage(contact.VKID, messageText);
 
                 UpdateTask(task, true, "Сообщение успешно отправлено");
+                Grats.Notification.Toaster.PopToast("Отправлено", "Сообщение успешно отправлено");
             }
             catch (MessageTemplateSyntaxException ex)
             {
                 UpdateTask(task, false, "Синтаксическая ошибка в шаблоне", ex);
+                Grats.Notification.Toaster.PopToast("Ошибка", "Синтаксическая ошибка в шаблоне");
             }
             catch (VkApiException ex)
             {
                 UpdateTask(task, false, "Ошибка соединения с ВКонтакте", ex);
+                Grats.Notification.Toaster.PopToast("Ошибка", "Ошибка соединения с ВКонтакте");
             }
             catch (Exception ex)
             {
                 UpdateTask(task, false, "Неизвестная ошибка", ex);
+                Grats.Notification.Toaster.PopToast("Ошибка", "Неизвестная ошибка");
             }
         }
 
