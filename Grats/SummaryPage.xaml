@@ -38,7 +38,8 @@
             </HubSection>
             <HubSection Header="История">
                 <DataTemplate>
-                    <Frame Name="HistoryFrame">
+                    <Frame Name="HistoryFrame"
+                           Width="600">
                         <local:HistoryPage/>
                     </Frame>
                 </DataTemplate>
