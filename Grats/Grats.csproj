@@ -110,6 +110,9 @@
     </Compile>
     <Compile Include="MessageDispatcher\MessageDispatcher.cs" />
     <Compile Include="MessageDispatcher\MessageDispatcherVkConnector.cs" />
+    <Compile Include="MessageEditorPage.xaml.cs">
+      <DependentUpon>MessageEditorPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MessageTemplates\MessageTemplate.cs" />
     <Compile Include="MessageTemplates\MessageTemplateSyntaxException.cs" />
     <Compile Include="Migrations\20170309155519_InitialMigration.cs" />
@@ -136,6 +139,9 @@
     <Compile Include="TemplatePlaceholderPage.xaml.cs">
       <DependentUpon>TemplatePlaceholderPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TemplateReferencePage.xaml.cs">
+      <DependentUpon>TemplateReferencePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TemplatesDetailPage.xaml.cs">
       <DependentUpon>TemplatesDetailPage.xaml</DependentUpon>
     </Compile>
@@ -148,6 +154,7 @@
     <Compile Include="ViewModels\ContactViewModel.cs" />
     <Compile Include="ViewModels\FriendsGroupByKey.cs" />
     <Compile Include="ViewModels\MessageTaskViewModel.cs" />
+    <Compile Include="ViewModels\ReferenceViewModel.cs" />
     <Compile Include="ViewModels\VKCurrentUserViewModel.cs" />
     <Compile Include="ViewModels\VKUserViewModel.cs" />
   </ItemGroup>
@@ -218,6 +225,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MessageEditorPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Secret.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -233,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TemplatePlaceholderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TemplateReferencePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
