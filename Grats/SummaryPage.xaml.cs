@@ -203,7 +203,7 @@ namespace Grats
         {
             var calendar = ((CalendarView)sender);
             var selectedDate = args.AddedDates?.FirstOrDefault();
-            if (selectedDate == null || !selectedDate.HasValue)
+            if (selectedDate == null || !selectedDate.HasValue || selectedDate.Value == DateTimeOffset.MinValue)
                 return;
             var flyout = new MenuFlyout();
             MenuFlyoutItem flyoutItem;
