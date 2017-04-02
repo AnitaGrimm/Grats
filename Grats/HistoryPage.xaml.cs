@@ -17,7 +17,9 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
+using static Grats.EditorPage;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -46,13 +48,19 @@ namespace Grats
     }
     public sealed partial class HistoryPage : Page
     {
+        public static DependencyProperty MainFrameProp = DependencyProperty.Register("MainFrame", typeof(Frame), typeof(HistoryPage), new PropertyMetadata(null));
+        public Frame MainFrame
+        {
+            get { return (Frame)GetValue(MainFrameProp); }
+            set { SetValue(MainFrameProp, value); }
+        }
+
         public InvertObservableCollection<MessageTaskViewModel> Messages = new InvertObservableCollection<MessageTaskViewModel>();
         public HistoryPage()
         {
             this.InitializeComponent();
             UpdateMessageTasks();
         }
-
         public void UpdateMessageTasks()
         {
             var db = (App.Current as App).dbContext;
@@ -62,6 +70,21 @@ namespace Grats
             var messageTaskViewModels = categories?.SelectMany(category => category.Tasks)?.Where(task=>task.Status== MessageTask.TaskStatus.Done || task.Status== MessageTask.TaskStatus.Pending)?.Select(task=>new MessageTaskViewModel(task));
             foreach (var viewModel in messageTaskViewModels)
                 Messages.Add(viewModel);
+        }
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MainFrame == null)
+                return;
+            var Item = e.AddedItems?.FirstOrDefault() as MessageTaskViewModel;
+            MainFrame.Navigate(
+                typeof(EditorPage),
+                    new EditCategoryParameter()
+                    {
+                        ID = Item.Task.CategoryID,
+                        CategoryType = Item.Task.Category.GetType()
+                    },
+                    new DrillInNavigationTransitionInfo());
         }
     }
 }

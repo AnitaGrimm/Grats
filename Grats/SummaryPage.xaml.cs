@@ -36,6 +36,7 @@ namespace Grats
         public SummaryPage()
         {
             this.InitializeComponent();
+            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
