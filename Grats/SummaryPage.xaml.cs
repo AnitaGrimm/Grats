@@ -264,13 +264,16 @@ namespace Grats
                     },
                     new DrillInNavigationTransitionInfo());
             else
-            MainFrame.Navigate(
-                typeof(EditorPage),
-                new NewCategoryParameter()
-                {
-                    Category = Cat
-                },
-                new DrillInNavigationTransitionInfo());
+            {
+                Cat.Name = "";
+                MainFrame.Navigate(
+                    typeof(EditorPage),
+                    new NewCategoryParameter()
+                    {
+                        Category = Cat
+                    },
+                    new DrillInNavigationTransitionInfo());
+            }
         }
         
 
