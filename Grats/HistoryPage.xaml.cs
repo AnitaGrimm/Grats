@@ -21,9 +21,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Grats
 {
+    public class InvertObservableCollection<T>: ObservableCollection<T>
+    {
+        public new void Add(T item)
+        {
+            this.Insert(0, item);
+        }
+    }
     public sealed partial class HistoryPage : Page
     {
-        public ObservableCollection<MessageTaskViewModel> Messages = new ObservableCollection<MessageTaskViewModel>();
+        public InvertObservableCollection<MessageTaskViewModel> Messages = new InvertObservableCollection<MessageTaskViewModel>();
         public HistoryPage()
         {
             this.InitializeComponent();
