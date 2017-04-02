@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
+        <local:HumanizeStringConverter x:Key="HumanizeStringConverter"/>
         <DataTemplate x:Key="MessageTaskItemTemplate"
                       x:DataType="viewmodels:MessageTaskViewModel">
             <Grid HorizontalAlignment="Stretch">
@@ -29,7 +30,7 @@
                                    HorizontalAlignment="Left" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"/>
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True">
-                            <TextBlock Text="{x:Bind LastTryDate}"
+                            <TextBlock Text="{x:Bind LastTryDate, Mode=OneWay, Converter={StaticResource HumanizeStringConverter}}"
                                    Name="LastTryTextBlock"
                                       Margin="8,0"/>
                             <SymbolIcon Symbol="{x:Bind StatusSymbol}"/>

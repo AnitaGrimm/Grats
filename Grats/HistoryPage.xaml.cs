@@ -1,9 +1,11 @@
 ﻿using Grats.Model;
 using Grats.ViewModels;
+using Humanizer;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -26,6 +28,20 @@ namespace Grats
         public new void Add(T item)
         {
             this.Insert(0, item);
+        }
+    }
+    public class HumanizeStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            DateTime sourceTime = DateTime.Parse((String)value);
+            var d =  sourceTime.Humanize();
+            return d;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return (String)value;
         }
     }
     public sealed partial class HistoryPage : Page
