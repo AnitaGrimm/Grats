@@ -258,6 +258,7 @@ namespace Grats
             else
             {
                 Cat.Name = "";
+                Cat.OwnersVKID = (App.Current as App).VKAPI.UserId.Value;
                 MainFrame.Navigate(
                     typeof(EditorPage),
                     new NewCategoryParameter()
