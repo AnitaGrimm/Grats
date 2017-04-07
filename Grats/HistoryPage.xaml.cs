@@ -41,7 +41,7 @@ namespace Grats
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             DateTime sourceTime = DateTime.Parse((String)value);
-            var d =  sourceTime.Humanize();
+            var d =  sourceTime.Humanize(false);
             return d;
         }
 
