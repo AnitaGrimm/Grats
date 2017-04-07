@@ -65,6 +65,19 @@ namespace Grats
         {
             this.InitializeComponent();
             UpdateMessageTasks();
+            SubscribeForTasksNotifications();
+        }
+
+        private void SubscribeForTasksNotifications()
+        {
+            (App.Current as App).TaskCompleted += HistoryPage_TaskCompleted;
+        }
+
+        private async void HistoryPage_TaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                UpdateMessageTasks();
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
