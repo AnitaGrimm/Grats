@@ -115,7 +115,7 @@
                               ItemTemplate="{StaticResource FriendsItempTemplate}" 
                               ItemsSource="{Binding Source={StaticResource FriendsGroupedByKey}}" 
                               SelectionMode="{x:Bind FriendsSelectionMode, Mode=OneWay}"
-                              SelectedValuePath="User"
+                              SelectedValuePath="User" SelectionChanged="FriendsListView_SelectionChanged"
                               CanDragItems="True"
                               DragItemsStarting="FriendsListView_DragItemsStarting"
                               DragItemsCompleted="FriendsListView_DragItemsCompleted">
