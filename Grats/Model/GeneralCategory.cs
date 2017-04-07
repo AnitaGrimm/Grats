@@ -64,6 +64,7 @@ namespace Grats.Model
             this.OwnersVKID = category.OwnersVKID;
             this.Template = category.Template;
             this.Date = date;
+            this.Time = category.Time;
         }
     }
 }

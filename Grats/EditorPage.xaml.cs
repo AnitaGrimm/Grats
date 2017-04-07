@@ -110,7 +110,7 @@ namespace Grats
                         .Include(c => c.CategoryContacts)
                         .ThenInclude(cc => cc.Contact)
                         .Single(s => s.ID == parameter.ID);
-                    DatePicker.Date = category.Date;
+                    DatePicker.Date = category.Date.Date;
                     ViewModel = new CategoryDetailViewModel(category);
                 }
                 else

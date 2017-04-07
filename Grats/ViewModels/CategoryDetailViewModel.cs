@@ -78,6 +78,19 @@ namespace Grats.ViewModels
             }
         }
 
+        public TimeSpan Time
+        {
+            get { return Category.Time; }
+            set
+            {
+                if (Category.Time != value)
+                {
+                    Category.Time = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public object CalendarPicker { get; private set; }
 
         public CategoryDetailViewModel() { }

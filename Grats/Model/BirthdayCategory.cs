@@ -66,6 +66,7 @@ namespace Grats.Model
                  select new CategoryContact(this, categoryContact.Contact)).ToList();
             this.OwnersVKID = category.OwnersVKID;
             this.Template = category.Template;
+            this.Time = category.Time;
         }
     }
 }
