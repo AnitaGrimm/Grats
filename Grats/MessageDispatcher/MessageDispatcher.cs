@@ -70,7 +70,6 @@ namespace Grats.MessageDispatcher
         {
             var category = task.Category;
             var contact = task.Contact;
-
             try
             {
                 IMessageTemplate template = new MessageTemplate(category.Template);
@@ -82,12 +81,12 @@ namespace Grats.MessageDispatcher
                 VK.SendMessage(contact.VKID, messageText);
 
                 UpdateTask(task, true, "Сообщение успешно отправлено");
-                Grats.Notification.Toaster.PopToast("Отправлено", "Сообщение успешно отправлено");
+                Grats.Notification.Toaster.PopToast("Отправлено", "Поздравление \"" + task.Category.Name + "\" успешно отправлено", null, null, contact.PhotoUri);
             }
             catch (MessageTemplateSyntaxException ex)
             {
                 UpdateTask(task, false, "Синтаксическая ошибка в шаблоне", ex);
-                Grats.Notification.Toaster.PopToast("Ошибка", "Синтаксическая ошибка в шаблоне");
+                Grats.Notification.Toaster.PopToast("Ошибка", "Синтаксическая ошибка в шаблоне ("+task.Category.Name+")");
             }
             catch (VkApiException ex)
             {
@@ -97,7 +96,7 @@ namespace Grats.MessageDispatcher
             catch (Exception ex)
             {
                 UpdateTask(task, false, "Неизвестная ошибка", ex);
-                Grats.Notification.Toaster.PopToast("Ошибка", "Неизвестная ошибка");
+                Grats.Notification.Toaster.PopToast("Ошибка", "Неизвестная ошибка(" + task.Category.Name + ")");
             }
         }
 
