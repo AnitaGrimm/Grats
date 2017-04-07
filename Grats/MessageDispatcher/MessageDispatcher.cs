@@ -37,11 +37,16 @@ namespace Grats.MessageDispatcher
 
         public void Dispatch()
         {
-            var tasks = FindWaitingTasks();
+            Dispatch(DateTime.Now);
+        }
+
+        public void Dispatch(DateTime now)
+        {
+            var tasks = FindWaitingTasks(now);
 
             foreach (var task in tasks)
             {
-                HandleTask(task);
+                HandleTask(task, now);
             }
         }
 
@@ -50,13 +55,14 @@ namespace Grats.MessageDispatcher
         private GratsDBContext DB;
         private MessageDispatcherVkConnector VK;
 
-        private List<MessageTask> FindWaitingTasks()
+        private List<MessageTask> FindWaitingTasks(DateTime now)
         {
-            var today = DateTime.Now;
+            var userId = VK.GetCurrentUserId();
             var tasksToDo =
                 from t in DB.MessageTasks
+                where t.Category.OwnersVKID == userId
                 where t.Status == MessageTask.TaskStatus.New || t.Status == MessageTask.TaskStatus.Retry
-                where t.DispatchDate <= today
+                where t.DispatchDate <= now
                 orderby t.DispatchDate
                 select t;
             return tasksToDo
@@ -66,8 +72,14 @@ namespace Grats.MessageDispatcher
         }
 
 
-        private void HandleTask(MessageTask task)
+        private void HandleTask(MessageTask task, DateTime now)
         {
+            if (task.Status == MessageTask.TaskStatus.New && (now - task.DispatchDate).TotalDays >= 1)
+            {
+                UpdateTask(task, false, "Сообщение не отправлено в запланированную дату");
+                return;
+            }
+
             var category = task.Category;
             var contact = task.Contact;
 

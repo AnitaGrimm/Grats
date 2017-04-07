@@ -80,7 +80,7 @@ namespace Grats
                 EventCalendarView val;
                 try
                 {
-                    val = new EventCalendarView { EventColor = color, EventDate = category.Date, Contacts = category, EventName = category.Name ?? "безымянное событие" };
+                    val = new EventCalendarView { EventColor = color, EventDate = category.Date, Contacts = category, EventName = category.Name ?? "безымянное событие", ExistingCategory = true };
                 }
                 catch
                 {
@@ -128,7 +128,7 @@ namespace Grats
                         EventCalendarView val;
                         try
                         {
-                            val = new EventCalendarView { EventColor = color, EventDate = cont.Contact.Birthday.Value, Contacts = category, EventName = "День рождения пользователя " + cont.Contact.ScreenName + " (" + (category.Name ?? "безымянное событие") + ")" };
+                            val = new EventCalendarView { EventColor = color, EventDate = cont.Contact.Birthday.Value, Contacts = category, EventName = "День рождения пользователя " + cont.Contact.ScreenName + " (" + (category.Name ?? "безымянное событие") + ")", ExistingCategory = true };
                         }
                         catch
                         {
@@ -244,26 +244,17 @@ namespace Grats
             var eventDesc = (EventCalendarView)((MenuFlyoutItem)sender).DataContext;
             var MainFrame = (Frame)this.Parent;
             var Cat = eventDesc.Contacts;
-            var db = (App.Current as App).dbContext;
-            var generalCategories = db.GeneralCategories
-                        .Include(c => c.CategoryContacts)
-                        .ThenInclude(cc => cc.Contact);
-            var birthdayCategories = db.BirthdayCategories
-                        .Include(c => c.CategoryContacts)
-                        .ThenInclude(cc => cc.Contact);
-            bool IsEdit = false;
-            if (Cat is GeneralCategory )
-                IsEdit = generalCategories.ToList().IndexOf(Cat as GeneralCategory) != -1;
-            if (Cat is BirthdayCategory)
-                IsEdit = birthdayCategories.ToList().IndexOf(Cat as BirthdayCategory) != -1;
-            if (IsEdit)
+            if (eventDesc.ExistingCategory)
+            {
                 MainFrame.Navigate(
                     typeof(EditorPage),
                     new EditCategoryParameter()
                     {
-                        ID = Cat.ID
+                        ID = Cat.ID,
+                        CategoryType = Cat.GetType(),
                     },
                     new DrillInNavigationTransitionInfo());
+            }
             else
             {
                 Cat.Name = "";

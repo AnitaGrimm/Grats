@@ -41,6 +41,8 @@ namespace Grats
         static string VK_API_PASSWORD_KEY = "vk_api_password";
         static string VK_API_APP_ID_KEY = "vk_api_app_id";
 
+        public event BackgroundTaskCompletedEventHandler TaskCompleted;
+
         public VkApi VKAPI;
         public ulong VKAPIApplicationID;
         /// <summary>
@@ -207,6 +209,11 @@ namespace Grats
                     Debug.Fail(e.Message);
                     return false;
                 }
+                catch (Exception e)
+                {
+                    Debug.Fail(e.Message);
+                    return false;
+                }
                 return true;
             }
         }
@@ -305,8 +312,14 @@ namespace Grats
                 builder.SetTrigger(trigger);
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
+                task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
                 await trigger.RequestAsync();
             }
+        }
+
+        private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            TaskCompleted?.Invoke(sender, args);
         }
 
         private async void RegisterTaskByTime()
@@ -334,7 +347,28 @@ namespace Grats
                 builder.SetTrigger(new TimeTrigger(15,false));
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
+                task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
                 //await trigger.RequestAsync();
+            }
+        }
+
+        public async void TriggerBackgroundTask()
+        {
+            try
+            {
+                foreach (var task in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (task.Value.Name == "SendGrats")
+                    {
+                        BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                        ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                        await appTr.RequestAsync();
+                    }
+                }
+            }
+            catch (InvalidOperationException exception)
+            {
+                Console.WriteLine(exception.Message);
             }
         }
 
