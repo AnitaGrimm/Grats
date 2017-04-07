@@ -152,6 +152,11 @@
                                   ItemTemplate="{StaticResource SelectedColorItemTemplate}"
                                   SelectedValue="{x:Bind ViewModel.Color, Mode=TwoWay}"
                                   Margin="8,0"/>
+                        <TextBlock Text="Время" Margin="8"/>
+                        <TimePicker Name="TimePicker"
+                                    ClockIdentifier="24HourClock"
+                                    Margin="8,0"
+                                    Time="{x:Bind ViewModel.Time, Mode=TwoWay}"/>
                     </StackPanel>
                 </Grid>
                 <Frame Name="MessageFrame">

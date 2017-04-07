@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace Grats.ViewModels
@@ -27,6 +28,17 @@ namespace Grats.ViewModels
         public string LastTryDate => Task.LastTryDate.ToString();
 
         public Symbol StatusSymbol { get; private set; }
+
+        public event EventHandler RetryTask;
+        
+        public void RetryClick(object sender, RoutedEventArgs e)
+        {
+            var db = (App.Current as App).dbContext;
+            Task.Status = MessageTask.TaskStatus.Retry;
+            db.MessageTasks.Update(Task);
+            db.SaveChanges();
+            RetryTask(this, new EventArgs());
+        }
 
         public MessageTaskViewModel( MessageTask CurrentTask)
         {

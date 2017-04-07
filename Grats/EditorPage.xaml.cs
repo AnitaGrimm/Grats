@@ -110,7 +110,7 @@ namespace Grats
                         .Include(c => c.CategoryContacts)
                         .ThenInclude(cc => cc.Contact)
                         .Single(s => s.ID == parameter.ID);
-                    DatePicker.Date = category.Date;
+                    DatePicker.Date = category.Date.Date;
                     ViewModel = new CategoryDetailViewModel(category);
                 }
                 else
@@ -131,7 +131,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -140,22 +140,7 @@ namespace Grats
             if (ViewModel.Validate())
             {
                 ViewModel.Save(DBContext);
-                try
-                {
-                    foreach(var task in BackgroundTaskRegistration.AllTasks)
-                    {   
-                        if (task.Value.Name == "SendGrats")
-                        {
-                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
-                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
-                            await appTr.RequestAsync();
-                        }
-                    }
-                }
-                catch (InvalidOperationException exception)
-                {
-                    Console.WriteLine(exception.Message);
-                }
+                (App.Current as App).TriggerBackgroundTask();
                 this.NavigationCacheMode = NavigationCacheMode.Disabled;
                 this.Frame.GoBack();
             }

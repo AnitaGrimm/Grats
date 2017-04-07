@@ -17,11 +17,19 @@ namespace GratsTests
     [Collection("Model tests")]
     public class MessageDispatcherTests : IDisposable
     {
+        const long UserId = 1000;
+        static readonly DateTime TestDate = new DateTime(2017, 4, 1, 12, 0, 0);
+
         class FakeVkConnector : MessageDispatcherVkConnector
         {
             public List<User> Users = new List<User>();
             public List<string> Messages = new List<string>();
             public VkApiException Exception = null;
+
+            public override long GetCurrentUserId()
+            {
+                return UserId;
+            }
 
             public override User GetUser(long userId, ProfileFields fields)
             {
@@ -48,12 +56,13 @@ namespace GratsTests
 
         GratsDBContext db;
         FakeVkConnector vk = new FakeVkConnector();
-        IMessageDispatcher dispatcher;
+        MessageDispatcher dispatcher;
 
         Category
             goodCategoryA,
             goodCategoryB,
-            badCategory;
+            badCategory,
+            otherCategory;
         Grats.Model.Contact
             contact1,
             contact2;
@@ -66,9 +75,10 @@ namespace GratsTests
             db = (App.Current as App).dbContext;
             dispatcher = new MessageDispatcher(db, vk);
 
-            goodCategoryA = new GeneralCategory { Name = "A", Template = "A" };
-            goodCategoryB = new GeneralCategory { Name = "B", Template = "B" };
-            badCategory = new GeneralCategory { Name = "bad", Template = "^" };
+            goodCategoryA = new GeneralCategory { Name = "A", Template = "A", OwnersVKID = UserId };
+            goodCategoryB = new GeneralCategory { Name = "B", Template = "B", OwnersVKID = UserId };
+            badCategory = new GeneralCategory { Name = "bad", Template = "^", OwnersVKID = UserId };
+            otherCategory = new GeneralCategory { Name = "bad", Template = "^", OwnersVKID = UserId + 1 };
 
             contact1 = new Grats.Model.Contact { VKID = 1, ScreenName = "UserX" };
             contact2 = new Grats.Model.Contact { VKID = 2, ScreenName = "UserY" };
@@ -105,7 +115,7 @@ namespace GratsTests
             {
                 Category = goodCategoryA,
                 Contact = contact1,
-                DispatchDate = DateTime.Today.AddDays(-1),
+                DispatchDate = TestDate.AddHours(-1),
                 Status = MessageTask.TaskStatus.New,
             };
 
@@ -115,7 +125,7 @@ namespace GratsTests
             int counter = 0;
 
             dispatcher.OnTaskHandled += (s, e) => { ++counter; };
-            dispatcher.Dispatch();
+            dispatcher.Dispatch(TestDate);
 
             db.Entry(task).Reload();
 
@@ -134,7 +144,7 @@ namespace GratsTests
             {
                 Category = goodCategoryA,
                 Contact = contact1,
-                DispatchDate = DateTime.Today.AddDays(-1),
+                DispatchDate = TestDate.AddHours(-1),
                 Status = MessageTask.TaskStatus.New,
             };
 
@@ -142,7 +152,7 @@ namespace GratsTests
             {
                 Category = goodCategoryA,
                 Contact = contact2,
-                DispatchDate = DateTime.Today.AddDays(-1),
+                DispatchDate = TestDate.AddHours(-1),
                 Status = MessageTask.TaskStatus.Retry,
             };
 
@@ -150,7 +160,7 @@ namespace GratsTests
             {
                 Category = goodCategoryB,
                 Contact = contact1,
-                DispatchDate = DateTime.Today.AddDays(10), // не должна быть отправлена
+                DispatchDate = TestDate.AddHours(10), // не должна быть отправлена
                 Status = MessageTask.TaskStatus.New,
             };
 
@@ -162,7 +172,7 @@ namespace GratsTests
             int counter = 0;
             dispatcher.OnTaskHandled += (s, e) => { ++counter; };
 
-            dispatcher.Dispatch();
+            dispatcher.Dispatch(TestDate);
 
             db.Entry(taskX).Reload();
             db.Entry(taskY).Reload();
@@ -184,7 +194,7 @@ namespace GratsTests
             {
                 Category = badCategory,
                 Contact = contact1,
-                DispatchDate = DateTime.Today.AddDays(-1),
+                DispatchDate = TestDate.AddHours(-1),
                 Status = MessageTask.TaskStatus.New,
             };
 
@@ -198,7 +208,7 @@ namespace GratsTests
                 ++counter;
                 Assert.NotNull(e.Exception);
             };
-            dispatcher.Dispatch();
+            dispatcher.Dispatch(TestDate);
 
             db.Entry(task).Reload();
 
@@ -217,7 +227,7 @@ namespace GratsTests
             {
                 Category = goodCategoryA,
                 Contact = contact1,
-                DispatchDate = DateTime.Today.AddDays(-1),
+                DispatchDate = TestDate.AddHours(-1),
                 Status = MessageTask.TaskStatus.New,
             };
 
@@ -234,7 +244,7 @@ namespace GratsTests
                 Assert.True(e.Exception.InnerException is VkApiException);
             };
 
-            dispatcher.Dispatch();
+            dispatcher.Dispatch(TestDate);
 
             db.Entry(task).Reload();
 
@@ -249,7 +259,7 @@ namespace GratsTests
         [Fact]
         public void ShouldRefreshTasks()
         {
-            var dispatchDate = DateTime.Today.AddDays(-1);
+            var dispatchDate = TestDate.AddHours(-1);
 
             var task = new MessageTask
             {
@@ -262,7 +272,7 @@ namespace GratsTests
             db.MessageTasks.Add(task);
             db.SaveChanges();
 
-            dispatcher.Dispatch();
+            dispatcher.Dispatch(TestDate);
 
             db.Entry(task).Reload();
 
@@ -277,6 +287,53 @@ namespace GratsTests
             Assert.Equal(contact1.ID, newTask.ContactID);
             Assert.Equal(MessageTask.TaskStatus.New, newTask.Status);
             Assert.Equal(dispatchDate.AddYears(1), newTask.DispatchDate);
+        }
+
+        [Fact]
+        public void ShouldIgnoreOthersMessages()
+        {
+            var task = new MessageTask
+            {
+                Category = otherCategory,
+                Contact = contact1,
+                DispatchDate = TestDate.AddHours(-1),
+                Status = MessageTask.TaskStatus.New,
+            };
+
+            db.MessageTasks.Add(task);
+            db.SaveChanges();
+
+            dispatcher.Dispatch(TestDate);
+
+            db.Entry(task).Reload();
+
+            Assert.Equal(MessageTask.TaskStatus.New, task.Status);
+            Assert.Equal(1, db.MessageTasks.Count());
+            Assert.True(vk.HasSent());
+        }
+
+        [Fact]
+        public void ShouldFailOldMessages()
+        {
+            var task = new MessageTask
+            {
+                Category = goodCategoryA,
+                Contact = contact1,
+                DispatchDate = TestDate.AddDays(-1.5), // пропущенная задача
+                Status = MessageTask.TaskStatus.New,
+            };
+
+            db.MessageTasks.Add(task);
+            db.SaveChanges();
+
+            dispatcher.Dispatch(TestDate);
+
+            db.Entry(task).Reload();
+
+            Assert.Equal(MessageTask.TaskStatus.Pending, task.Status);
+            Assert.True(task.LastTryDate > task.DispatchDate);
+
+            Assert.True(vk.HasSent());
         }
     }
 }

@@ -43,7 +43,8 @@
                         <Button Name="ResendButton"
                                 Margin="0,8"
                                 HorizontalAlignment="Right"
-                                Visibility="{x:Bind CanBeResended}">
+                                Visibility="{x:Bind CanBeResended}"
+                                Click="{x:Bind RetryClick}">
                             Повторить отправку
                         </Button>
                     </Grid>
@@ -53,9 +54,38 @@
     </Page.Resources>
     <Grid x:Name="hGrid" 
           Background="{ThemeResource Background}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <CommandBar
+            Background="{ThemeResource Background}">
+            <AppBarButton Icon="Accept"
+                          Content="Успешные"
+                          Name="DoneOnlyButton"
+                          Click="DoneOnlyButton_Click">
+                <AppBarButton.Background>
+                    <SolidColorBrush Color="{x:Bind DoneOnlyButtonBackground, Mode=OneWay}"/>
+                </AppBarButton.Background>
+            </AppBarButton>
+            <AppBarButton Icon="Refresh"
+                          Content="Ожидающие"
+                          Name="PendingOnlyButton"
+                          Click="PendingOnlyButton_Click">
+                <AppBarButton.Background>
+                    <SolidColorBrush Color="{x:Bind PendingOnlyButtonBackground, Mode=OneWay}"/>
+                </AppBarButton.Background>
+            </AppBarButton>
+            <!--<AppBarButton Icon="Cancel"
+                          Content="Не отправленные"
+                          Name="ErrorOnlyButton"
+                          Click="ErrorOnlyButton_Click"
+                          Background="{x:Bind ErrorOnlyButtonBackground, Mode=OneWay}"/>-->
+        </CommandBar>
         <ListView  ItemTemplate="{StaticResource MessageTaskItemTemplate}" 
-                              ItemsSource="{x:Bind Messages}"
-                   Padding="-12,0,0,0" SelectionChanged="ListView_SelectionChanged">
+                   ItemsSource="{x:Bind Messages}"
+                   Padding="-12,0,0,0" SelectionChanged="ListView_SelectionChanged"
+                   Grid.Row="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"
