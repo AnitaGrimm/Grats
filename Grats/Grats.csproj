@@ -119,6 +119,10 @@
     <Compile Include="Migrations\20170309155519_InitialMigration.designer.cs">
       <DependentUpon>20170309155519_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20170407113424_CategoryTimeMigration.cs" />
+    <Compile Include="Migrations\20170407113424_CategoryTimeMigration.designer.cs">
+      <DependentUpon>20170407113424_CategoryTimeMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />
     <Compile Include="Model\Category.cs" />
@@ -259,6 +263,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

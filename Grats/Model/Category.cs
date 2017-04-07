@@ -22,12 +22,20 @@ namespace Grats.Model
     {
         // TODO: Выбрать дефолтный цвет
         public static string DefaultColor = "#00000000";
+        public static TimeSpan DefaultTime = new TimeSpan(12, 0, 0);
+
+        public Category()
+        {
+            Color = DefaultColor;
+            Time = DefaultTime;
+        }
 
         public long ID { get; set; }
         public long OwnersVKID { get; set; }
         public string Name { get; set; }
         public string Color { get; set; }
         public string Template { get; set; }
+        public TimeSpan Time { get; set; }
         //public List<Contact> Contacts { get; set; }
         public List<CategoryContact> CategoryContacts { get; set; }
         public List<MessageTask> Tasks { get; set; }

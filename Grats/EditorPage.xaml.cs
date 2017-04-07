@@ -64,8 +64,15 @@ namespace Grats
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private GratsDBContext DBContext { get; set; }
-        public CategoryDetailViewModel ViewModel { get; set; }
-        public ObservableCollection<SolidColorBrush> Brushes = new ObservableCollection<SolidColorBrush>();
+        public ObservableCollection<string> Colors = new ObservableCollection<string>(
+            AvailableColors.Select(color => color.ToString()));
+
+        CategoryDetailViewModel ViewModelField;
+        public CategoryDetailViewModel ViewModel
+        {
+            get { return ViewModelField; }
+            set { ViewModelField = value; OnPropertyChanged(); }
+        }
        
         public DateTime MaxDate { get; private set; }
         public DateTime MinDate { get; private set; }
@@ -75,18 +82,9 @@ namespace Grats
             MinDate = DateTime.Now;
             MaxDate = DateTime.Now.AddYears(1);
             this.InitializeComponent();
-            UpdateUI();
             DBContext = (App.Current as App).dbContext;
             NavigationCacheMode = NavigationCacheMode.Enabled;
 
-        }
-
-        private void UpdateUI()
-        {
-            var brushes = from color in AvailableColors
-                          select new SolidColorBrush(color);
-            foreach (var b in brushes)
-                Brushes.Add(b);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -100,6 +98,8 @@ namespace Grats
             {
                 var parameter = (e.Parameter as NewCategoryParameter);
                 DeleteButton.Visibility = Visibility.Collapsed;
+                if(parameter.Category is GeneralCategory)
+                    DatePicker.Date = (parameter.Category as GeneralCategory).Date;
                 ViewModel = new CategoryDetailViewModel(parameter.Category);
             }
             else
@@ -112,7 +112,7 @@ namespace Grats
                         .Include(c => c.CategoryContacts)
                         .ThenInclude(cc => cc.Contact)
                         .Single(s => s.ID == parameter.ID);
-                    DatePicker.Date = category.Date;
+                    DatePicker.Date = category.Date.Date;
                     ViewModel = new CategoryDetailViewModel(category);
                 }
                 else
@@ -133,7 +133,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private async void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -142,22 +142,7 @@ namespace Grats
             if (ViewModel.Validate())
             {
                 ViewModel.Save(DBContext);
-                try
-                {
-                    foreach(var task in BackgroundTaskRegistration.AllTasks)
-                    {   
-                        if (task.Value.Name == "SendGrats")
-                        {
-                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
-                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
-                            await appTr.RequestAsync();
-                        }
-                    }
-                }
-                catch (InvalidOperationException exception)
-                {
-                    Console.WriteLine(exception.Message);
-                }
+                (App.Current as App).TriggerBackgroundTask();
                 this.NavigationCacheMode = NavigationCacheMode.Disabled;
                 this.Frame.GoBack();
             }
@@ -224,18 +209,15 @@ namespace Grats
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.Date = DatePicker.Date;
-            if (ViewModel.Validate())
+            try
             {
-                try
-                {
-                    ViewModel.Delete(DBContext);
-                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                    this.Frame.GoBack();
-                }
-                catch (InvalidOperationException exception)
-                {
+                ViewModel.Delete(DBContext);
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
+            }
+            catch (InvalidOperationException exception)
+            {
 
-                }
             }
         }
     }
