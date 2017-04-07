@@ -7,7 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    RequestedTheme="Dark">
+    RequestedTheme="Dark"
+    x:Name="summaryPage">
 
     <Grid Background="{ThemeResource Background}"
           Padding="32,0">
@@ -40,7 +41,7 @@
                 <DataTemplate>
                     <Frame Name="HistoryFrame"
                            Width="600">
-                        <local:HistoryPage/>
+                        <local:HistoryPage  MainFrame="{Binding ElementName=summaryPage, Path=Parent}"/>
                     </Frame>
                 </DataTemplate>
             </HubSection>
