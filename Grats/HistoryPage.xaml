@@ -43,7 +43,8 @@
                         <Button Name="ResendButton"
                                 Margin="0,8"
                                 HorizontalAlignment="Right"
-                                Visibility="{x:Bind CanBeResended}">
+                                Visibility="{x:Bind CanBeResended}"
+                                Click="{x:Bind RetryClick}">
                             Повторить отправку
                         </Button>
                     </Grid>

@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -165,7 +166,36 @@ namespace Grats
                 .Where(task=> whiteList.Count == 0 ? !blackList.Contains(task.Status) : whiteList.Contains(task.Status) )?
                 .Select(task=>new MessageTaskViewModel(task));
             foreach (var viewModel in messageTaskViewModels)
+            {
+                viewModel.RetryTask += ViewModel_RetryTask;
                 Messages.Add(viewModel);
+            }
+        }
+
+        private void ViewModel_RetryTask(object sender, EventArgs e)
+        {
+            UpdateMessageTasks();
+            TriggerBackgroundTask();
+        }
+
+        private async void TriggerBackgroundTask()
+        {
+            try
+            {
+                foreach (var task in BackgroundTaskRegistration.AllTasks)
+                {
+                    if (task.Value.Name == "SendGrats")
+                    {
+                        BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                        ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                        await appTr.RequestAsync();
+                    }
+                }
+            }
+            catch (InvalidOperationException exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
