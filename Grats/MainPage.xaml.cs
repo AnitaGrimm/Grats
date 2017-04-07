@@ -399,7 +399,7 @@ namespace Grats
             }
             selectedUsers = listView?.SelectedItems?.Select(x => (VKUserViewModel)x)?.Where(x=>x!=null)?.ToList();
         }
-#endregion
+        #endregion
 
         private void FriendsListView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
         {
