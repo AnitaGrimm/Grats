@@ -18,12 +18,15 @@ namespace Grats.Model
                                   categoryContact.Contact.Birthday != null
                             select categoryContact.Contact).ToList();
 
-            var now = DateTime.Today;
+            var now = DateTime.Now;
 
             foreach (var contact in contacts)
             {
                 var birthday = contact.Birthday.Value;
-                var dispatchDate = birthday.AddYears(now.Year - birthday.Year);
+                var dispatchDate = new DateTime(
+                    birthday.Year, birthday.Month, birthday.Day,
+                    Time.Hours, Time.Minutes, Time.Seconds);
+                dispatchDate = dispatchDate.AddYears(now.Year - dispatchDate.Year);
                 if (dispatchDate < now)
                     dispatchDate = dispatchDate.AddYears(1);
 
@@ -66,6 +69,7 @@ namespace Grats.Model
                  select new CategoryContact(this, categoryContact.Contact)).ToList();
             this.OwnersVKID = category.OwnersVKID;
             this.Template = category.Template;
+            this.Time = category.Time;
         }
     }
 }

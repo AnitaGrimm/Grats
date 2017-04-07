@@ -34,5 +34,9 @@ namespace Grats.ViewModels
         {
             this.Category = category;
         }
+        public bool IsValid()
+        {
+            return Name != "" && Category != null && Category.CategoryContacts != null && Category.CategoryContacts.Count!=0 && Category.Tasks != null && Category.Tasks.Count!=0 && Category.Name != "" && Category.Template!="";
+        }
     }
 }

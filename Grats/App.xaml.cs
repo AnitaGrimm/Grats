@@ -41,6 +41,8 @@ namespace Grats
         static string VK_API_PASSWORD_KEY = "vk_api_password";
         static string VK_API_APP_ID_KEY = "vk_api_app_id";
 
+        public event BackgroundTaskCompletedEventHandler TaskCompleted;
+
         public VkApi VKAPI;
         public ulong VKAPIApplicationID;
         /// <summary>
@@ -207,6 +209,11 @@ namespace Grats
                     Debug.Fail(e.Message);
                     return false;
                 }
+                catch (Exception e)
+                {
+                    Debug.Fail(e.Message);
+                    return false;
+                }
                 return true;
             }
         }
@@ -305,15 +312,19 @@ namespace Grats
                 builder.SetTrigger(trigger);
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
+                task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
                 await trigger.RequestAsync();
-                RegisterTaskByTime();
             }
+        }
+
+        private void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            TaskCompleted?.Invoke(sender, args);
         }
 
         private async void RegisterTaskByTime()
         {
             var taskRegistered = false;
-            var x = await BackgroundExecutionManager.RequestAccessAsync();
             var trigger = new TimeTrigger(15, false);
             var taskName = "SendGratsByTime";
             foreach(var task in BackgroundTaskRegistration.AllTasks)
@@ -327,30 +338,37 @@ namespace Grats
             if (!taskRegistered)
             {
 
-                var builder = new BackgroundTaskBuilder();
-                builder.Name = taskName;
-                builder.TaskEntryPoint = typeof(TimerTask.BackgroundTaskbyTime).ToString();
+                var builder = new BackgroundTaskBuilder()
+                {
+                    Name = taskName, TaskEntryPoint= "BackgroundTaskByTime.BackgroundTaskTime"
+                };
                 builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
-                
+                var x = await BackgroundExecutionManager.RequestAccessAsync();
                 builder.SetTrigger(new TimeTrigger(15,false));
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
-                task.Completed += Task_Completed;
+                task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
                 //await trigger.RequestAsync();
             }
         }
 
-        private async void Task_Completed(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        public async void TriggerBackgroundTask()
         {
-         foreach(var task in BackgroundTaskRegistration.AllTasks)
+            try
             {
-                if (task.Value.Name == "SendGrats")
+                foreach (var task in BackgroundTaskRegistration.AllTasks)
                 {
-                    BackgroundTaskRegistration taskReg = task.Value as BackgroundTaskRegistration;
-                    ApplicationTrigger appTr = taskReg.Trigger as ApplicationTrigger;
-                    await appTr.RequestAsync();
-                    break; 
+                    if (task.Value.Name == "SendGrats")
+                    {
+                        BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                        ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                        await appTr.RequestAsync();
+                    }
                 }
+            }
+            catch (InvalidOperationException exception)
+            {
+                Console.WriteLine(exception.Message);
             }
         }
 

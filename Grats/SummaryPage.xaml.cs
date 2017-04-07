@@ -36,6 +36,7 @@ namespace Grats
         public SummaryPage()
         {
             this.InitializeComponent();
+            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -79,7 +80,7 @@ namespace Grats
                 EventCalendarView val;
                 try
                 {
-                    val = new EventCalendarView { EventColor = color, EventDate = category.Date, Contacts = category, EventName = category.Name ?? "безымянное событие" };
+                    val = new EventCalendarView { EventColor = color, EventDate = category.Date, Contacts = category, EventName = category.Name ?? "безымянное событие", ExistingCategory = true };
                 }
                 catch
                 {
@@ -127,7 +128,7 @@ namespace Grats
                         EventCalendarView val;
                         try
                         {
-                            val = new EventCalendarView { EventColor = color, EventDate = cont.Contact.Birthday.Value, Contacts = category, EventName = "День рождения пользователя " + cont.Contact.ScreenName + " (" + (category.Name ?? "безымянное событие") + ")" };
+                            val = new EventCalendarView { EventColor = color, EventDate = cont.Contact.Birthday.Value, Contacts = category, EventName = "День рождения пользователя " + cont.Contact.ScreenName + " (" + (category.Name ?? "безымянное событие") + ")", ExistingCategory = true };
                         }
                         catch
                         {
@@ -161,7 +162,7 @@ namespace Grats
             else if (args.Phase == 1)
             {
                 // Затемняем прошедшие даты
-                if (args.Item.Date < DateTimeOffset.Now)
+                if (args.Item.Date < new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 0, 0, 0, DateTimeOffset.Now.Offset))
                 {
                     args.Item.IsBlackout = true;
                 }
@@ -173,7 +174,7 @@ namespace Grats
             {
                 // Avoid unnecessary processing.
                 // Не нужны даты, которые были до нынешней
-                if (args.Item.Date >= DateTimeOffset.Now)
+                if (args.Item.Date >= new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day,0,0,0, DateTimeOffset.Now.Offset))
                 {
                     // Get bookings for the date being rendered.
 
@@ -203,7 +204,7 @@ namespace Grats
         {
             var calendar = ((CalendarView)sender);
             var selectedDate = args.AddedDates?.FirstOrDefault();
-            if (selectedDate == null || !selectedDate.HasValue)
+            if (selectedDate == null || !selectedDate.HasValue || selectedDate.Value == DateTimeOffset.MinValue)
                 return;
             var flyout = new MenuFlyout();
             MenuFlyoutItem flyoutItem;
@@ -223,7 +224,7 @@ namespace Grats
             }
             calendar.ContextFlyout = flyout;
             flyoutItem = new MenuFlyoutItem();
-            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime , CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
+            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime.Date, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime, CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
             flyoutItem.Text = "Добавить событие";
             flyoutItem.Click += MenuFlyoutItem_Click;
             flyoutItem.Foreground = new SolidColorBrush(Colors.LightGray);
@@ -243,34 +244,28 @@ namespace Grats
             var eventDesc = (EventCalendarView)((MenuFlyoutItem)sender).DataContext;
             var MainFrame = (Frame)this.Parent;
             var Cat = eventDesc.Contacts;
-            var db = (App.Current as App).dbContext;
-            var generalCategories = db.GeneralCategories
-                        .Include(c => c.CategoryContacts)
-                        .ThenInclude(cc => cc.Contact);
-            var birthdayCategories = db.BirthdayCategories
-                        .Include(c => c.CategoryContacts)
-                        .ThenInclude(cc => cc.Contact);
-            bool IsEdit = false;
-            if (Cat is GeneralCategory )
-                IsEdit = generalCategories.ToList().IndexOf(Cat as GeneralCategory) != -1;
-            if (Cat is BirthdayCategory)
-                IsEdit = birthdayCategories.ToList().IndexOf(Cat as BirthdayCategory) != -1;
-            if (IsEdit)
+            if (eventDesc.ExistingCategory)
+            {
                 MainFrame.Navigate(
                     typeof(EditorPage),
                     new EditCategoryParameter()
                     {
-                        ID = Cat.ID
+                        ID = Cat.ID,
+                        CategoryType = Cat.GetType(),
                     },
                     new DrillInNavigationTransitionInfo());
+            }
             else
-            MainFrame.Navigate(
-                typeof(EditorPage),
-                new NewCategoryParameter()
-                {
-                    Category = Cat
-                },
-                new DrillInNavigationTransitionInfo());
+            {
+                Cat.Name = "";
+                MainFrame.Navigate(
+                    typeof(EditorPage),
+                    new NewCategoryParameter()
+                    {
+                        Category = Cat
+                    },
+                    new DrillInNavigationTransitionInfo());
+            }
         }
         
 

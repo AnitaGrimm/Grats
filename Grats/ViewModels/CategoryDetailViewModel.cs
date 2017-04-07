@@ -65,15 +65,28 @@ namespace Grats.ViewModels
         public string DateValidationError { get; set; }
         public string MessageValidationError { get; set; }
 
-        public Color Color
+        public string Color
         {
-            get { return ColorExtensions.FromHex(Category.Color);  }
+            get { return Category.Color;  }
             set
             {
-                if (this.Category.Color.ToString() != value.ToString())
+                if (value != null && Category.Color != value)
                 {
-                    this.Category.Color = value.ToString();
-                    this.OnPropertyChanged();
+                    Category.Color = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public TimeSpan Time
+        {
+            get { return Category.Time; }
+            set
+            {
+                if (Category.Time != value)
+                {
+                    Category.Time = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -85,11 +98,6 @@ namespace Grats.ViewModels
         public CategoryDetailViewModel(Category category)
         {
             this.Category = category;
-            try
-            {
-                this.Color = ColorExtensions.FromHex(category.Color);
-            }
-            catch { }
             if (category is GeneralCategory)
                 Date = (category as GeneralCategory).Date;
             else if (category is BirthdayCategory)

@@ -119,6 +119,10 @@
     <Compile Include="Migrations\20170309155519_InitialMigration.designer.cs">
       <DependentUpon>20170309155519_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20170407113424_CategoryTimeMigration.cs" />
+    <Compile Include="Migrations\20170407113424_CategoryTimeMigration.designer.cs">
+      <DependentUpon>20170407113424_CategoryTimeMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\GratsDBContextModelSnapshot.cs" />
     <Compile Include="Model\BirthdayCategory.cs" />
     <Compile Include="Model\Category.cs" />
@@ -131,7 +135,6 @@
     <Compile Include="HistoryPage.xaml.cs">
       <DependentUpon>HistoryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Notification\Toaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
@@ -260,12 +263,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TimerTask\TimerTask.csproj">
-      <Project>{95c6b9b8-9e36-48eb-9ebe-5aa247e06bd9}</Project>
-      <Name>TimerTask</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

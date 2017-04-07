@@ -15,5 +15,6 @@ namespace Grats.ViewModels
         public Category Contacts;
         public string EventName;
         public Color EventColor;
+        public bool ExistingCategory;
     }
 }

@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
+        <local:HumanizeStringConverter x:Key="HumanizeStringConverter"/>
         <DataTemplate x:Key="MessageTaskItemTemplate"
                       x:DataType="viewmodels:MessageTaskViewModel">
             <Grid HorizontalAlignment="Stretch">
@@ -29,7 +30,7 @@
                                    HorizontalAlignment="Left" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True"/>
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignTopWithPanel="True">
-                            <TextBlock Text="{x:Bind LastTryDate}"
+                            <TextBlock Text="{x:Bind LastTryDate, Mode=OneWay, Converter={StaticResource HumanizeStringConverter}}"
                                    Name="LastTryTextBlock"
                                       Margin="8,0"/>
                             <SymbolIcon Symbol="{x:Bind StatusSymbol}"/>
@@ -42,7 +43,8 @@
                         <Button Name="ResendButton"
                                 Margin="0,8"
                                 HorizontalAlignment="Right"
-                                Visibility="{x:Bind CanBeResended}">
+                                Visibility="{x:Bind CanBeResended}"
+                                Click="{x:Bind RetryClick}">
                             Повторить отправку
                         </Button>
                     </Grid>
@@ -52,9 +54,38 @@
     </Page.Resources>
     <Grid x:Name="hGrid" 
           Background="{ThemeResource Background}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <CommandBar
+            Background="{ThemeResource Background}">
+            <AppBarButton Icon="Accept"
+                          Content="Успешные"
+                          Name="DoneOnlyButton"
+                          Click="DoneOnlyButton_Click">
+                <AppBarButton.Background>
+                    <SolidColorBrush Color="{x:Bind DoneOnlyButtonBackground, Mode=OneWay}"/>
+                </AppBarButton.Background>
+            </AppBarButton>
+            <AppBarButton Icon="Refresh"
+                          Content="Ожидающие"
+                          Name="PendingOnlyButton"
+                          Click="PendingOnlyButton_Click">
+                <AppBarButton.Background>
+                    <SolidColorBrush Color="{x:Bind PendingOnlyButtonBackground, Mode=OneWay}"/>
+                </AppBarButton.Background>
+            </AppBarButton>
+            <!--<AppBarButton Icon="Cancel"
+                          Content="Не отправленные"
+                          Name="ErrorOnlyButton"
+                          Click="ErrorOnlyButton_Click"
+                          Background="{x:Bind ErrorOnlyButtonBackground, Mode=OneWay}"/>-->
+        </CommandBar>
         <ListView  ItemTemplate="{StaticResource MessageTaskItemTemplate}" 
-                              ItemsSource="{x:Bind Messages}"
-                   Padding="-12,0,0,0">
+                   ItemsSource="{x:Bind Messages}"
+                   Padding="-12,0,0,0" SelectionChanged="ListView_SelectionChanged"
+                   Grid.Row="1">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"

@@ -16,6 +16,13 @@ namespace Grats.MessageDispatcher
     public class MessageDispatcherVkConnector
     {
         /// <summary>
+        /// См. VkApi.UserId
+        /// </summary>
+        public virtual long GetCurrentUserId()
+        {
+            return (App.Current as App).VKAPI.UserId.Value;
+        }
+        /// <summary>
         /// См. VkApi.Users.Get(...)
         /// </summary>
         public virtual User GetUser(long userId, ProfileFields fields)
