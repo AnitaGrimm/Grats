@@ -59,6 +59,7 @@ namespace Grats.Model
                                       task.Status == MessageTask.TaskStatus.Retry)
                                select task;
             db.MessageTasks.RemoveRange(pendingTasks);
+            db.SaveChanges();
 
             Generate(db);
         }
