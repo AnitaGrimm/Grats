@@ -30,13 +30,22 @@ namespace Grats.Model
 
             foreach (var contact in contacts)
             {
-                db.MessageTasks.Add(new MessageTask()
+                var matchingTasks =
+                    from messageTask in db.MessageTasks
+                    where messageTask.CategoryID == ID && messageTask.ContactID == contact.ID
+                    where messageTask.DispatchDate >= dispatchDate.Date && messageTask.DispatchDate < dispatchDate.Date.AddDays(1)
+                    select messageTask;
+
+                if (!matchingTasks.Any())
                 {
-                    CategoryID = ID,
-                    Contact = contact,
-                    DispatchDate = dispatchDate,
-                    Status = MessageTask.TaskStatus.New,
-                });
+                    db.MessageTasks.Add(new MessageTask()
+                    {
+                        CategoryID = ID,
+                        Contact = contact,
+                        DispatchDate = dispatchDate,
+                        Status = MessageTask.TaskStatus.New,
+                    });
+                }
             }
 
             db.SaveChanges();
