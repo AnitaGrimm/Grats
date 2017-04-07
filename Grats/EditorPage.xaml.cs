@@ -64,8 +64,15 @@ namespace Grats
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private GratsDBContext DBContext { get; set; }
-        public CategoryDetailViewModel ViewModel { get; set; }
-        public ObservableCollection<SolidColorBrush> Brushes = new ObservableCollection<SolidColorBrush>();
+        public ObservableCollection<string> Colors = new ObservableCollection<string>(
+            AvailableColors.Select(color => color.ToString()));
+
+        CategoryDetailViewModel ViewModelField;
+        public CategoryDetailViewModel ViewModel
+        {
+            get { return ViewModelField; }
+            set { ViewModelField = value; OnPropertyChanged(); }
+        }
        
         public DateTime MaxDate { get; private set; }
         public DateTime MinDate { get; private set; }
@@ -75,18 +82,9 @@ namespace Grats
             MinDate = DateTime.Now;
             MaxDate = DateTime.Now.AddYears(1);
             this.InitializeComponent();
-            UpdateUI();
             DBContext = (App.Current as App).dbContext;
             NavigationCacheMode = NavigationCacheMode.Enabled;
 
-        }
-
-        private void UpdateUI()
-        {
-            var brushes = from color in AvailableColors
-                          select new SolidColorBrush(color);
-            foreach (var b in brushes)
-                Brushes.Add(b);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
