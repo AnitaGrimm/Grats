@@ -31,7 +31,7 @@ namespace Grats.Notification
             var image = doc.CreateElement("image");
             image.SetAttribute("placement", "appLogoOverride");
             image.SetAttribute("hint-crop", "circle");
-            image.SetAttribute("src", (img is null? "..\\..\\..\\Assets\\Logo.png" : img));
+            image.SetAttribute("src", (img is null? "..\\..\\..\\Assets\\Square44x44Logo.scale-400.png" : img));
             var el = doc.CreateElement("text");
             el.InnerText = title;
             binding.AppendChild(el);
