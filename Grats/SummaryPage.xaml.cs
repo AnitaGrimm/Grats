@@ -33,6 +33,7 @@ namespace Grats
     {
         public List<EventCalendarView> CalendarEvents = new List<EventCalendarView>();
         Point pointerPosition = new Point();
+        DateTime MaxAvailableDate;
         public SummaryPage()
         {
             this.InitializeComponent();
@@ -162,7 +163,7 @@ namespace Grats
             else if (args.Phase == 1)
             {
                 // Затемняем прошедшие даты
-                if (args.Item.Date < new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 0, 0, 0, DateTimeOffset.Now.Offset))
+                if (args.Item.Date < new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 0, 0, 0, DateTimeOffset.Now.Offset)|| args.Item.Date>MaxAvailableDate)
                 {
                     args.Item.IsBlackout = true;
                 }
@@ -174,7 +175,7 @@ namespace Grats
             {
                 // Avoid unnecessary processing.
                 // Не нужны даты, которые были до нынешней
-                if (args.Item.Date >= new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day,0,0,0, DateTimeOffset.Now.Offset))
+                if (args.Item.Date >= new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day,0,0,0, DateTimeOffset.Now.Offset) && args.Item.Date<MaxAvailableDate.AddDays(1))
                 {
                     // Get bookings for the date being rendered.
 
@@ -273,7 +274,8 @@ namespace Grats
         {
             var calendar = (CalendarView)sender;
             calendar.MinDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            calendar.MaxDate = new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day);
+            MaxAvailableDate = (new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month, DateTime.Now.Day)).AddDays(-1);
+            calendar.MaxDate = (new DateTime(DateTime.Now.Year + 1, DateTime.Now.Month+1, 1)).AddDays(-1);
         }
     }
 }
