@@ -100,6 +100,8 @@ namespace Grats
             {
                 var parameter = (e.Parameter as NewCategoryParameter);
                 DeleteButton.Visibility = Visibility.Collapsed;
+                if(parameter.Category is GeneralCategory)
+                    DatePicker.Date = (parameter.Category as GeneralCategory).Date;
                 ViewModel = new CategoryDetailViewModel(parameter.Category);
             }
             else

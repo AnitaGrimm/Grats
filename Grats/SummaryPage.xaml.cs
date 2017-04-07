@@ -223,7 +223,7 @@ namespace Grats
             }
             calendar.ContextFlyout = flyout;
             flyoutItem = new MenuFlyoutItem();
-            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime , CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
+            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime.Date, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime, CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
             flyoutItem.Text = "Добавить событие";
             flyoutItem.Click += MenuFlyoutItem_Click;
             flyoutItem.Foreground = new SolidColorBrush(Colors.LightGray);
