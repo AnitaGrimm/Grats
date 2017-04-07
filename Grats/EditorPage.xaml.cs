@@ -80,7 +80,7 @@ namespace Grats
         public EditorPage()
         {
             MinDate = DateTime.Now;
-            MaxDate = DateTime.Now.AddYears(1);
+            MaxDate = DateTime.Now.AddYears(1).AddDays(-1);
             this.InitializeComponent();
             DBContext = (App.Current as App).dbContext;
             NavigationCacheMode = NavigationCacheMode.Enabled;
