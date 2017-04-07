@@ -26,6 +26,7 @@ using System.Windows.Input;
 using Windows.Devices.Input;
 using Microsoft.EntityFrameworkCore;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Background;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -52,18 +53,12 @@ namespace Grats
         // TODO: Подобрать цвета
         static List<Color> AvailableColors = new List<Color>
         {
-            Colors.Azure,
-            Colors.Firebrick,
-            Colors.SkyBlue,
-            Colors.LawnGreen,
-            Colors.Ivory
-        };
 
-        static User DummyUser = new User()
-        {
-            FirstName = "Иван",
-            LastName = "Иванов",
-            Sex = VkNet.Enums.Sex.Male
+            Color.FromArgb(255,238,64,53),
+            Color.FromArgb(255,243,119,54),
+            Color.FromArgb(255,253,244,152),
+            Color.FromArgb(255,123,192,67),
+            Color.FromArgb(255,3,146,207)
         };
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
@@ -71,51 +66,14 @@ namespace Grats
         private GratsDBContext DBContext { get; set; }
         public CategoryDetailViewModel ViewModel { get; set; }
         public ObservableCollection<SolidColorBrush> Brushes = new ObservableCollection<SolidColorBrush>();
-        public string TemplatePlaceholderText;
-        public string TemplatePreviewText;
-
-        private bool preview = false;
-        public bool Preview
-        {
-            get { return preview;  }
-            set
-            {
-                preview = value;
-                if (value)
-                {
-                    try
-                    {
-                        TemplatePreviewText = new MessageTemplate(ViewModel.MessageText)
-                            .Substitute(DummyUser);
-                    }
-                    catch (MessageTemplateSyntaxException e)
-                    {
-                        TemplatePreviewText = e.Message;
-                    }
-                    catch (Exception e) { }
-                }
-                OnPropertyChanged("TemplatePreviewText");
-                OnPropertyChanged("TemplateVisibility");
-                OnPropertyChanged("PreviewVisibility");
-            }
-        }
-        public Visibility TemplateVisibility
-        {
-            get
-            {
-                return Preview ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
-        public Visibility PreviewVisibility
-        {
-            get
-            {
-                return !Preview ? Visibility.Collapsed : Visibility.Visible;
-            }
-        }
-
+       
+        public DateTime MaxDate { get; private set; }
+        public DateTime MinDate { get; private set; }
+        
         public EditorPage()
         {
+            MinDate = DateTime.Now;
+            MaxDate = DateTime.Now.AddYears(1);
             this.InitializeComponent();
             UpdateUI();
             DBContext = (App.Current as App).dbContext;
@@ -129,23 +87,6 @@ namespace Grats
                           select new SolidColorBrush(color);
             foreach (var b in brushes)
                 Brushes.Add(b);
-
-            // TODO: Выделить в ресурс
-            TemplatePlaceholderText = "Синтаксис шаблона: \r\n\r\n" +
-                "\t^<поле_значения>\r\n" +
-                "\t^<поле_выбора>{ \"<случай>\" : \"<значение>\", \"<случай>\" : \"<значение>\", ... ,\"<значение_по-умолчанию>\" }\r\n\r\n" +
-                "Доступные поля:\r\n\r\n";
-            foreach (var field in MessageTemplate.AvailableFields)
-            {
-                TemplatePlaceholderText += field;
-                if (MessageTemplate.AvailableFieldValues.Keys.Contains(field))
-                {
-                    TemplatePlaceholderText += "(" +
-                        String.Join(",", MessageTemplate.AvailableFieldValues[field].ToArray()) +
-                        ")";
-                }
-                TemplatePlaceholderText += "\r\n";
-            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -183,6 +124,7 @@ namespace Grats
                     ViewModel = new CategoryDetailViewModel(category);
                 }
             }
+            MessageFrame.Navigate(typeof(MessageEditorPage), ViewModel);
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -191,7 +133,7 @@ namespace Grats
             this.Frame.GoBack();
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             // TODO: Избавиться от костылей
             // TOOD: Добавить валидацию
@@ -199,65 +141,32 @@ namespace Grats
             ViewModel.Date = DatePicker.Date;
             if (ViewModel.Validate())
             {
+                ViewModel.Save(DBContext);
                 try
                 {
-                    ViewModel.Save(DBContext);
-                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                    this.Frame.GoBack();
+                    foreach(var task in BackgroundTaskRegistration.AllTasks)
+                    {   
+                        if (task.Value.Name == "SendGrats")
+                        {
+                            BackgroundTaskRegistration bt = task.Value as BackgroundTaskRegistration;
+                            ApplicationTrigger appTr = bt.Trigger as ApplicationTrigger;
+                            await appTr.RequestAsync();
+                        }
+                    }
                 }
                 catch (InvalidOperationException exception)
                 {
-
+                    Console.WriteLine(exception.Message);
                 }
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
             }
         }
         
-        private void PreviewButton_Click(object sender, RoutedEventArgs e)
-        {
-            (sender as AppBarButton).Focus(FocusState.Keyboard);
-            Preview = !Preview;
-        }
-
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            this.Focus(FocusState.Keyboard);
             this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        private void OpenTemplateButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.Frame.Navigate(typeof(TemplatesMasterPage), ViewModel);
-        }
-
-        #region SaveTemplateButton
-
-        private void SaveTemplateAppBarButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewModel.ValidateMessageText())
-                SaveTemplateFlyout.ShowAt(SaveTemplateAppBarButton);
-        }
-
-        private void SaveTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            var db = (App.Current as App).dbContext;
-            if (ViewModel.ValidateMessageText() &&
-                !string.IsNullOrEmpty(TemplateName.Text)){
-                db.Templates.Add(new Model.Template()
-                {
-                    Name = TemplateName.Text,
-                    Text = ViewModel.MessageText
-                });
-                db.SaveChanges();
-                SaveTemplateFlyout.Hide();
-            }
-        }
-        
-        private void CancelSaveTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            SaveTemplateFlyout.Hide();
-        }
-
-        #endregion
 
         private void ContactsListView_DragEnter(object sender, DragEventArgs e)
         {

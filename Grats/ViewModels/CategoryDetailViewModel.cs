@@ -239,6 +239,9 @@ namespace Grats.ViewModels
                 result = new GeneralCategory(Category, Date.Value.DateTime);
                 db.BirthdayCategories.Remove(Category as BirthdayCategory);
                 db.GeneralCategories.Add(result as GeneralCategory);
+            } else if (IsGeneral)
+            {
+                (Category as GeneralCategory).Date = Date.Value.DateTime;
             }
             db.SaveChanges();
             (result as ITaskGenerator).Regenerate(db);

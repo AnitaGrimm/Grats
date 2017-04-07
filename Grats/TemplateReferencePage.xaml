@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="Grats.TemplateReferencePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Grats"
+    xmlns:viewmodels="using:Grats.ViewModels"
+    RequestedTheme="Light"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Grid Background="{ThemeResource Background}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Name="GoBackButton"
+                    Click="GoBackButton_Click"
+                    Background="{x:Null}"
+                    Margin="8">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+            <TextBlock Text="Справка"
+                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                   Margin="8"/>
+        </StackPanel>
+        <SplitView Background="{ThemeResource Background}"
+               DisplayMode="Inline"
+               IsPaneOpen="True"
+               Margin="8"
+               VerticalAlignment="Stretch"
+                   Grid.Row="1"
+                   MinHeight="300">
+            <SplitView.Pane>
+                <ListView Name="ModifiersListView"
+                      ItemsSource="{x:Bind Items}"
+                      IsItemClickEnabled="True"
+                      ItemClick="ModifiersListView_ItemClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:ReferenceViewModel">
+                            <TextBlock Text="{x:Bind Title}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </SplitView.Pane>
+            <StackPanel Background="White">
+                <TextBlock Margin="16"
+                       Text="{x:Bind DetailTitle, Mode=OneWay}"
+                       Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="{x:Bind DetailDescription, Mode=OneWay}"
+                       Margin="16,0"/>
+            </StackPanel>
+        </SplitView>
+    </Grid>
+</Page>

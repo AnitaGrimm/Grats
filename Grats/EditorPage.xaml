@@ -44,35 +44,45 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Margin="0,16,0,0">
+        <Grid Margin="0,16,0,0"
+              Height="48">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <AppBarButton Name="BackButton"
-                              Icon="Back"
-                              Click="BackButton_Click" VerticalAlignment="Center" Height="48"/>
+            <Button Name="BackButton"
+                              Click="BackButton_Click"
+                    Background="{x:Null}"
+                    Margin="8,0">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
             <TextBlock Text="Поздравление"
                            Grid.Column="1"
                            Style="{ThemeResource TitleTextBlockStyle}"
                            VerticalAlignment="Center"
                        Margin="16,0"/>
-            <CommandBar Grid.Column="2"
-                        Background="{x:Null}"
-                        Margin="48,0">
-                <AppBarButton Name="SaveButton" 
-                          Icon="Save"
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        FlowDirection="RightToLeft"
+                        Margin="36,0">
+                <Button Name="SaveButton"
                           VerticalAlignment="Center"
                               ToolTipService.ToolTip="Сохранить"
                               Click="SaveButton_Click"
-                          Height="48"/>
-                <AppBarButton Name="DeleteButton" 
-                          Icon="Delete"
-                          VerticalAlignment="Center"
-                              ToolTipService.ToolTip="Удалить"
-                          Height="48" Click="DeleteButton_Click"/>
-            </CommandBar>
+                              Background="{x:Null}"
+                        Margin="8,0">
+                    <SymbolIcon Symbol="Save"/>
+                </Button>
+                <Button Name="DeleteButton"
+                        VerticalAlignment="Center"
+                        ToolTipService.ToolTip="Удалить"
+                        Click="DeleteButton_Click"
+                        Background="{x:Null}"
+                        Margin="8,0">
+                    <SymbolIcon Symbol="Delete"/>
+                </Button>
+            </StackPanel>
         </Grid>
         <ScrollViewer VerticalScrollBarVisibility="Hidden"
                       Grid.Row="1"
@@ -116,7 +126,9 @@
                                         IsEnabled="{x:Bind ViewModel.IsGeneral, Mode=OneWay}" 
                                             Header="Дата"
                                             Margin="8"
-                                            Name="DatePicker"/>
+                                            Name="DatePicker"
+                                            MaxDate="{x:Bind MaxDate}"
+                                            MinDate="{x:Bind MinDate}"/>
                         <CheckBox Name="IsBithdayCheckBox"
                                   Margin="8,0"
                                   IsChecked="{x:Bind ViewModel.IsBirthday, Mode=TwoWay}">
@@ -138,77 +150,13 @@
                                   Margin="8,0"/>
                     </StackPanel>
                 </Grid>
-                <StackPanel Margin="0,8">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="Текст поздравления"
-                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Margin="8,0"/>
-                        <TextBlock Grid.Row="1"
-                            Margin="16,4" Style="{StaticResource ValidationErrorTextBlockStyle}"
-                               Text="{x:Bind ViewModel.MessageValidationError, Mode=OneWay}"/>
-                        <CommandBar
-                                Grid.Column="1"
-                                Grid.RowSpan="2"
-                                Background="{x:Null}"
-                            Margin="8,0">
-                            <AppBarButton Icon="Preview"
-                                      Label="Предпросмотр"
-                                          Name="PreviewButton"
-                                          ToolTipService.ToolTip="Предпросмотр"
-                                          Click="PreviewButton_Click"/>
-                            <AppBarButton Icon="Save"
-                                      Label="Сохранить"
-                                          Name="SaveTemplateAppBarButton"
-                                          ToolTipService.ToolTip="Сохранить"
-                                          Click="SaveTemplateAppBarButton_Click">
-                                <Flyout x:Name="SaveTemplateFlyout">
-                                    <StackPanel Width="240">
-                                        <TextBox Name="TemplateName"
-                                             Header="Название шаблона"
-                                                 Margin="8"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Margin="8"
-                                                        Name="CancelSaveTemplate"
-                                                        Click="CancelSaveTemplate_Click">
-                                                Отмена
-                                            </Button>
-                                            <Button x:Name="SaveTemplate"
-                                                Margin="8"
-                                                    Click="SaveTemplate_Click">
-                                                Сохранить
-                                            </Button>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Flyout>
-                            </AppBarButton>
-                            <AppBarButton Icon="Folder"
-                                          Name="OpenTemplateButton"
-                                      Label="Открыть"
-                                          ToolTipService.ToolTip="Открыть"
-                                          Click="OpenTemplateButton_Click"/>
-                        </CommandBar>
-                    </Grid>
-                    <TextBox Height="300"
-                             Margin="8,0"
-                             PlaceholderText="{x:Bind TemplatePlaceholderText}"
-                             Text="{x:Bind ViewModel.MessageText, Mode=TwoWay}"
-                             Visibility="{x:Bind TemplateVisibility, Mode=OneWay}"
-                             TextWrapping="Wrap"
-                             AcceptsReturn="True"/>
-                    <TextBlock Text="{x:Bind TemplatePreviewText, Mode=OneWay}" 
-                             Margin="8,0"
-                               Padding="8"
-                             Visibility="{x:Bind PreviewVisibility, Mode=OneWay}"
-                               TextWrapping="Wrap"/>
-                </StackPanel>
+                <Frame Name="MessageFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <ContentThemeTransition/>
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
             </StackPanel>
         </ScrollViewer>
     </Grid>

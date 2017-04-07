@@ -22,6 +22,7 @@ using Windows.UI.Xaml.Media;
 using VkNet.Exception;
 using System.Net.Http;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Background;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -72,10 +73,10 @@ namespace Grats
             var db = (App.Current as App).dbContext;
             var VKAPI = (App.Current as App).VKAPI;
             var categories = Enumerable.Union<Category>(
-                db.BirthdayCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value),
-                db.GeneralCategories.Where(c => c.OwnersVKID == VKAPI.UserId.Value));
+                db.BirthdayCategories/*.Where(c => c.OwnersVKID == VKAPI.UserId.Value)*/,
+                db.GeneralCategories/*.Where(c => c.OwnersVKID == VKAPI.UserId.Value)*/);
             var categoriesViewModels = from category in categories
-                                      select new CategoryMasterViewModel(category);
+                                       select new CategoryMasterViewModel(category);
             Categories.Clear();
             foreach (var viewModel in categoriesViewModels)
                 Categories.Add(viewModel);
@@ -174,8 +175,10 @@ namespace Grats
             var collection = new ObservableCollection<FriendsGroupByKey>();
             foreach (var g in groups)
             {
-                var group = new FriendsGroupByKey();
-                group.Key = g.Key;
+                var group = new FriendsGroupByKey()
+                {
+                    Key = g.Key
+                };
                 group.AddRange(g.Friends);
                 collection.Add(group);
             }
@@ -223,7 +226,7 @@ namespace Grats
             while (MainFrame.CanGoBack)
                 MainFrame.GoBack();
             MainFrame.Navigate(
-                typeof(EditorPage), 
+                typeof(EditorPage),
                 new NewCategoryParameter()
                 {
                     Category = category
@@ -241,7 +244,7 @@ namespace Grats
                 {
                     ID = id,
                     CategoryType = categoryType
-                }, 
+                },
                 new DrillInNavigationTransitionInfo());
         }
 
@@ -266,7 +269,7 @@ namespace Grats
                 OnPropertyChanged("SelectButtonVisibility");
             }
         }
-        public Visibility SelectionButtonsVisibility => 
+        public Visibility SelectionButtonsVisibility =>
             IsSelecting ? Visibility.Visible : Visibility.Collapsed;
         public ListViewSelectionMode FriendsSelectionMode =>
             IsSelecting ? ListViewSelectionMode.Multiple : ListViewSelectionMode.None;
