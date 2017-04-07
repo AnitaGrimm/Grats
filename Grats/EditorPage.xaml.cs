@@ -142,7 +142,6 @@ namespace Grats
             if (ViewModel.Validate())
             {
                 ViewModel.Save(DBContext);
-                (App.Current as App).TriggerBackgroundTask();
                 this.NavigationCacheMode = NavigationCacheMode.Disabled;
                 this.Frame.GoBack();
             }

@@ -236,6 +236,7 @@ namespace Grats.ViewModels
             db.CategoryContacts.RemoveRange(removed);
 
             var result = Category;
+            var dateChanged = true;
             if (IsBirthday && Category is GeneralCategory)
             {
                 result = new BirthdayCategory(Category);
@@ -249,10 +250,13 @@ namespace Grats.ViewModels
                 db.GeneralCategories.Add(result as GeneralCategory);
             } else if (IsGeneral)
             {
+                dateChanged = (Category as GeneralCategory).Date.Date != Date.Value.Date;
                 (Category as GeneralCategory).Date = Date.Value.DateTime;
             }
             db.SaveChanges();
             (result as ITaskGenerator).Regenerate(db);
+            if (dateChanged)
+                (App.Current as App).TriggerBackgroundTask();
         }
 
         private void Create(GratsDBContext db)
@@ -271,6 +275,7 @@ namespace Grats.ViewModels
                 db.SaveChanges();
                 result.Generate(db);
             }
+            (App.Current as App).TriggerBackgroundTask();
         }
     }
 }

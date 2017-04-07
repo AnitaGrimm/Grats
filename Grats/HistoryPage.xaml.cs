@@ -30,7 +30,7 @@ using static Grats.Model.MessageTask;
 
 namespace Grats
 {
-    public class InvertObservableCollection<T>: ObservableCollection<T>
+    public class InvertObservableCollection<T> : ObservableCollection<T>
     {
         public new void Add(T item)
         {
@@ -42,7 +42,7 @@ namespace Grats
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             DateTime sourceTime = DateTime.Parse((String)value);
-            var d =  sourceTime.Humanize(false);
+            var d = sourceTime.Humanize(false);
             return d;
         }
 
@@ -75,7 +75,8 @@ namespace Grats
 
         private async void HistoryPage_TaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {
-            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
                 UpdateMessageTasks();
             });
         }
@@ -151,7 +152,7 @@ namespace Grats
                 return result;
             }
         }
-        
+
         public HashSet<TaskStatus> BlackList
         {
             get
@@ -176,8 +177,8 @@ namespace Grats
             var whiteList = WhiteList;
             var blackList = BlackList;
             var messageTaskViewModels = categories?.SelectMany(category => category.Tasks)?
-                .Where(task=> whiteList.Count == 0 ? !blackList.Contains(task.Status) : whiteList.Contains(task.Status) )?
-                .Select(task=>new MessageTaskViewModel(task));
+                .Where(task => whiteList.Count == 0 ? !blackList.Contains(task.Status) : whiteList.Contains(task.Status))?
+                .Select(task => new MessageTaskViewModel(task));
             foreach (var viewModel in messageTaskViewModels)
             {
                 viewModel.RetryTask += ViewModel_RetryTask;
@@ -211,24 +212,24 @@ namespace Grats
             }
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (MainFrame == null)
                 return;
-            var Item = e.AddedItems?.FirstOrDefault() as MessageTaskViewModel;
+            var item = e.ClickedItem as MessageTaskViewModel;
             MainFrame.Navigate(
                 typeof(EditorPage),
                     new EditCategoryParameter()
                     {
-                        ID = Item.Task.CategoryID,
-                        CategoryType = Item.Task.Category.GetType()
+                        ID = item.Task.CategoryID,
+                        CategoryType = item.Task.Category.GetType()
                     },
                     new DrillInNavigationTransitionInfo());
-        }
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
