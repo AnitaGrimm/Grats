@@ -36,6 +36,7 @@ namespace Grats
         public SummaryPage()
         {
             this.InitializeComponent();
+            
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -161,7 +162,7 @@ namespace Grats
             else if (args.Phase == 1)
             {
                 // Затемняем прошедшие даты
-                if (args.Item.Date < DateTimeOffset.Now)
+                if (args.Item.Date < new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 0, 0, 0, DateTimeOffset.Now.Offset))
                 {
                     args.Item.IsBlackout = true;
                 }
@@ -173,7 +174,7 @@ namespace Grats
             {
                 // Avoid unnecessary processing.
                 // Не нужны даты, которые были до нынешней
-                if (args.Item.Date >= DateTimeOffset.Now)
+                if (args.Item.Date >= new DateTimeOffset(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day,0,0,0, DateTimeOffset.Now.Offset))
                 {
                     // Get bookings for the date being rendered.
 
@@ -203,7 +204,7 @@ namespace Grats
         {
             var calendar = ((CalendarView)sender);
             var selectedDate = args.AddedDates?.FirstOrDefault();
-            if (selectedDate == null || !selectedDate.HasValue)
+            if (selectedDate == null || !selectedDate.HasValue || selectedDate.Value == DateTimeOffset.MinValue)
                 return;
             var flyout = new MenuFlyout();
             MenuFlyoutItem flyoutItem;
@@ -264,13 +265,16 @@ namespace Grats
                     },
                     new DrillInNavigationTransitionInfo());
             else
-            MainFrame.Navigate(
-                typeof(EditorPage),
-                new NewCategoryParameter()
-                {
-                    Category = Cat
-                },
-                new DrillInNavigationTransitionInfo());
+            {
+                Cat.Name = "";
+                MainFrame.Navigate(
+                    typeof(EditorPage),
+                    new NewCategoryParameter()
+                    {
+                        Category = Cat
+                    },
+                    new DrillInNavigationTransitionInfo());
+            }
         }
         
 
