@@ -315,18 +315,15 @@ namespace Grats
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.Date = DatePicker.Date;
-            if (ViewModel.Validate())
+            try
             {
-                try
-                {
-                    ViewModel.Delete(DBContext);
-                    this.NavigationCacheMode = NavigationCacheMode.Disabled;
-                    this.Frame.GoBack();
-                }
-                catch (InvalidOperationException exception)
-                {
+                ViewModel.Delete(DBContext);
+                this.NavigationCacheMode = NavigationCacheMode.Disabled;
+                this.Frame.GoBack();
+            }
+            catch (InvalidOperationException exception)
+            {
 
-                }
             }
         }
     }
