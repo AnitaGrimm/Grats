@@ -19,8 +19,12 @@ namespace Grats.Model
                             where categoryContact.CategoryID == ID
                             select categoryContact.Contact).ToList();
 
-            var now = DateTime.Today;
-            var dispatchDate = Date.AddYears(now.Year - Date.Year);
+            var now = DateTime.Now;
+
+            var dispatchDate = new DateTime(
+                Date.Year, Date.Month, Date.Day,
+                Time.Hours, Time.Minutes, Time.Seconds);
+            dispatchDate = dispatchDate.AddYears(now.Year - dispatchDate.Year);
             if (dispatchDate < now)
                 dispatchDate = dispatchDate.AddYears(1);
 
