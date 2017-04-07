@@ -25,7 +25,7 @@ namespace Grats.Model
                 Date.Year, Date.Month, Date.Day,
                 Time.Hours, Time.Minutes, Time.Seconds);
             dispatchDate = dispatchDate.AddYears(now.Year - dispatchDate.Year);
-            if (dispatchDate < now)
+            if (dispatchDate.Date < now.Date)
                 dispatchDate = dispatchDate.AddYears(1);
 
             foreach (var contact in contacts)

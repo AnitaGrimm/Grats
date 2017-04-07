@@ -27,7 +27,7 @@ namespace Grats.Model
                     birthday.Year, birthday.Month, birthday.Day,
                     Time.Hours, Time.Minutes, Time.Seconds);
                 dispatchDate = dispatchDate.AddYears(now.Year - dispatchDate.Year);
-                if (dispatchDate < now)
+                if (dispatchDate.Date < now.Date)
                     dispatchDate = dispatchDate.AddYears(1);
 
                 db.MessageTasks.Add(new MessageTask()
