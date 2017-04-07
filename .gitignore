@@ -244,3 +244,4 @@ ModelManifest.xml
 /BackgroundTaskByTime/BackgroundTaskByTime.csproj
 *.csproj
 *.cs
+/UnitTestProject2
