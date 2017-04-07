@@ -251,6 +251,7 @@ namespace Grats
         public void SignOut()
         {
             UnregisterTask("SendGrats");
+            UnregisterTask("SendGratsByTime");
             ClearCredentials();
             ShowLoginPage();
         }
@@ -314,6 +315,7 @@ namespace Grats
                 BackgroundTaskRegistration task = builder.Register();
                 task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
                 await trigger.RequestAsync();
+                RegisterTaskByTime();
             }
         }
 
@@ -340,18 +342,22 @@ namespace Grats
 
                 var builder = new BackgroundTaskBuilder()
                 {
-                    Name = taskName, TaskEntryPoint= "BackgroundTaskByTime.BackgroundTaskTime"
+                    Name = taskName, TaskEntryPoint= "TimerTask.BackgroundTaskbyTime"
                 };
                 builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
                 var x = await BackgroundExecutionManager.RequestAccessAsync();
                 builder.SetTrigger(new TimeTrigger(15,false));
                 builder.IsNetworkRequested = true;
                 BackgroundTaskRegistration task = builder.Register();
-                task.Completed += new BackgroundTaskCompletedEventHandler(Task_Completed);
+                task.Completed += TriggerBackgroundTask;
                 //await trigger.RequestAsync();
             }
         }
 
+        private void TriggerBackgroundTask(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        {
+            TriggerBackgroundTask();
+        }
         public async void TriggerBackgroundTask()
         {
             try
