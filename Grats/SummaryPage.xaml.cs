@@ -67,10 +67,13 @@ namespace Grats
         public async void UpdateEvents(List<User> friends)
         {
             var db = (App.Current as App).dbContext;
-            var generalCategories = db.GeneralCategories
+            var VKAPI = (App.Current as App).VKAPI;
+            var generalCategories = db.GeneralCategories.
+                Where(c => c.OwnersVKID == VKAPI.UserId.Value)
                         .Include(c => c.CategoryContacts)
                         .ThenInclude(cc => cc.Contact);
-            var birthdayCategories = db.BirthdayCategories
+            var birthdayCategories = db.BirthdayCategories.
+                Where(c => c.OwnersVKID == VKAPI.UserId.Value)
                         .Include(c => c.CategoryContacts)
                         .ThenInclude(cc => cc.Contact);
             //добавление генеральных событий
@@ -94,7 +97,8 @@ namespace Grats
             foreach (var friend in friends)
             {
                 BirthdayCategory cat = new BirthdayCategory();
-                cat.Color = "#00FFFFF0"; 
+                cat.Color = "#00FFFFF0";
+                cat.OwnersVKID = (App.Current as App).VKAPI.UserId.Value;
                 cat.Name = "День рождения пользователя " + friend.FirstName + " " + friend.LastName + "(поздравление не установлено)";
                 cat.CategoryContacts = new List<CategoryContact>() { new CategoryContact { Category = cat, Contact = new Model.Contact(friend) } };
                 EventCalendarView val1=null, val2=null;
@@ -225,7 +229,7 @@ namespace Grats
             }
             calendar.ContextFlyout = flyout;
             flyoutItem = new MenuFlyoutItem();
-            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime.Date, Contacts = new GeneralCategory { Date = selectedDate.Value.DateTime, CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
+            flyoutItem.DataContext = new EventCalendarView { EventDate = selectedDate.Value.DateTime.Date, Contacts = new GeneralCategory {  OwnersVKID = (App.Current as App).VKAPI.UserId.Value, Date = selectedDate.Value.DateTime, CategoryContacts = new List<CategoryContact>(), Color="#FFFFFFFF" }, EventColor = Colors.LightGray };
             flyoutItem.Text = "Добавить событие";
             flyoutItem.Click += MenuFlyoutItem_Click;
             flyoutItem.Foreground = new SolidColorBrush(Colors.LightGray);
